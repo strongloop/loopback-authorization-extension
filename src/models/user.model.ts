@@ -8,4 +8,8 @@ export class User extends Entity {
         id: true
     })
     id: string;
+
+    constructor(data?: Partial<User>) {
+        super(data);
+    }
 }

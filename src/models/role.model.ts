@@ -11,4 +11,8 @@ export class Role extends Entity {
 
     @belongsTo(() => Role, { keyTo: "id" })
     parent: Role;
+
+    constructor(data?: Partial<Role>) {
+        super(data);
+    }
 }

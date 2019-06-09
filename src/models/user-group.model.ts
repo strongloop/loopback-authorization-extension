@@ -16,4 +16,8 @@ export class UserGroup extends Entity {
 
     @belongsTo(() => Group, { keyTo: "id" })
     group: Group;
+
+    constructor(data?: Partial<UserGroup>) {
+        super(data);
+    }
 }

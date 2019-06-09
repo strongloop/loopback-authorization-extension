@@ -16,4 +16,8 @@ export class PermissionRole extends Entity {
 
     @belongsTo(() => Role, { keyTo: "id" })
     role: Role;
+
+    constructor(data?: Partial<PermissionRole>) {
+        super(data);
+    }
 }

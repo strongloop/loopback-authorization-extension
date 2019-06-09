@@ -8,4 +8,8 @@ export class Permission extends Entity {
         id: true
     })
     id: string;
+
+    constructor(data?: Partial<Permission>) {
+        super(data);
+    }
 }

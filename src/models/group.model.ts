@@ -11,4 +11,8 @@ export class Group extends Entity {
 
     @belongsTo(() => Group, { keyTo: "id" })
     parent: Group;
+
+    constructor(data?: Partial<Group>) {
+        super(data);
+    }
 }
