@@ -1,7 +1,6 @@
 import {
     BelongsToAccessor,
     DefaultCrudRepository,
-    Getter,
     juggler
 } from "@loopback/repository";
 
@@ -21,7 +20,7 @@ export class PermissionRoleRepository<
         typeof PermissionRole.prototype.id
     >;
     public readonly role: BelongsToAccessor<
-        Role,
+        RoleModel,
         typeof PermissionRole.prototype.id
     >;
 
@@ -32,24 +31,14 @@ export class PermissionRoleRepository<
     ) {
         super(PermissionRole, dataSource);
 
-        let permissionRepositoryGetter: Getter<
-            PermissionRepository<PermissionModel>
-        > = async () => {
-            return permissionRepository;
-        };
-        let roleRepositoryGetter: Getter<
-            RoleRepository<RoleModel>
-        > = async () => {
-            return roleRepository;
-        };
-
         this.permission = this._createBelongsToAccessorFor(
             "permission",
-            permissionRepositoryGetter
+            async () => {
+                return permissionRepository;
+            }
         );
-        this.role = this._createBelongsToAccessorFor(
-            "role",
-            roleRepositoryGetter
-        );
+        this.role = this._createBelongsToAccessorFor("role", async () => {
+            return roleRepository;
+        });
     }
 }

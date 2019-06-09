@@ -1,7 +1,6 @@
 import {
     BelongsToAccessor,
     DefaultCrudRepository,
-    Getter,
     juggler
 } from "@loopback/repository";
 
@@ -17,7 +16,10 @@ export class UserRoleRepository<
         UserModel,
         typeof UserRole.prototype.id
     >;
-    public readonly role: BelongsToAccessor<Role, typeof UserRole.prototype.id>;
+    public readonly role: BelongsToAccessor<
+        RoleModel,
+        typeof UserRole.prototype.id
+    >;
 
     constructor(
         userRepository: UserRepository<UserModel>,
@@ -26,24 +28,11 @@ export class UserRoleRepository<
     ) {
         super(UserRole, dataSource);
 
-        let userRepositoryGetter: Getter<
-            UserRepository<UserModel>
-        > = async () => {
+        this.user = this._createBelongsToAccessorFor("user", async () => {
             return userRepository;
-        };
-        let roleRepositoryGetter: Getter<
-            RoleRepository<RoleModel>
-        > = async () => {
+        });
+        this.role = this._createBelongsToAccessorFor("role", async () => {
             return roleRepository;
-        };
-
-        this.user = this._createBelongsToAccessorFor(
-            "user",
-            userRepositoryGetter
-        );
-        this.role = this._createBelongsToAccessorFor(
-            "role",
-            roleRepositoryGetter
-        );
+        });
     }
 }

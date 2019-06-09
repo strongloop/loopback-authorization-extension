@@ -4,13 +4,16 @@ import { Request } from "@loopback/rest";
  * interface definition of a function which accepts a request
  * and authorizes user
  */
-// TODO: add `ACLUser` model instead of `any`
 export interface AuthorizeFn {
     (
         permissions: StringPermissionKey[],
         request: Request,
         methodArgs: any[]
     ): Promise<boolean>;
+}
+
+export interface GetUserPermissionsFn {
+    (id: string): Promise<StringPermissionKey[]>;
 }
 
 /**

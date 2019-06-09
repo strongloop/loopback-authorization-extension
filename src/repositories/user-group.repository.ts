@@ -1,7 +1,6 @@
 import {
     BelongsToAccessor,
     DefaultCrudRepository,
-    Getter,
     juggler
 } from "@loopback/repository";
 
@@ -18,7 +17,7 @@ export class UserGroupRepository<
         typeof UserGroup.prototype.id
     >;
     public readonly group: BelongsToAccessor<
-        Group,
+        GroupModel,
         typeof UserGroup.prototype.id
     >;
 
@@ -29,24 +28,11 @@ export class UserGroupRepository<
     ) {
         super(UserGroup, dataSource);
 
-        let userRepositoryGetter: Getter<
-            UserRepository<UserModel>
-        > = async () => {
+        this.user = this._createBelongsToAccessorFor("user", async () => {
             return userRepository;
-        };
-        let groupRepositoryGetter: Getter<
-            GroupRepository<GroupModel>
-        > = async () => {
+        });
+        this.group = this._createBelongsToAccessorFor("group", async () => {
             return groupRepository;
-        };
-
-        this.user = this._createBelongsToAccessorFor(
-            "user",
-            userRepositoryGetter
-        );
-        this.group = this._createBelongsToAccessorFor(
-            "group",
-            groupRepositoryGetter
-        );
+        });
     }
 }
