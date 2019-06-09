@@ -1,7 +1,8 @@
 import {
     BelongsToAccessor,
     DefaultCrudRepository,
-    Getter
+    Getter,
+    juggler
 } from "@loopback/repository";
 
 import { PermissionRole, Permission, Role } from "./../models";
@@ -27,7 +28,7 @@ export class PermissionRoleRepository<
     constructor(
         permissionRepository: PermissionRepository<PermissionModel>,
         roleRepository: RoleRepository<RoleModel>,
-        dataSource: any
+        dataSource: juggler.DataSource
     ) {
         super(PermissionRole, dataSource);
 

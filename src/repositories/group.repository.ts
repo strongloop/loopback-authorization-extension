@@ -1,4 +1,4 @@
-import { Entity, DefaultCrudRepository } from "@loopback/repository";
+import { Entity, DefaultCrudRepository, juggler } from "@loopback/repository";
 
 import { Group } from "./../models";
 
@@ -7,7 +7,7 @@ export class GroupRepository<
 > extends DefaultCrudRepository<GroupModel, typeof Group.prototype.id> {
     constructor(
         ctor: typeof Entity & { prototype: GroupModel },
-        dataSource: any
+        dataSource: juggler.DataSource
     ) {
         super(ctor, dataSource);
     }

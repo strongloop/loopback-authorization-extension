@@ -1,4 +1,4 @@
-import { Entity, DefaultCrudRepository } from "@loopback/repository";
+import { Entity, DefaultCrudRepository, juggler } from "@loopback/repository";
 
 import { Permission } from "./../models";
 
@@ -10,7 +10,7 @@ export class PermissionRepository<
 > {
     constructor(
         ctor: typeof Entity & { prototype: PermissionModel },
-        dataSource: any
+        dataSource: juggler.DataSource
     ) {
         super(ctor, dataSource);
     }

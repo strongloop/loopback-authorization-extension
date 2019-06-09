@@ -1,7 +1,8 @@
 import {
     BelongsToAccessor,
     DefaultCrudRepository,
-    Getter
+    Getter,
+    juggler
 } from "@loopback/repository";
 
 import { UserGroup, User, Group } from "./../models";
@@ -24,7 +25,7 @@ export class UserGroupRepository<
     constructor(
         userRepository: UserRepository<UserModel>,
         groupRepository: GroupRepository<GroupModel>,
-        dataSource: any
+        dataSource: juggler.DataSource
     ) {
         super(UserGroup, dataSource);
 

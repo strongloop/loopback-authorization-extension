@@ -1,4 +1,4 @@
-import { Entity, DefaultCrudRepository } from "@loopback/repository";
+import { Entity, DefaultCrudRepository, juggler } from "@loopback/repository";
 
 import { Role } from "./../models";
 
@@ -7,7 +7,7 @@ export class RoleRepository<
 > extends DefaultCrudRepository<RoleModel, typeof Role.prototype.id> {
     constructor(
         ctor: typeof Entity & { prototype: RoleModel },
-        dataSource: any
+        dataSource: juggler.DataSource
     ) {
         super(ctor, dataSource);
     }
