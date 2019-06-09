@@ -6,7 +6,7 @@ import { Request } from "@loopback/rest";
  */
 // TODO: add `ACLUser` model instead of `any`
 export interface AuthorizeFn {
-    (user: any, request: Request, methodArgs: any[]): Promise<void>;
+    (user: any, request: Request, methodArgs: any[]): Promise<boolean>;
 }
 
 /**
