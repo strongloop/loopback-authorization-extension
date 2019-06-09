@@ -14,7 +14,7 @@ import {
     PermissionRoleRepository
 } from "./repositories";
 
-import { AuthorizeFn } from "./types";
+import { AuthorizeFn, GetUserPermissionsFn } from "./types";
 import { AuthorizationMetadata } from "./decorators";
 
 export namespace AuthorizationBindings {
@@ -60,7 +60,10 @@ export namespace AuthorizationBindings {
     >("authorization.repositories.permission_role");
 
     export const AUTHORIZE_ACTION = BindingKey.create<AuthorizeFn>(
-        "authorization.actions.authorize"
+        "authorization.providers.authorize"
+    );
+    export const GET_USER_PERMISSIONS = BindingKey.create<GetUserPermissionsFn>(
+        "authorization.providers.getUserPermissions"
     );
 }
 

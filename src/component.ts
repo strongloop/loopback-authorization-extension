@@ -15,6 +15,11 @@ import {
     PermissionRoleRepository
 } from "./repositories";
 
+import {
+    AuthorizeActionProvider,
+    GetUserPermissionsProvider
+} from "./providers";
+
 export class AuthorizationComponent implements Component {
     constructor(
         @inject(CoreBindings.APPLICATION_INSTANCE)
@@ -77,4 +82,10 @@ export class AuthorizationComponent implements Component {
             permissionRoleRepository
         );
     }
+
+    providers? = {
+        [AuthorizationBindings.AUTHORIZE_ACTION.key]: AuthorizeActionProvider,
+        [AuthorizationBindings.GET_USER_PERMISSIONS
+            .key]: GetUserPermissionsProvider
+    };
 }
