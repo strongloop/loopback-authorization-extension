@@ -6,7 +6,11 @@ import { Request } from "@loopback/rest";
  */
 // TODO: add `ACLUser` model instead of `any`
 export interface AuthorizeFn {
-    (user: any, request: Request, methodArgs: any[]): Promise<boolean>;
+    (
+        permissions: StringPermissionKey[],
+        request: Request,
+        methodArgs: any[]
+    ): Promise<boolean>;
 }
 
 /**
@@ -16,7 +20,8 @@ export type Condition = And | Or | Permission;
 export type And = { and: Condition[] };
 export type Or = { or: Condition[] };
 export type Permission = { key: PermissionKey; type: boolean };
-export type PermissionKey = AsyncPermissionKey | string;
+export type PermissionKey = AsyncPermissionKey | StringPermissionKey;
+export type StringPermissionKey = string;
 export type AsyncPermissionKey = (
     controller: any,
     request: Request,
