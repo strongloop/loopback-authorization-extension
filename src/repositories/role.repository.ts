@@ -1,10 +1,8 @@
 import { Entity, DefaultCrudRepository, juggler } from "@loopback/repository";
 
-import { Role } from "./../models";
-
 export class RoleRepository<
-    RoleModel extends Role
-> extends DefaultCrudRepository<RoleModel, typeof Role.prototype.id> {
+    RoleModel extends Entity
+> extends DefaultCrudRepository<RoleModel, "string"> {
     constructor(
         ctor: typeof Entity & { prototype: RoleModel },
         dataSource: juggler.DataSource

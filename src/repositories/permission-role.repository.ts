@@ -1,18 +1,19 @@
 import {
+    Entity,
     BelongsToAccessor,
     DefaultCrudRepository,
     juggler
 } from "@loopback/repository";
 
-import { PermissionRole, Permission, Role } from "./../models";
+import { PermissionRole } from "./../models";
 
 import { PermissionRepository, RoleRepository } from ".";
 
 export class PermissionRoleRepository<
-    PermissionModel extends Permission,
-    RoleModel extends Role
+    PermissionModel extends Entity,
+    RoleModel extends Entity
 > extends DefaultCrudRepository<
-    PermissionRole,
+    PermissionRole<PermissionModel, RoleModel>,
     typeof PermissionRole.prototype.id
 > {
     public readonly permission: BelongsToAccessor<

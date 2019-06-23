@@ -1,9 +1,10 @@
 import { Entity, model, property, belongsTo } from "@loopback/repository";
 
-import { Group, Role } from "./";
-
 @model()
-export class GroupRole extends Entity {
+export class GroupRole<
+    GroupModel extends Entity,
+    RoleModel extends Entity
+> extends Entity {
     @property({
         type: "string",
         unique: true,
@@ -11,13 +12,13 @@ export class GroupRole extends Entity {
     })
     id: string;
 
-    @belongsTo(() => Group, { keyTo: "id" })
-    group: Group;
+    @belongsTo(() => GroupModel, { keyTo: "id" })
+    group: GroupModel;
 
-    @belongsTo(() => Role, { keyTo: "id" })
-    role: Role;
+    @belongsTo(() => RoleModel, { keyTo: "id" })
+    role: RoleModel;
 
-    constructor(data?: Partial<GroupRole>) {
+    constructor(data?: Partial<GroupRole<GroupModel, RoleModel>>) {
         super(data);
     }
 }

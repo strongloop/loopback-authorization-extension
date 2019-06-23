@@ -3,7 +3,6 @@ import { Entity, juggler } from "@loopback/repository";
 
 import { AuthorizationBindings } from "./keys";
 
-import { User, Group, Permission, Role } from "./models";
 import {
     UserRepository,
     GroupRepository,
@@ -15,27 +14,41 @@ import {
     PermissionRoleRepository
 } from "./repositories";
 
-import {
-    AuthorizeActionProvider,
-    GetUserPermissionsProvider
-} from "./providers";
+import { AuthorizeActionProvider } from "./providers";
 
-export class AuthorizationComponent implements Component {
+export class AuthorizationComponent<
+    UserModel extends Entity,
+    GroupModel extends Entity,
+    PermissionModel extends Entity,
+    RoleModel extends Entity
+> implements Component {
     constructor(
         @inject(CoreBindings.APPLICATION_INSTANCE)
         app: Application,
         @inject(AuthorizationBindings.USER_MODEL)
-        userCtor: typeof Entity & { prototype: User },
+        userCtor: typeof Entity & { prototype: UserModel },
         @inject(AuthorizationBindings.GROUP_MODEL)
-        groupCtor: typeof Entity & { prototype: Group },
+        groupCtor: typeof Entity & { prototype: GroupModel },
         @inject(AuthorizationBindings.PERMISSION_MODEL)
-        permissionCtor: typeof Entity & { prototype: Permission },
+        permissionCtor: typeof Entity & { prototype: PermissionModel },
         @inject(AuthorizationBindings.ROLE_MODEL)
-        roleCtor: typeof Entity & { prototype: Role },
+        roleCtor: typeof Entity & { prototype: RoleModel },
         @inject(AuthorizationBindings.DATASOURCE)
         dataSource: juggler.DataSource
     ) {
-        let userRepository = new UserRepository<User>(userCtor, dataSource);
+        /**
+         * Create new Object from:
+         *  1. UserRepository
+         *  2. GroupRepository
+         *  3. PermissionRepository
+         *  4. RoleRepository
+         *
+         * Bind repositories to component level Context
+         */
+        let userRepository = new UserRepository<UserModel>(
+            userCtor,
+            dataSource
+        );
         let groupRepository = new GroupRepository<Group>(groupCtor, dataSource);
         let permissionRepository = new PermissionRepository<Permission>(
             permissionCtor,
@@ -43,6 +56,15 @@ export class AuthorizationComponent implements Component {
         );
         let roleRepository = new RoleRepository<Role>(roleCtor, dataSource);
 
+        /**
+         * Create new Object from:
+         *  1. UserGroupRepository
+         *  2. UserRoleRepository
+         *  3. GroupRoleRepository
+         *  4. PermissionRoleRepository
+         *
+         * Bind repositories to component level Context
+         */
         let userGroupRepository = new UserGroupRepository<User, Group>(
             userRepository,
             groupRepository,
@@ -84,8 +106,6 @@ export class AuthorizationComponent implements Component {
     }
 
     providers? = {
-        [AuthorizationBindings.AUTHORIZE_ACTION.key]: AuthorizeActionProvider,
-        [AuthorizationBindings.GET_USER_PERMISSIONS
-            .key]: GetUserPermissionsProvider
+        [AuthorizationBindings.AUTHORIZE_ACTION.key]: AuthorizeActionProvider
     };
 }

@@ -1,13 +1,8 @@
 import { Entity, DefaultCrudRepository, juggler } from "@loopback/repository";
 
-import { Permission } from "./../models";
-
 export class PermissionRepository<
-    PermissionModel extends Permission
-> extends DefaultCrudRepository<
-    PermissionModel,
-    typeof Permission.prototype.id
-> {
+    PermissionModel extends Entity
+> extends DefaultCrudRepository<PermissionModel, "string"> {
     constructor(
         ctor: typeof Entity & { prototype: PermissionModel },
         dataSource: juggler.DataSource

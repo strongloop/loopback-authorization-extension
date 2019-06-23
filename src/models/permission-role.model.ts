@@ -1,9 +1,10 @@
 import { Entity, model, property, belongsTo } from "@loopback/repository";
 
-import { Permission, Role } from "./";
-
 @model()
-export class PermissionRole extends Entity {
+export class PermissionRole<
+    PermissionModel extends Entity,
+    RoleModel extends Entity
+> extends Entity {
     @property({
         type: "string",
         unique: true,
@@ -11,13 +12,13 @@ export class PermissionRole extends Entity {
     })
     id: string;
 
-    @belongsTo(() => Permission, { keyTo: "id" })
-    permission: Permission;
+    @belongsTo(() => PermissionModel, { keyTo: "id" })
+    permission: PermissionModel;
 
-    @belongsTo(() => Role, { keyTo: "id" })
-    role: Role;
+    @belongsTo(() => RoleModel, { keyTo: "id" })
+    role: RoleModel;
 
-    constructor(data?: Partial<PermissionRole>) {
+    constructor(data?: Partial<PermissionRole<PermissionModel, RoleModel>>) {
         super(data);
     }
 }

@@ -1,17 +1,21 @@
 import {
+    Entity,
     BelongsToAccessor,
     DefaultCrudRepository,
     juggler
 } from "@loopback/repository";
 
-import { UserRole, User, Role } from "./../models";
+import { UserRole } from "./../models";
 
 import { UserRepository, RoleRepository } from ".";
 
 export class UserRoleRepository<
-    UserModel extends User,
-    RoleModel extends Role
-> extends DefaultCrudRepository<UserRole, typeof UserRole.prototype.id> {
+    UserModel extends Entity,
+    RoleModel extends Entity
+> extends DefaultCrudRepository<
+    UserRole<UserModel, RoleModel>,
+    typeof UserRole.prototype.id
+> {
     public readonly user: BelongsToAccessor<
         UserModel,
         typeof UserRole.prototype.id

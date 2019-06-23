@@ -1,10 +1,8 @@
 import { Entity, DefaultCrudRepository, juggler } from "@loopback/repository";
 
-import { User } from "./../models";
-
 export class UserRepository<
-    UserModel extends User
-> extends DefaultCrudRepository<UserModel, typeof User.prototype.id> {
+    UserModel extends Entity
+> extends DefaultCrudRepository<UserModel, "string"> {
     constructor(
         ctor: typeof Entity & { prototype: UserModel },
         dataSource: juggler.DataSource

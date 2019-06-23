@@ -1,17 +1,21 @@
 import {
+    Entity,
     BelongsToAccessor,
     DefaultCrudRepository,
     juggler
 } from "@loopback/repository";
 
-import { GroupRole, Group, Role } from "./../models";
+import { GroupRole } from "./../models";
 
 import { GroupRepository, RoleRepository } from ".";
 
 export class GroupRoleRepository<
-    GroupModel extends Group,
-    RoleModel extends Role
-> extends DefaultCrudRepository<GroupRole, typeof GroupRole.prototype.id> {
+    GroupModel extends Entity,
+    RoleModel extends Entity
+> extends DefaultCrudRepository<
+    GroupRole<GroupModel, RoleModel>,
+    typeof GroupRole.prototype.id
+> {
     public readonly group: BelongsToAccessor<
         GroupModel,
         typeof GroupRole.prototype.id
