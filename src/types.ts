@@ -12,10 +12,6 @@ export interface AuthorizeFn {
     ): Promise<boolean>;
 }
 
-export interface GetUserPermissionsFn {
-    (id: string): Promise<StringPermissionKey[]>;
-}
-
 /**
  * Authorizer `Condition` type system and authorization metadata
  */

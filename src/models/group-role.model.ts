@@ -12,7 +12,7 @@ export class GroupRole<
     })
     id: string;
 
-    @belongsTo(() => GroupModel, { keyTo: "id" })
+    @belongsTo(() => ctor, { keyTo: "id" })
     group: GroupModel;
 
     @belongsTo(() => RoleModel, { keyTo: "id" })
