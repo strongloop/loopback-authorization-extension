@@ -1,6 +1,6 @@
 import { BindingKey, MetadataAccessor } from "@loopback/context";
 
-import { Entity, juggler } from "@loopback/repository";
+import { Entity, juggler, Constructor } from "@loopback/repository";
 
 import {
     UserRepository,
@@ -16,11 +16,12 @@ import {
 import { AuthorizeFn } from "./types";
 import { AuthorizationMetadata } from "./decorators";
 
+export type UserModel = Constructor<Entity>;
+export type GroupModel = Constructor<Entity>;
+export type PermissionModel = Constructor<Entity>;
+export type RoleModel = Constructor<Entity>;
+
 export namespace AuthorizationBindings {
-    export type UserModel = Entity & { prototype: any };
-    export type GroupModel = Entity & { prototype: any };
-    export type PermissionModel = Entity & { prototype: any };
-    export type RoleModel = Entity & { prototype: any };
     /**
      * Generic Models keys: input
      *  1. UserModel extends Entity
@@ -29,18 +30,18 @@ export namespace AuthorizationBindings {
      *  4. RoleModel extends Entity
      *
      */
-    export const USER_MODEL = BindingKey.create<
-        typeof Entity & { prototype: UserModel }
-    >("authorization.models.user");
-    export const GROUP_MODEL = BindingKey.create<
-        typeof Entity & { prototype: GroupModel }
-    >("authorization.models.group");
-    export const PERMISSION_MODEL = BindingKey.create<
-        typeof Entity & { prototype: PermissionModel }
-    >("authorization.models.permission");
-    export const ROLE_MODEL = BindingKey.create<
-        typeof Entity & { prototype: RoleModel }
-    >("authorization.models.role");
+    export const USER_MODEL = BindingKey.create<UserModel>(
+        "authorization.models.user"
+    );
+    export const GROUP_MODEL = BindingKey.create<GroupModel>(
+        "authorization.models.group"
+    );
+    export const PERMISSION_MODEL = BindingKey.create<PermissionModel>(
+        "authorization.models.permission"
+    );
+    export const ROLE_MODEL = BindingKey.create<RoleModel>(
+        "authorization.models.role"
+    );
 
     /**
      * DataSource key: input
