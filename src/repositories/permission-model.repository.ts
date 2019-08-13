@@ -1,14 +1,21 @@
-import { DefaultCrudRepository } from "@loopback/repository";
+import { DefaultCrudRepository, juggler } from "@loopback/repository";
 import { PermissionModel, PermissionModelRelations } from "../models";
-import { MySqlDataSource } from "../datasources";
-import { inject } from "@loopback/core";
+import {} from "@loopback/core";
 
-export class PermissionModelRepository extends DefaultCrudRepository<
-    PermissionModel,
+export class PermissionModelRepository<
+    Permission extends PermissionModel,
+    PermissionRelations extends PermissionModelRelations
+> extends DefaultCrudRepository<
+    Permission,
     typeof PermissionModel.prototype.id,
-    PermissionModelRelations
+    PermissionRelations
 > {
-    constructor(@inject("datasources.MySQL") dataSource: MySqlDataSource) {
-        super(PermissionModel, dataSource);
+    constructor(
+        entityClass: typeof PermissionModel & {
+            prototype: Permission;
+        },
+        dataSource: juggler.DataSource
+    ) {
+        super(entityClass, dataSource);
     }
 }

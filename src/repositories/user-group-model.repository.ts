@@ -1,16 +1,17 @@
 import {
     DefaultCrudRepository,
-    repository,
-    BelongsToAccessor
+    BelongsToAccessor,
+    juggler
 } from "@loopback/repository";
 import {
     UserGroupModel,
     UserGroupModelRelations,
     UserModel,
-    GroupModel
+    UserModelRelations,
+    GroupModel,
+    GroupModelRelations
 } from "../models";
-import { MySqlDataSource } from "../datasources";
-import { inject, Getter } from "@loopback/core";
+import { Getter } from "@loopback/core";
 import { UserModelRepository, GroupModelRepository } from "./";
 
 export class UserGroupModelRepository extends DefaultCrudRepository<
@@ -29,11 +30,13 @@ export class UserGroupModelRepository extends DefaultCrudRepository<
     >;
 
     constructor(
-        @inject("datasources.MySQL") dataSource: MySqlDataSource,
-        @repository.getter("UserModelRepository")
-        protected userModelRepositoryGetter: Getter<UserModelRepository>,
-        @repository.getter("GroupModelRepository")
-        protected groupModelRepositoryGetter: Getter<GroupModelRepository>
+        dataSource: juggler.DataSource,
+        userModelRepositoryGetter: Getter<
+            UserModelRepository<UserModel, UserModelRelations>
+        >,
+        groupModelRepositoryGetter: Getter<
+            GroupModelRepository<GroupModel, GroupModelRelations>
+        >
     ) {
         super(UserGroupModel, dataSource);
         this.groupModel = this.createBelongsToAccessorFor(

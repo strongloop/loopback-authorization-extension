@@ -18,8 +18,8 @@ export interface AuthorizeFn {
 export type Condition = And | Or | Permission;
 export type And = { and: Condition[] };
 export type Or = { or: Condition[] };
-export type Permission = { key: PermissionKey; type: boolean };
-export type PermissionKey = AsyncPermissionKey | StringPermissionKey;
+export type Permission = { key: PermissionKey; not?: true };
+export type PermissionKey = StringPermissionKey | AsyncPermissionKey;
 export type StringPermissionKey = string;
 export type AsyncPermissionKey = (
     controller: any,
