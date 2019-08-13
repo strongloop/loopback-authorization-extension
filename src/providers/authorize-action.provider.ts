@@ -5,7 +5,7 @@ import {
     Provider,
     CoreBindings
 } from "@loopback/core";
-import { Request } from "@loopback/rest";
+import { Request, HttpErrors } from "@loopback/rest";
 
 import {
     Condition,
@@ -29,13 +29,19 @@ export class AuthorizeActionProvider implements Provider<AuthorizeFn> {
             let methodName = await this.getMethodName();
             let metadata = getAuthorizeMetadata(controller, methodName);
 
-            return this.authorize(
+            let access = await this.authorize(
                 metadata,
                 permissions,
                 request,
                 controller,
                 methodArgs
             );
+
+            if (!access) {
+                throw new HttpErrors.Forbidden(
+                    "You don't have permission to access this endpoint!"
+                );
+            }
         };
     }
 

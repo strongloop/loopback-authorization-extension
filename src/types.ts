@@ -9,7 +9,7 @@ export interface AuthorizeFn {
         permissions: StringPermissionKey[],
         request: Request,
         methodArgs: any[]
-    ): Promise<boolean>;
+    ): Promise<void>;
 }
 
 /**
