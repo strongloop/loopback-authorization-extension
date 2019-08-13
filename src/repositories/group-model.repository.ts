@@ -1,28 +1,34 @@
 import {
     DefaultCrudRepository,
-    repository,
-    BelongsToAccessor
+    BelongsToAccessor,
+    juggler
 } from "@loopback/repository";
 import { GroupModel, GroupModelRelations } from "../models";
-import { MySqlDataSource } from "../datasources";
-import { inject, Getter } from "@loopback/core";
+import { Getter } from "@loopback/core";
 
-export class GroupModelRepository extends DefaultCrudRepository<
-    GroupModel,
+export class GroupModelRepository<
+    Group extends GroupModel,
+    GroupRelations extends GroupModelRelations
+> extends DefaultCrudRepository<
+    Group,
     typeof GroupModel.prototype.id,
-    GroupModelRelations
+    GroupRelations
 > {
     public readonly groupModel: BelongsToAccessor<
-        GroupModel,
+        Group,
         typeof GroupModel.prototype.id
     >;
 
     constructor(
-        @inject("datasources.MySQL") dataSource: MySqlDataSource,
-        @repository.getter("GroupModelRepository")
-        protected groupModelRepositoryGetter: Getter<GroupModelRepository>
+        entityClass: typeof GroupModel & {
+            prototype: Group;
+        },
+        dataSource: juggler.DataSource,
+        groupModelRepositoryGetter: Getter<
+            GroupModelRepository<Group, GroupRelations>
+        >
     ) {
-        super(GroupModel, dataSource);
+        super(entityClass, dataSource);
         this.groupModel = this.createBelongsToAccessorFor(
             "parent",
             groupModelRepositoryGetter
