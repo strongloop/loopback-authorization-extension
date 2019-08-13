@@ -23,15 +23,12 @@ export class GroupModelRepository<
         entityClass: typeof GroupModel & {
             prototype: Group;
         },
-        dataSource: juggler.DataSource,
-        groupModelRepositoryGetter: Getter<
-            GroupModelRepository<Group, GroupRelations>
-        >
+        dataSource: juggler.DataSource
     ) {
         super(entityClass, dataSource);
         this.groupModel = this.createBelongsToAccessorFor(
             "parent",
-            groupModelRepositoryGetter
+            Getter.fromValue(this)
         );
     }
 }

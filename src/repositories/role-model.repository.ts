@@ -23,15 +23,12 @@ export class RoleModelRepository<
         entityClass: typeof RoleModel & {
             prototype: Role;
         },
-        dataSource: juggler.DataSource,
-        roleModelRepositoryGetter: Getter<
-            RoleModelRepository<Role, RoleRelations>
-        >
+        dataSource: juggler.DataSource
     ) {
         super(entityClass, dataSource);
         this.roleModel = this.createBelongsToAccessorFor(
             "parent",
-            roleModelRepositoryGetter
+            Getter.fromValue(this)
         );
     }
 }
