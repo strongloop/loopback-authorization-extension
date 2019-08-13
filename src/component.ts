@@ -30,7 +30,10 @@ import {
     RolePermissionModelRepository
 } from "./repositories";
 
-import { AuthorizeActionProvider } from "./providers";
+import {
+    AuthorizeActionProvider,
+    GetUserPermissionsProvider
+} from "./providers";
 
 export class AuthorizationComponent implements Component {
     constructor(
@@ -95,6 +98,8 @@ export class AuthorizationComponent implements Component {
     }
 
     providers?: ProviderMap = {
-        [AuthorizationBindings.AUTHORIZE_ACTION.key]: AuthorizeActionProvider
+        [AuthorizationBindings.AUTHORIZE_ACTION.key]: AuthorizeActionProvider,
+        [AuthorizationBindings.GET_USER_PERMISSIONS_ACTION
+            .key]: GetUserPermissionsProvider
     };
 }
