@@ -25,9 +25,20 @@ export class AuthorizeActionProvider implements Provider<AuthorizeFn> {
 
     async value(): Promise<AuthorizeFn> {
         return async (permissions, request, methodArgs) => {
-            let controller = await this.getController();
-            let methodName = await this.getMethodName();
-            let metadata = getAuthorizeMetadata(controller, methodName);
+            let controller: any;
+            let methodName: string;
+            let metadata: Condition;
+            try {
+                controller = await this.getController();
+                methodName = await this.getMethodName();
+                metadata = getAuthorizeMetadata(controller, methodName);
+            } catch (error) {
+                metadata = {
+                    key: async () => {
+                        return true;
+                    }
+                };
+            }
 
             let access = await this.authorize(
                 metadata,
