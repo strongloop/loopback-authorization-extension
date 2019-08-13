@@ -5,7 +5,6 @@ import {
     Provider,
     CoreBindings
 } from "@loopback/core";
-
 import { Request } from "@loopback/rest";
 
 import { Condition, And, Or, StringPermissionKey, AuthorizeFn } from "../types";
@@ -92,7 +91,7 @@ export class AuthorizeActionProvider implements Provider<AuthorizeFn> {
                     );
                 }
 
-                return conditions.type ? result : !result;
+                return conditions.not ? !result : result;
             }
         }
 
