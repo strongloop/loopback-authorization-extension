@@ -37,6 +37,7 @@
         "@loopback/context": "^1.21.1",
         "@loopback/core": "^1.9.0",
         "@loopback/repository": "^1.10.1",
+        "@loopback/rest": "^1.16.6",
         "loopback-connector-mysql": "^5.4.2"
     },
     "devDependencies": {
