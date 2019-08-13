@@ -13,6 +13,14 @@ export interface AuthorizeFn {
 }
 
 /**
+ * interface definition of a function which accepts a user id
+ * and finds it's permission
+ */
+export interface GetUserPermissionsFn {
+    (id: string): Promise<StringPermissionKey[]>;
+}
+
+/**
  * Authorizer `Condition` type system and authorization metadata
  */
 export type Condition = And | Or | Permission;
