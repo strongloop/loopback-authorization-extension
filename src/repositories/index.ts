@@ -1,9 +1,8 @@
-export * from "./user.repository";
-export * from "./group.repository";
-export * from "./permission.repository";
-export * from "./role.repository";
-
-export * from "./user-group.repository";
-export * from "./user-role.repository";
-export * from "./group-role.repository";
-export * from "./permission-role.repository";
+export * from "./user-model.repository";
+export * from "./group-model.repository";
+export * from "./role-model.repository";
+export * from "./permission-model.repository";
+export * from "./user-group-model.repository";
+export * from "./user-role-model.repository";
+export * from "./group-role-model.repository";
+export * from "./role-permission-model.repository";

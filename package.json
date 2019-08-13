@@ -1,7 +1,7 @@
 {
     "name": "loopback-authorization-extension",
     "version": "0.1.0",
-    "description": "HRBAC, MAC, DAC access models generic implementation for Loopback v4",
+    "description": "HRBAC, MAC, DAC access models, generic implementation for Loopback v4",
     "keywords": [
         "loopback-extension",
         "loopback"
@@ -11,38 +11,39 @@
         "node": ">=8.9"
     },
     "scripts": {
-        "build:apidocs": "lb-apidocs",
-        "build": "lb-tsc es2017 --outDir dist",
-        "build:watch": "lb-tsc --watch --outDir dist",
-        "clean": "lb-clean dist",
+        "build": "lb-tsc",
+        "build:watch": "lb-tsc --watch --outDir build",
+        "clean": "lb-clean build *.tsbuildinfo",
         "pretest": "npm run clean && npm run build",
-        "test": "lb-mocha --allow-console-logs \"dist/__tests__\"",
-        "test:dev": "lb-mocha --allow-console-logs dist/__tests__/**/*.js",
+        "test": "lb-mocha --allow-console-logs \"build/__tests__\"",
+        "test:dev": "lb-mocha --allow-console-logs build/__tests__/**/*.js",
         "prepublishOnly": "npm run test"
     },
     "repository": {
         "type": "git"
     },
-    "author": "",
-    "license": "",
+    "author": "KoLiBer",
+    "license": "MIT",
     "files": [
         "README.md",
         "index.js",
         "index.d.ts",
-        "dist",
+        "build",
         "src",
         "!*/__tests__"
     ],
     "dependencies": {
-        "@loopback/boot": "^1.4.0",
-        "@loopback/context": "^1.19.0",
-        "@loopback/core": "^1.8.1",
-        "@loopback/rest": "^1.15.0"
+        "@loopback/boot": "^1.5.0",
+        "@loopback/context": "^1.21.1",
+        "@loopback/core": "^1.9.0",
+        "@loopback/repository": "^1.10.1",
+        "loopback-connector-mysql": "^5.4.2"
     },
     "devDependencies": {
-        "@loopback/build": "^1.7.1",
-        "@loopback/testlab": "^1.5.0",
-        "@types/node": "^10.11.2",
-        "typescript": "~3.5.1"
+        "@loopback/build": "^2.0.6",
+        "source-map-support": "^0.5.13",
+        "@loopback/testlab": "^1.7.2",
+        "@types/node": "^10.14.14",
+        "typescript": "~3.5.3"
     }
 }

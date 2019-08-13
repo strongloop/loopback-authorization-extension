@@ -3,14 +3,14 @@ import { BindingKey, MetadataAccessor } from "@loopback/context";
 import { Entity, juggler, Constructor } from "@loopback/repository";
 
 import {
-    UserRepository,
-    GroupRepository,
-    PermissionRepository,
-    RoleRepository,
-    UserGroupRepository,
-    UserRoleRepository,
-    GroupRoleRepository,
-    PermissionRoleRepository
+    UserModelRepository,
+    GroupModelRepository,
+    RoleModelRepository,
+    PermissionModelRepository,
+    UserGroupModelRepository,
+    UserRoleModelRepository,
+    GroupRoleModelRepository,
+    RolePermissionModelRepository
 } from "./repositories";
 
 import { AuthorizeFn } from "./types";
@@ -60,18 +60,18 @@ export namespace AuthorizationBindings {
      *  4. RoleRepository
      *
      */
-    export const USER_REPOSITORY = BindingKey.create<UserRepository<UserModel>>(
-        "authorization.repositories.user"
-    );
+    export const USER_REPOSITORY = BindingKey.create<
+        UserModelRepository<UserModel>
+    >("authorization.repositories.user");
     export const GROUP_REPOSITORY = BindingKey.create<
-        GroupRepository<GroupModel>
+        GroupModelRepository<GroupModel>
     >("authorization.repositories.group");
     export const PERMISSION_REPOSITORY = BindingKey.create<
         PermissionRepository<PermissionModel>
     >("authorization.repositories.permission");
-    export const ROLE_REPOSITORY = BindingKey.create<RoleRepository<RoleModel>>(
-        "authorization.repositories.role"
-    );
+    export const ROLE_REPOSITORY = BindingKey.create<
+        RoleModelRepository<RoleModel>
+    >("authorization.repositories.role");
 
     /**
      * Advance Repositories keys: output
@@ -82,16 +82,16 @@ export namespace AuthorizationBindings {
      *
      */
     export const USER_GROUP_REPOSITORY = BindingKey.create<
-        UserGroupRepository<UserModel, GroupModel>
+        UserGroupModelRepository<UserModel, GroupModel>
     >("authorization.repositories.user_group");
     export const USER_ROLE_REPOSITORY = BindingKey.create<
-        UserRoleRepository<UserModel, RoleModel>
+        UserRoleModelRepository<UserModel, RoleModel>
     >("authorization.repositories.user_role");
     export const GROUP_ROLE_REPOSITORY = BindingKey.create<
-        GroupRoleRepository<GroupModel, RoleModel>
+        GroupRoleModelRepository<GroupModel, RoleModel>
     >("authorization.repositories.group_role");
     export const PERMISSION_ROLE_REPOSITORY = BindingKey.create<
-        PermissionRoleRepository<PermissionModel, RoleModel>
+        PermissionRoleModelRepository<PermissionModel, RoleModel>
     >("authorization.repositories.permission_role");
 
     /**
