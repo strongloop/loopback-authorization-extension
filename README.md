@@ -10,8 +10,6 @@ Access controlling is one of the most important parts of every application, ther
 npm i --save loopback-authorization-extension
 ```
 
-## Structure
-
 ## Usage
 
 Follow these steps to add `authorization` extension to your loopback4 application
@@ -439,7 +437,7 @@ export class UserControllerController {
 
 ## Complete Example
 
-See [this example](http://github.com/strong-loop/loopback-authorization-example)
+See [this example](https://github.com/koliberr136a1/loopback-authorization-example)
 
 ## Contributions
 
