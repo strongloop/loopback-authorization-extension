@@ -1,14 +1,21 @@
-import { DefaultCrudRepository } from "@loopback/repository";
+import { DefaultCrudRepository, juggler } from "@loopback/repository";
 import { UserModel, UserModelRelations } from "../models";
-import { MySqlDataSource } from "../datasources";
-import { inject } from "@loopback/core";
+import {} from "@loopback/core";
 
-export class UserModelRepository extends DefaultCrudRepository<
-    UserModel,
+export class UserModelRepository<
+    User extends UserModel,
+    UserRelations extends UserModelRelations
+> extends DefaultCrudRepository<
+    User,
     typeof UserModel.prototype.id,
-    UserModelRelations
+    UserRelations
 > {
-    constructor(@inject("datasources.MySQL") dataSource: MySqlDataSource) {
-        super(UserModel, dataSource);
+    constructor(
+        entityClass: typeof UserModel & {
+            prototype: User;
+        },
+        dataSource: juggler.DataSource
+    ) {
+        super(entityClass, dataSource);
     }
 }

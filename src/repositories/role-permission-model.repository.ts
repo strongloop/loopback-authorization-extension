@@ -1,16 +1,17 @@
 import {
     DefaultCrudRepository,
-    repository,
-    BelongsToAccessor
+    BelongsToAccessor,
+    juggler
 } from "@loopback/repository";
 import {
     RolePermissionModel,
     RolePermissionModelRelations,
     RoleModel,
-    PermissionModel
+    RoleModelRelations,
+    PermissionModel,
+    PermissionModelRelations
 } from "../models";
-import { MySqlDataSource } from "../datasources";
-import { inject, Getter } from "@loopback/core";
+import { Getter } from "@loopback/core";
 import { RoleModelRepository, PermissionModelRepository } from "./";
 
 export class RolePermissionModelRepository extends DefaultCrudRepository<
@@ -29,12 +30,12 @@ export class RolePermissionModelRepository extends DefaultCrudRepository<
     >;
 
     constructor(
-        @inject("datasources.MySQL") dataSource: MySqlDataSource,
-        @repository.getter("RoleModelRepository")
-        protected roleModelRepositoryGetter: Getter<RoleModelRepository>,
-        @repository.getter("PermissionModelRepository")
-        protected permissionModelRepositoryGetter: Getter<
-            PermissionModelRepository
+        dataSource: juggler.DataSource,
+        roleModelRepositoryGetter: Getter<
+            RoleModelRepository<RoleModel, RoleModelRelations>
+        >,
+        permissionModelRepositoryGetter: Getter<
+            PermissionModelRepository<PermissionModel, PermissionModelRelations>
         >
     ) {
         super(RolePermissionModel, dataSource);
