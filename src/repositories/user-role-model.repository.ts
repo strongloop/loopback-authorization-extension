@@ -7,7 +7,9 @@ import {
     UserRoleModel,
     UserRoleModelRelations,
     UserModel,
-    RoleModel
+    UserModelRelations,
+    RoleModel,
+    RoleModelRelations
 } from "../models";
 import { Getter } from "@loopback/core";
 import { UserModelRepository, RoleModelRepository } from "./";
@@ -29,8 +31,12 @@ export class UserRoleModelRepository extends DefaultCrudRepository<
 
     constructor(
         dataSource: juggler.DataSource,
-        userModelRepositoryGetter: Getter<UserModelRepository>,
-        roleModelRepositoryGetter: Getter<RoleModelRepository>
+        userModelRepositoryGetter: Getter<
+            UserModelRepository<UserModel, UserModelRelations>
+        >,
+        roleModelRepositoryGetter: Getter<
+            RoleModelRepository<RoleModel, RoleModelRelations>
+        >
     ) {
         super(UserRoleModel, dataSource);
         this.roleModel = this.createBelongsToAccessorFor(

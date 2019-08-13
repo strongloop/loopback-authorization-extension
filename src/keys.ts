@@ -2,6 +2,16 @@ import { BindingKey, MetadataAccessor } from "@loopback/context";
 import { juggler } from "@loopback/repository";
 
 import {
+    UserModel,
+    UserModelRelations,
+    GroupModel,
+    GroupModelRelations,
+    RoleModel,
+    RoleModelRelations,
+    PermissionModel,
+    PermissionModelRelations
+} from "./models";
+import {
     UserModelRepository,
     GroupModelRepository,
     RoleModelRepository,
@@ -33,17 +43,17 @@ export namespace AuthorizationBindings {
      *  4. PermissionModelRepository
      *
      */
-    export const USER_REPOSITORY = BindingKey.create<UserModelRepository>(
-        "authorization.repositories.user"
-    );
-    export const GROUP_REPOSITORY = BindingKey.create<GroupModelRepository>(
-        "authorization.repositories.group"
-    );
-    export const ROLE_REPOSITORY = BindingKey.create<RoleModelRepository>(
-        "authorization.repositories.role"
-    );
+    export const USER_REPOSITORY = BindingKey.create<
+        UserModelRepository<UserModel, UserModelRelations>
+    >("authorization.repositories.user");
+    export const GROUP_REPOSITORY = BindingKey.create<
+        GroupModelRepository<GroupModel, GroupModelRelations>
+    >("authorization.repositories.group");
+    export const ROLE_REPOSITORY = BindingKey.create<
+        RoleModelRepository<RoleModel, RoleModelRelations>
+    >("authorization.repositories.role");
     export const PERMISSION_REPOSITORY = BindingKey.create<
-        PermissionModelRepository
+        PermissionModelRepository<PermissionModel, PermissionModelRelations>
     >("authorization.repositories.permission");
 
     /**

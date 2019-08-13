@@ -7,7 +7,9 @@ import {
     RolePermissionModel,
     RolePermissionModelRelations,
     RoleModel,
-    PermissionModel
+    RoleModelRelations,
+    PermissionModel,
+    PermissionModelRelations
 } from "../models";
 import { Getter } from "@loopback/core";
 import { RoleModelRepository, PermissionModelRepository } from "./";
@@ -29,8 +31,12 @@ export class RolePermissionModelRepository extends DefaultCrudRepository<
 
     constructor(
         dataSource: juggler.DataSource,
-        roleModelRepositoryGetter: Getter<RoleModelRepository>,
-        permissionModelRepositoryGetter: Getter<PermissionModelRepository>
+        roleModelRepositoryGetter: Getter<
+            RoleModelRepository<RoleModel, RoleModelRelations>
+        >,
+        permissionModelRepositoryGetter: Getter<
+            PermissionModelRepository<PermissionModel, PermissionModelRelations>
+        >
     ) {
         super(RolePermissionModel, dataSource);
         this.permissionModel = this.createBelongsToAccessorFor(

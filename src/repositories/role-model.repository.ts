@@ -6,21 +6,29 @@ import {
 import { RoleModel, RoleModelRelations } from "../models";
 import { Getter } from "@loopback/core";
 
-export class RoleModelRepository extends DefaultCrudRepository<
-    RoleModel,
+export class RoleModelRepository<
+    Role extends RoleModel,
+    RoleRelations extends RoleModelRelations
+> extends DefaultCrudRepository<
+    Role,
     typeof RoleModel.prototype.id,
-    RoleModelRelations
+    RoleRelations
 > {
     public readonly roleModel: BelongsToAccessor<
-        RoleModel,
+        Role,
         typeof RoleModel.prototype.id
     >;
 
     constructor(
+        entityClass: typeof RoleModel & {
+            prototype: Role;
+        },
         dataSource: juggler.DataSource,
-        roleModelRepositoryGetter: Getter<RoleModelRepository>
+        roleModelRepositoryGetter: Getter<
+            RoleModelRepository<Role, RoleRelations>
+        >
     ) {
-        super(RoleModel, dataSource);
+        super(entityClass, dataSource);
         this.roleModel = this.createBelongsToAccessorFor(
             "parent",
             roleModelRepositoryGetter

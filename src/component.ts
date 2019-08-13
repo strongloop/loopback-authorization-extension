@@ -10,6 +10,16 @@ import { juggler } from "@loopback/repository";
 import { AuthorizationBindings } from "./keys";
 
 import {
+    UserModel,
+    UserModelRelations,
+    GroupModel,
+    GroupModelRelations,
+    RoleModel,
+    RoleModelRelations,
+    PermissionModel,
+    PermissionModelRelations
+} from "./models";
+import {
     UserModelRepository,
     GroupModelRepository,
     RoleModelRepository,
@@ -21,7 +31,6 @@ import {
 } from "./repositories";
 
 import { AuthorizeActionProvider } from "./providers";
-import { GroupModel, GroupModelRelations } from "./models";
 
 export class AuthorizationComponent implements Component {
     constructor(
@@ -30,13 +39,16 @@ export class AuthorizationComponent implements Component {
         @inject(AuthorizationBindings.DATASOURCE)
         dataSource: juggler.DataSource,
         @inject(AuthorizationBindings.USER_REPOSITORY)
-        userRepository: UserModelRepository,
+        userRepository: UserModelRepository<UserModel, UserModelRelations>,
         @inject(AuthorizationBindings.GROUP_REPOSITORY)
         groupRepository: GroupModelRepository<GroupModel, GroupModelRelations>,
         @inject(AuthorizationBindings.ROLE_REPOSITORY)
-        roleRepository: RoleModelRepository,
+        roleRepository: RoleModelRepository<RoleModel, RoleModelRelations>,
         @inject(AuthorizationBindings.PERMISSION_REPOSITORY)
-        permissionRepository: PermissionModelRepository
+        permissionRepository: PermissionModelRepository<
+            PermissionModel,
+            PermissionModelRelations
+        >
     ) {
         /**
          * Create new Object from:
