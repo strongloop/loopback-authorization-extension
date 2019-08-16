@@ -5,7 +5,8 @@ export class UserModel extends Entity {
     @property({
         type: "string",
         id: true,
-        required: true
+        required: true,
+        defaultFn: "uuidv4"
     })
     id: string;
 
