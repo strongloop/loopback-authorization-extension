@@ -5,7 +5,6 @@ export class RoleModel extends Entity {
     @property({
         type: "string",
         id: true,
-        required: true,
         defaultFn: "uuidv4"
     })
     id: string;
