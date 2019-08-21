@@ -110,7 +110,15 @@ import {
 export class TestApplication extends BootMixin(
     ServiceMixin(RepositoryMixin(RestApplication))
 ) {
-    constructor(options: ApplicationConfig = {}) {
+    constructor(
+        options: ApplicationConfig = {},
+        @inject("datasources.MySQL") dataSource: MySQLDataSource,
+        @repository(UserRepository) userRepository: UserRepository,
+        @repository(GroupRepository) groupRepository: GroupRepository,
+        @repository(RoleRepository) roleRepository: RoleRepository,
+        @repository(PermissionRepository)
+        permissionRepository: PermissionRepository
+    ) {
         super(options);
 
         // Set up the custom sequence
@@ -122,19 +130,12 @@ export class TestApplication extends BootMixin(
         // ...
 
         // bind dataSource, repositories, component to your application context
-        const dataSource = new MySqlDataSource();
         this.bind(AuthorizationBindings.DATASOURCE).to(dataSource);
-        this.bind(AuthorizationBindings.USER_REPOSITORY).to(
-            new UserRepository(dataSource)
-        );
-        this.bind(AuthorizationBindings.GROUP_REPOSITORY).to(
-            new GroupRepository(dataSource)
-        );
-        this.bind(AuthorizationBindings.ROLE_REPOSITORY).to(
-            new RoleRepository(dataSource)
-        );
+        this.bind(AuthorizationBindings.USER_REPOSITORY).to(userRepository);
+        this.bind(AuthorizationBindings.GROUP_REPOSITORY).to(groupRepository);
+        this.bind(AuthorizationBindings.ROLE_REPOSITORY).to(roleRepository);
         this.bind(AuthorizationBindings.PERMISSION_REPOSITORY).to(
-            new PermissionRepository(dataSource)
+            permissionRepository
         );
         this.component(AuthorizationComponent);
 
@@ -222,28 +223,6 @@ At the final step you must get user permissions using `getUserPermissions(id)` p
 
 ```js
 import {
-    Count,
-    CountSchema,
-    Filter,
-    repository,
-    Where
-} from "@loopback/repository";
-import {
-    post,
-    param,
-    get,
-    getFilterSchemaFor,
-    getModelSchemaRef,
-    getWhereSchemaFor,
-    patch,
-    put,
-    del,
-    requestBody
-} from "@loopback/rest";
-import { User } from "../models";
-import { UserRepository } from "../repositories";
-
-import {
     AuthorizationBindings,
     GetUserPermissionsFn,
     authorize
@@ -294,13 +273,13 @@ You can feel the power of `loopback-authorization-extension` is in this step, by
 ```js
 // ...
 
+@authenticate(...)
 @authorize({
     and: [
         {key: "CREATE_USER"},
         {key: "DELETE_USER"}
     ]
 })
-@authenticate(...)
 async editUser(...args): Promise<any> {...}
 
 // ...
@@ -361,37 +340,7 @@ In some special cases we need to check some other permissions or conditions such
 
 ## How to define `Users, Groups, Roles, Permissions`
 
-Everywhere you can inject the authorizer repositories such as `UserModelRepository`, `GroupModelRepository`, etc and edit your models in database
-
-```js
-import {
-    AuthorizationBindings,
-    GetUserPermissionsFn,
-    authorize
-} from "loopback-authorization-extension";
-import { inject } from "@loopback/context";
-
-export class UserControllerController {
-    constructor(
-        @inject(AuthorizationBindings.USER_REPOSITORY)
-        public userRepository: UserRepository
-    ) {}
-
-    @get("/users", {
-        responses: {
-            "200": {
-                ...
-            }
-        }
-    })
-    async find(
-        @param.query.object("filter", getFilterSchemaFor(User))
-        filter?: Filter<User>
-    ): Promise<User[]> {
-        return this.userRepository.find(filter);
-    }
-}
-```
+> You can add or remove users, groups, roles and permissions using your repositories
 
 ---
 
@@ -425,7 +374,6 @@ export class UserControllerController {
     async find(...args): Promise<any> {
         // add user to group
         return this.userGroupRepository.create(new UserGroupModel({
-            id: "...",
             user: "user id",
             group: "group id"
         }));
