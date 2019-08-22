@@ -1,8 +1,7 @@
-import {
-    DefaultCrudRepository,
-    BelongsToAccessor,
-    juggler
-} from "@loopback/repository";
+import { Getter, bind } from "@loopback/core";
+import { DefaultCrudRepository, BelongsToAccessor } from "@loopback/repository";
+
+import { AuthorizationDataSource, injectDataSource } from "../datasources";
 import {
     UserGroupModel,
     UserGroupModelRelations,
@@ -11,9 +10,22 @@ import {
     GroupModel,
     GroupModelRelations
 } from "../models";
-import { Getter } from "@loopback/core";
-import { UserModelRepository, GroupModelRepository } from "./";
+import {
+    UserModelRepository,
+    injectUserRepositoryGetter,
+    GroupModelRepository,
+    injectGroupRepositoryGetter
+} from "./";
 
+/**
+ * Add binding tags to repository, for tracking
+ */
+@bind(binding => {
+    binding.tag({ authorization: true });
+    binding.tag({ model: "UserGroup" });
+
+    return binding;
+})
 export class UserGroupModelRepository extends DefaultCrudRepository<
     UserGroupModel,
     typeof UserGroupModel.prototype.id,
@@ -30,10 +42,13 @@ export class UserGroupModelRepository extends DefaultCrudRepository<
     >;
 
     constructor(
-        dataSource: juggler.DataSource,
+        @injectDataSource()
+        dataSource: AuthorizationDataSource,
+        @injectUserRepositoryGetter()
         userModelRepositoryGetter: Getter<
             UserModelRepository<UserModel, UserModelRelations>
         >,
+        @injectGroupRepositoryGetter()
         groupModelRepositoryGetter: Getter<
             GroupModelRepository<GroupModel, GroupModelRelations>
         >

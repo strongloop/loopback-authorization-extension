@@ -1,11 +1,21 @@
+import { Getter, bind, inject } from "@loopback/core";
 import {
     DefaultCrudRepository,
     BelongsToAccessor,
     juggler
 } from "@loopback/repository";
-import { RoleModel, RoleModelRelations } from "../models";
-import { Getter } from "@loopback/core";
 
+import { RoleModel, RoleModelRelations } from "../models";
+
+/**
+ * Add binding tags to repository, for tracking
+ */
+@bind(binding => {
+    binding.tag({ authorization: true });
+    binding.tag({ model: "Role" });
+
+    return binding;
+})
 export class RoleModelRepository<
     Role extends RoleModel,
     RoleRelations extends RoleModelRelations
@@ -31,4 +41,11 @@ export class RoleModelRepository<
             Getter.fromValue(this)
         );
     }
+}
+
+export function injectRoleRepositoryGetter() {
+    return inject.getter(binding => {
+        return false;
+    });
+    // TODO
 }

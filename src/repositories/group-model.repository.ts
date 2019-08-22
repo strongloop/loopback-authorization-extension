@@ -1,11 +1,21 @@
+import { Getter, bind, inject } from "@loopback/core";
 import {
     DefaultCrudRepository,
     BelongsToAccessor,
     juggler
 } from "@loopback/repository";
-import { GroupModel, GroupModelRelations } from "../models";
-import { Getter } from "@loopback/core";
 
+import { GroupModel, GroupModelRelations } from "../models";
+
+/**
+ * Add binding tags to repository, for tracking
+ */
+@bind(binding => {
+    binding.tag({ authorization: true });
+    binding.tag({ model: "Group" });
+
+    return binding;
+})
 export class GroupModelRepository<
     Group extends GroupModel,
     GroupRelations extends GroupModelRelations
@@ -31,4 +41,11 @@ export class GroupModelRepository<
             Getter.fromValue(this)
         );
     }
+}
+
+export function injectGroupRepositoryGetter() {
+    return inject.getter(binding => {
+        return false;
+    });
+    // TODO
 }

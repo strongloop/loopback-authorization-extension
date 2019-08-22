@@ -1,7 +1,17 @@
+import { bind, inject } from "@loopback/core";
 import { DefaultCrudRepository, juggler } from "@loopback/repository";
-import { UserModel, UserModelRelations } from "../models";
-import {} from "@loopback/core";
 
+import { UserModel, UserModelRelations } from "../models";
+
+/**
+ * Add binding tags to repository, for tracking
+ */
+@bind(binding => {
+    binding.tag({ authorization: true });
+    binding.tag({ model: "User" });
+
+    return binding;
+})
 export class UserModelRepository<
     User extends UserModel,
     UserRelations extends UserModelRelations
@@ -18,4 +28,11 @@ export class UserModelRepository<
     ) {
         super(entityClass, dataSource);
     }
+}
+
+export function injectUserRepositoryGetter() {
+    return inject.getter(binding => {
+        return false;
+    });
+    // TODO
 }
