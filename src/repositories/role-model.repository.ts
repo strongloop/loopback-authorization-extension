@@ -45,7 +45,6 @@ export class RoleModelRepository<
 
 export function injectRoleRepositoryGetter() {
     return inject.getter(binding => {
-        return false;
+        return binding.tagMap.authorization && binding.tagMap.model === "Role";
     });
-    // TODO
 }

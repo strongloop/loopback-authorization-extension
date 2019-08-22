@@ -45,7 +45,6 @@ export class GroupModelRepository<
 
 export function injectGroupRepositoryGetter() {
     return inject.getter(binding => {
-        return false;
+        return binding.tagMap.authorization && binding.tagMap.model === "Group";
     });
-    // TODO
 }

@@ -1,4 +1,4 @@
-import { Getter, bind } from "@loopback/core";
+import { Getter, bind, inject } from "@loopback/core";
 import { DefaultCrudRepository, BelongsToAccessor } from "@loopback/repository";
 
 import { AuthorizationDataSource, injectDataSource } from "../datasources";
@@ -43,24 +43,34 @@ export class RolePermissionModelRepository extends DefaultCrudRepository<
 
     constructor(
         @injectDataSource()
-        dataSource: AuthorizationDataSource,
+        dataSource: AuthorizationDataSource[],
         @injectRoleRepositoryGetter()
         roleModelRepositoryGetter: Getter<
             RoleModelRepository<RoleModel, RoleModelRelations>
-        >,
+        >[],
         @injectPermissionRepositoryGetter()
         permissionModelRepositoryGetter: Getter<
             PermissionModelRepository<PermissionModel, PermissionModelRelations>
-        >
+        >[]
     ) {
-        super(RolePermissionModel, dataSource);
-        this.permissionModel = this.createBelongsToAccessorFor(
-            "permission",
-            permissionModelRepositoryGetter
-        );
+        super(RolePermissionModel, dataSource[0]);
+
         this.roleModel = this.createBelongsToAccessorFor(
             "role",
-            roleModelRepositoryGetter
+            roleModelRepositoryGetter[0]
+        );
+        this.permissionModel = this.createBelongsToAccessorFor(
+            "permission",
+            permissionModelRepositoryGetter[0]
         );
     }
+}
+
+export function injectRolePermissionRepositoryGetter() {
+    return inject.getter(binding => {
+        return (
+            binding.tagMap.authorization &&
+            binding.tagMap.model === "RolePermission"
+        );
+    });
 }

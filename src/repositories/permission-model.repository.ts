@@ -32,7 +32,9 @@ export class PermissionModelRepository<
 
 export function injectPermissionRepositoryGetter() {
     return inject.getter(binding => {
-        return false;
+        return (
+            binding.tagMap.authorization &&
+            binding.tagMap.model === "Permission"
+        );
     });
-    // TODO
 }

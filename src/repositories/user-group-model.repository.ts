@@ -1,4 +1,4 @@
-import { Getter, bind } from "@loopback/core";
+import { Getter, bind, inject } from "@loopback/core";
 import { DefaultCrudRepository, BelongsToAccessor } from "@loopback/repository";
 
 import { AuthorizationDataSource, injectDataSource } from "../datasources";
@@ -43,24 +43,33 @@ export class UserGroupModelRepository extends DefaultCrudRepository<
 
     constructor(
         @injectDataSource()
-        dataSource: AuthorizationDataSource,
+        dataSource: AuthorizationDataSource[],
         @injectUserRepositoryGetter()
         userModelRepositoryGetter: Getter<
             UserModelRepository<UserModel, UserModelRelations>
-        >,
+        >[],
         @injectGroupRepositoryGetter()
         groupModelRepositoryGetter: Getter<
             GroupModelRepository<GroupModel, GroupModelRelations>
-        >
+        >[]
     ) {
-        super(UserGroupModel, dataSource);
-        this.groupModel = this.createBelongsToAccessorFor(
-            "group",
-            groupModelRepositoryGetter
-        );
+        super(UserGroupModel, dataSource[0]);
+
         this.userModel = this.createBelongsToAccessorFor(
             "user",
-            userModelRepositoryGetter
+            userModelRepositoryGetter[0]
+        );
+        this.groupModel = this.createBelongsToAccessorFor(
+            "group",
+            groupModelRepositoryGetter[0]
         );
     }
+}
+
+export function injectUserGroupRepositoryGetter() {
+    return inject.getter(binding => {
+        return (
+            binding.tagMap.authorization && binding.tagMap.model === "UserGroup"
+        );
+    });
 }

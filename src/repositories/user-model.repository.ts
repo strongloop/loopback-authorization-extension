@@ -32,7 +32,6 @@ export class UserModelRepository<
 
 export function injectUserRepositoryGetter() {
     return inject.getter(binding => {
-        return false;
+        return binding.tagMap.authorization && binding.tagMap.model === "User";
     });
-    // TODO
 }
