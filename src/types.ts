@@ -5,11 +5,9 @@ import { Request } from "@loopback/rest";
  * and authorizes user
  */
 export interface AuthorizeFn {
-    (
-        permissions: StringPermissionKey[],
-        request: Request,
-        methodArgs: any[]
-    ): Promise<void>;
+    (permissions: StringKey[], request: Request, methodArgs: any[]): Promise<
+        void
+    >;
 }
 
 /**
@@ -17,19 +15,18 @@ export interface AuthorizeFn {
  * and finds it's permission
  */
 export interface GetUserPermissionsFn {
-    (id: string): Promise<StringPermissionKey[]>;
+    (id: string): Promise<StringKey[]>;
 }
 
 /**
  * Authorizer `Condition` type system and authorization metadata
  */
-export type Condition = And | Or | Permission;
+export type Condition = And | Or | Key;
 export type And = { and: Condition[] };
 export type Or = { or: Condition[] };
-export type Permission = { key: PermissionKey; not?: true };
-export type PermissionKey = StringPermissionKey | AsyncPermissionKey;
-export type StringPermissionKey = string;
-export type AsyncPermissionKey = (
+export type Key = { key: StringKey | AsyncKey; not?: true };
+export type StringKey = string;
+export type AsyncKey = (
     controller: any,
     request: Request,
     methodArgs: any[]

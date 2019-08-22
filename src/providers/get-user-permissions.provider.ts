@@ -1,7 +1,7 @@
 import { Provider } from "@loopback/core";
 import { repository } from "@loopback/repository";
 
-import { GetUserPermissionsFn, StringPermissionKey } from "../types";
+import { GetUserPermissionsFn, StringKey } from "../types";
 
 import { Permission, PermissionRelations } from "../models";
 
@@ -118,7 +118,7 @@ export class GetUserPermissionsProvider
             Permission,
             PermissionRelations
         >
-    ): Promise<StringPermissionKey[]> {
+    ): Promise<StringKey[]> {
         const rolesPermissions = await rolePermissionRepository.find({
             where: {
                 role: {
