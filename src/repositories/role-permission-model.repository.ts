@@ -1,7 +1,14 @@
-import { Getter, bind, inject } from "@loopback/core";
-import { DefaultCrudRepository, BelongsToAccessor } from "@loopback/repository";
+import {
+    DefaultCrudRepository,
+    BelongsToAccessor,
+    juggler
+} from "@loopback/repository";
 
-import { AuthorizationDataSource, injectDataSource } from "../datasources";
+import {
+    injectDataSource,
+    injectRoleRepository,
+    injectPermissionRepository
+} from "../keys";
 import {
     RolePermissionModel,
     RolePermissionModelRelations,
@@ -10,67 +17,46 @@ import {
     PermissionModel,
     PermissionModelRelations
 } from "../models";
-import {
-    RoleModelRepository,
-    injectRoleRepositoryGetter,
-    PermissionModelRepository,
-    injectPermissionRepositoryGetter
-} from "./";
+import { RoleModelRepository, PermissionModelRepository } from "./";
 
-/**
- * Add binding tags to repository, for tracking
- */
-@bind(binding => {
-    binding.tag({ authorization: true });
-    binding.tag({ model: "RolePermission" });
-
-    return binding;
-})
 export class RolePermissionModelRepository extends DefaultCrudRepository<
     RolePermissionModel,
     typeof RolePermissionModel.prototype.id,
     RolePermissionModelRelations
 > {
-    public readonly roleModel: BelongsToAccessor<
+    public readonly role: BelongsToAccessor<
         RoleModel,
         typeof RolePermissionModel.prototype.id
     >;
 
-    public readonly permissionModel: BelongsToAccessor<
+    public readonly permission: BelongsToAccessor<
         PermissionModel,
         typeof RolePermissionModel.prototype.id
     >;
 
     constructor(
         @injectDataSource()
-        dataSource: AuthorizationDataSource[],
-        @injectRoleRepositoryGetter()
-        roleModelRepositoryGetter: Getter<
-            RoleModelRepository<RoleModel, RoleModelRelations>
+        dataSource: juggler.DataSource[],
+        @injectRoleRepository()
+        roleModelRepository: RoleModelRepository<
+            RoleModel,
+            RoleModelRelations
         >[],
-        @injectPermissionRepositoryGetter()
-        permissionModelRepositoryGetter: Getter<
-            PermissionModelRepository<PermissionModel, PermissionModelRelations>
+        @injectPermissionRepository()
+        permissionModelRepository: PermissionModelRepository<
+            PermissionModel,
+            PermissionModelRelations
         >[]
     ) {
         super(RolePermissionModel, dataSource[0]);
 
-        this.roleModel = this.createBelongsToAccessorFor(
+        this.role = this.createBelongsToAccessorFor(
             "role",
-            roleModelRepositoryGetter[0]
+            async () => roleModelRepository[0]
         );
-        this.permissionModel = this.createBelongsToAccessorFor(
+        this.permission = this.createBelongsToAccessorFor(
             "permission",
-            permissionModelRepositoryGetter[0]
+            async () => permissionModelRepository[0]
         );
     }
-}
-
-export function injectRolePermissionRepositoryGetter() {
-    return inject.getter(binding => {
-        return (
-            binding.tagMap.authorization &&
-            binding.tagMap.model === "RolePermission"
-        );
-    });
 }

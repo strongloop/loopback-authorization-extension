@@ -1,7 +1,14 @@
-import { Getter, bind, inject } from "@loopback/core";
-import { DefaultCrudRepository, BelongsToAccessor } from "@loopback/repository";
+import {
+    DefaultCrudRepository,
+    BelongsToAccessor,
+    juggler
+} from "@loopback/repository";
 
-import { AuthorizationDataSource, injectDataSource } from "../datasources";
+import {
+    injectDataSource,
+    injectUserRepository,
+    injectRoleRepository
+} from "../keys";
 import {
     UserRoleModel,
     UserRoleModelRelations,
@@ -10,22 +17,8 @@ import {
     RoleModel,
     RoleModelRelations
 } from "../models";
-import {
-    UserModelRepository,
-    injectUserRepositoryGetter,
-    RoleModelRepository,
-    injectRoleRepositoryGetter
-} from "./";
+import { UserModelRepository, RoleModelRepository } from "./";
 
-/**
- * Add binding tags to repository, for tracking
- */
-@bind(binding => {
-    binding.tag({ authorization: true });
-    binding.tag({ model: "UserRole" });
-
-    return binding;
-})
 export class UserRoleModelRepository extends DefaultCrudRepository<
     UserRoleModel,
     typeof UserRoleModel.prototype.id,
@@ -43,33 +36,27 @@ export class UserRoleModelRepository extends DefaultCrudRepository<
 
     constructor(
         @injectDataSource()
-        dataSource: AuthorizationDataSource[],
-        @injectUserRepositoryGetter()
-        userModelRepositoryGetter: Getter<
-            UserModelRepository<UserModel, UserModelRelations>
+        dataSource: juggler.DataSource[],
+        @injectUserRepository()
+        userModelRepository: UserModelRepository<
+            UserModel,
+            UserModelRelations
         >[],
-        @injectRoleRepositoryGetter()
-        roleModelRepositoryGetter: Getter<
-            RoleModelRepository<RoleModel, RoleModelRelations>
+        @injectRoleRepository()
+        roleModelRepository: RoleModelRepository<
+            RoleModel,
+            RoleModelRelations
         >[]
     ) {
         super(UserRoleModel, dataSource[0]);
 
         this.userModel = this.createBelongsToAccessorFor(
             "user",
-            userModelRepositoryGetter[0]
+            async () => userModelRepository[0]
         );
         this.roleModel = this.createBelongsToAccessorFor(
             "role",
-            roleModelRepositoryGetter[0]
+            async () => roleModelRepository[0]
         );
     }
-}
-
-export function injectUserRoleRepositoryGetter() {
-    return inject.getter(binding => {
-        return (
-            binding.tagMap.authorization && binding.tagMap.model === "UserRole"
-        );
-    });
 }

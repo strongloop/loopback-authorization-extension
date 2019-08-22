@@ -1,7 +1,14 @@
-import { Getter, bind, inject } from "@loopback/core";
-import { DefaultCrudRepository, BelongsToAccessor } from "@loopback/repository";
+import {
+    DefaultCrudRepository,
+    BelongsToAccessor,
+    juggler
+} from "@loopback/repository";
 
-import { AuthorizationDataSource, injectDataSource } from "../datasources";
+import {
+    injectDataSource,
+    injectUserRepository,
+    injectGroupRepository
+} from "../keys";
 import {
     UserGroupModel,
     UserGroupModelRelations,
@@ -10,66 +17,46 @@ import {
     GroupModel,
     GroupModelRelations
 } from "../models";
-import {
-    UserModelRepository,
-    injectUserRepositoryGetter,
-    GroupModelRepository,
-    injectGroupRepositoryGetter
-} from "./";
+import { UserModelRepository, GroupModelRepository } from "./";
 
-/**
- * Add binding tags to repository, for tracking
- */
-@bind(binding => {
-    binding.tag({ authorization: true });
-    binding.tag({ model: "UserGroup" });
-
-    return binding;
-})
 export class UserGroupModelRepository extends DefaultCrudRepository<
     UserGroupModel,
     typeof UserGroupModel.prototype.id,
     UserGroupModelRelations
 > {
-    public readonly userModel: BelongsToAccessor<
+    public readonly user: BelongsToAccessor<
         UserModel,
         typeof UserGroupModel.prototype.id
     >;
 
-    public readonly groupModel: BelongsToAccessor<
+    public readonly group: BelongsToAccessor<
         GroupModel,
         typeof UserGroupModel.prototype.id
     >;
 
     constructor(
         @injectDataSource()
-        dataSource: AuthorizationDataSource[],
-        @injectUserRepositoryGetter()
-        userModelRepositoryGetter: Getter<
-            UserModelRepository<UserModel, UserModelRelations>
+        dataSource: juggler.DataSource[],
+        @injectUserRepository()
+        userModelRepository: UserModelRepository<
+            UserModel,
+            UserModelRelations
         >[],
-        @injectGroupRepositoryGetter()
-        groupModelRepositoryGetter: Getter<
-            GroupModelRepository<GroupModel, GroupModelRelations>
+        @injectGroupRepository()
+        groupModelRepository: GroupModelRepository<
+            GroupModel,
+            GroupModelRelations
         >[]
     ) {
         super(UserGroupModel, dataSource[0]);
 
-        this.userModel = this.createBelongsToAccessorFor(
+        this.user = this.createBelongsToAccessorFor(
             "user",
-            userModelRepositoryGetter[0]
+            async () => userModelRepository[0]
         );
-        this.groupModel = this.createBelongsToAccessorFor(
+        this.group = this.createBelongsToAccessorFor(
             "group",
-            groupModelRepositoryGetter[0]
+            async () => groupModelRepository[0]
         );
     }
-}
-
-export function injectUserGroupRepositoryGetter() {
-    return inject.getter(binding => {
-        return (
-            binding.tagMap.authorization && binding.tagMap.model === "UserGroup"
-        );
-    });
 }
