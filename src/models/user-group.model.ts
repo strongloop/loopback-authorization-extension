@@ -1,8 +1,8 @@
 import { Entity, model, property, belongsTo } from "@loopback/repository";
-import { UserModel, GroupModel } from "./";
+import { User, Group } from ".";
 
 @model({ settings: {} })
-export class UserGroupModel extends Entity {
+export class UserGroup extends Entity {
     @property({
         type: "string",
         id: true,
@@ -11,20 +11,19 @@ export class UserGroupModel extends Entity {
     })
     id: string;
 
-    @belongsTo(() => UserModel)
+    @belongsTo(() => User)
     user: string;
 
-    @belongsTo(() => GroupModel)
+    @belongsTo(() => Group)
     group: string;
 
-    constructor(data?: Partial<UserGroupModel>) {
+    constructor(data?: Partial<UserGroup>) {
         super(data);
     }
 }
 
-export interface UserGroupModelRelations {
+export interface UserGroupRelations {
     // describe navigational properties here
 }
 
-export type UserGroupModelWithRelations = UserGroupModel &
-    UserGroupModelRelations;
+export type UserGroupWithRelations = UserGroup & UserGroupRelations;

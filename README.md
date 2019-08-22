@@ -15,10 +15,10 @@ npm i --save loopback-authorization-extension
 Follow these steps to add `authorization` extension to your loopback4 application
 
 1. define `User`, `Group`, `Role`, `Permission` models
-2. define `User`, `Group`, `Role`, `Permission` repositories
-3. bind your `dataSource` to `AuthorizationBindings.DATASOURCE` key
-4. bind your `repositories` to `AuthorizationBindings.X_REPOSITORY` key
-5. bind the `AuthorizationComponent`
+2. define, bind `User`, `Group`, `Role`, `Permission` repositories
+3. bind your `dataSource`
+4. bind the `AuthorizationComponent`
+5. add `AuthorizationMixin` to your application
 6. add `AuthorizationActionProvider` to your custom http sequence handler
 7. use `GetUserPermissionsProvider` to find user permissions when `signin` and `save` the permissions in user's session
 
@@ -26,15 +26,15 @@ Now, let's try these
 
 ### Step 1 (Adding Models)
 
-Use the command `lb4 model` for simplifing your `Entity` model creation, then just replace `Entity` class with `UserModel`, `GroupModel`, `RoleModel` or `PermissionModel` as the parent class
+Use the command `lb4 model` for simplifing your `Entity` model creation, then just replace `Entity` class with `User`, `Group`, `Role` or `Permission` as the parent class
 
 See this example:
 
 ```js
 import { model, property } from "@loopback/repository";
 import {
-    UserModel,
-    UserModelRelations
+    User as UserModel,
+    UserRelations as UserModelRelations
 } from "loopback-authorization-extension";
 
 @model({ settings: {} })
@@ -66,7 +66,7 @@ export type UserWithRelations = User & UserRelations;
 
 ### Step 2 (Adding Repositories)
 
-Use the command `lb4 repository` for simplifing your `Repository` creation, then just replace `DefaultCrudRepository` class with `UserModelRepository`, `GroupModelRepository`, `RoleModelRepository` or `PermissionModelRepository` as the parent class
+Use the command `lb4 repository` for simplifing your `Repository` creation, then replace `DefaultCrudRepository` class with `UserRepository`, `GroupRepository`, `RoleRepository` or `PermissionRepository` as the parent class, then bind them
 
 See this example:
 
@@ -75,8 +75,12 @@ import { Group, GroupRelations } from "../models";
 import { MySqlDataSource } from "../datasources";
 import { inject } from "@loopback/core";
 
-import { GroupModelRepository } from "loopback-authorization-extension";
+import {
+    GroupRepository as GroupModelRepository,
+    bindGroupRepository
+} from "loopback-authorization-extension";
 
+@bindGroupRepository()
 export class GroupRepository extends GroupModelRepository<
     Group,
     GroupRelations
@@ -87,38 +91,49 @@ export class GroupRepository extends GroupModelRepository<
 }
 ```
 
+> Don't forget bind your repository using `bindXRepository`
+
 ---
 
-### Step 3,4,5
+### Step 3
+
+Bind your dataSource you want to use for authorization tables using `bindDataSource`
+
+See this example:
+
+```js
+import { bindDataSource } from "loopback-authorization-extension";
+
+@bindDataSource()
+export class MySqlDataSource extends juggler.DataSource {
+    static dataSourceName = "MySQL";
+
+    constructor(
+        @inject("datasources.config.MySQL", { optional: true })
+        dsConfig: object = config
+    ) {
+        super(dsConfig);
+    }
+}
+```
+
+---
+
+### Step 4,5
 
 Edit your `application.ts` file:
 
 ```js
 import {
     AuthorizationBindings,
-    AuthorizationComponent
+    AuthorizationComponent,
+    AuthorizationMixin
 } from "loopback-authorization-extension";
 
-import { MySqlDataSource } from "./datasources";
-import {
-    UserRepository,
-    GroupRepository,
-    RoleRepository,
-    PermissionRepository
-} from "./repositories";
-
-export class TestApplication extends BootMixin(
-    ServiceMixin(RepositoryMixin(RestApplication))
+export class TestApplication extends AuthorizationMixin(
+    BootMixin(ServiceMixin(RepositoryMixin(RestApplication)))
 ) {
-    constructor(
-        options: ApplicationConfig = {},
-        @inject("datasources.MySQL") dataSource: MySQLDataSource,
-        @repository(UserRepository) userRepository: UserRepository,
-        @repository(GroupRepository) groupRepository: GroupRepository,
-        @repository(RoleRepository) roleRepository: RoleRepository,
-        @repository(PermissionRepository)
-        permissionRepository: PermissionRepository
-    ) {
+    constructor(options: ApplicationConfig = {}) {
         super(options);
 
         // Set up the custom sequence
@@ -129,14 +144,6 @@ export class TestApplication extends BootMixin(
 
         // ...
 
-        // bind dataSource, repositories, component to your application context
-        this.bind(AuthorizationBindings.DATASOURCE).to(dataSource);
-        this.bind(AuthorizationBindings.USER_REPOSITORY).to(userRepository);
-        this.bind(AuthorizationBindings.GROUP_REPOSITORY).to(groupRepository);
-        this.bind(AuthorizationBindings.ROLE_REPOSITORY).to(roleRepository);
-        this.bind(AuthorizationBindings.PERMISSION_REPOSITORY).to(
-            permissionRepository
-        );
         this.component(AuthorizationComponent);
 
         // ...
