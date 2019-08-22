@@ -7,12 +7,7 @@ import {
 } from "@loopback/core";
 import { Request, HttpErrors } from "@loopback/rest";
 
-import {
-    Condition,
-    Permission,
-    StringPermissionKey,
-    AuthorizeFn
-} from "../types";
+import { Condition, Key, StringKey, AuthorizeFn } from "../types";
 import { getAuthorizeMetadata } from "../decorators";
 
 export class AuthorizeActionProvider implements Provider<AuthorizeFn> {
@@ -58,7 +53,7 @@ export class AuthorizeActionProvider implements Provider<AuthorizeFn> {
 
     private async authorize(
         condition: Condition,
-        permissions: StringPermissionKey[],
+        keys: StringKey[],
         request: Request,
         controller: any,
         methodArgs: any[]
@@ -67,7 +62,7 @@ export class AuthorizeActionProvider implements Provider<AuthorizeFn> {
             if ("and" in condition) {
                 return await this.authorizeAnd(
                     condition.and,
-                    permissions,
+                    keys,
                     request,
                     controller,
                     methodArgs
@@ -75,7 +70,7 @@ export class AuthorizeActionProvider implements Provider<AuthorizeFn> {
             } else if ("or" in condition) {
                 return await this.authorizeOr(
                     condition.or,
-                    permissions,
+                    keys,
                     request,
                     controller,
                     methodArgs
@@ -83,7 +78,7 @@ export class AuthorizeActionProvider implements Provider<AuthorizeFn> {
             } else {
                 return await this.authorizePermission(
                     condition,
-                    permissions,
+                    keys,
                     request,
                     controller,
                     methodArgs
@@ -96,7 +91,7 @@ export class AuthorizeActionProvider implements Provider<AuthorizeFn> {
 
     private async authorizeAnd(
         conditions: Condition[],
-        permissions: StringPermissionKey[],
+        keys: StringKey[],
         request: Request,
         controller: any,
         methodArgs: any[]
@@ -109,7 +104,7 @@ export class AuthorizeActionProvider implements Provider<AuthorizeFn> {
         for (let condition of conditions) {
             let result = await this.authorize(
                 condition,
-                permissions,
+                keys,
                 request,
                 controller,
                 methodArgs
@@ -126,7 +121,7 @@ export class AuthorizeActionProvider implements Provider<AuthorizeFn> {
 
     private async authorizeOr(
         conditions: Condition[],
-        permissions: StringPermissionKey[],
+        keys: StringKey[],
         request: Request,
         controller: any,
         methodArgs: any[]
@@ -139,7 +134,7 @@ export class AuthorizeActionProvider implements Provider<AuthorizeFn> {
         for (let condition of conditions) {
             let result = await this.authorize(
                 condition,
-                permissions,
+                keys,
                 request,
                 controller,
                 methodArgs
@@ -155,22 +150,22 @@ export class AuthorizeActionProvider implements Provider<AuthorizeFn> {
     }
 
     private async authorizePermission(
-        permission: Permission,
-        permissions: StringPermissionKey[],
+        key: Key,
+        keys: StringKey[],
         request: Request,
         controller: any,
         methodArgs: any[]
     ) {
         let result = false;
 
-        if (typeof permission.key === "string") {
+        if (typeof key.key === "string") {
             // string key
-            result = permissions.indexOf(permission.key) >= 0;
+            result = keys.indexOf(key.key) >= 0;
         } else {
             // async key
-            result = await permission.key(controller, request, methodArgs);
+            result = await key.key(controller, request, methodArgs);
         }
 
-        return permission.not ? !result : result;
+        return key.not ? !result : result;
     }
 }

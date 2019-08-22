@@ -1,66 +1,60 @@
-import { inject, Getter, Provider } from "@loopback/core";
+import { Provider } from "@loopback/core";
+import { repository } from "@loopback/repository";
 
-import { GetUserPermissionsFn, StringPermissionKey } from "../types";
-import { AuthorizationBindings } from "../keys";
+import { GetUserPermissionsFn, StringKey } from "../types";
 
-import { PermissionModel, PermissionModelRelations } from "../models";
+import { Permission, PermissionRelations } from "../models";
 
+import { injectPermissionRepository } from "../keys";
 import {
-    PermissionModelRepository,
-    UserGroupModelRepository,
-    UserRoleModelRepository,
-    GroupRoleModelRepository,
-    RolePermissionModelRepository
+    PermissionRepository,
+    UserGroupRepository,
+    UserRoleRepository,
+    GroupRoleRepository,
+    RolePermissionRepository
 } from "../repositories";
 
 export class GetUserPermissionsProvider
     implements Provider<GetUserPermissionsFn> {
     constructor(
-        @inject.getter(AuthorizationBindings.PERMISSION_REPOSITORY)
-        private getPermissionRepository: Getter<
-            PermissionModelRepository<PermissionModel, PermissionModelRelations>
-        >,
-        @inject.getter(AuthorizationBindings.USER_GROUP_REPOSITORY)
-        private getUserGroupRepository: Getter<UserGroupModelRepository>,
-        @inject.getter(AuthorizationBindings.USER_ROLE_REPOSITORY)
-        private getUserRoleRepository: Getter<UserRoleModelRepository>,
-        @inject.getter(AuthorizationBindings.GROUP_ROLE_REPOSITORY)
-        private getGroupRoleRepository: Getter<GroupRoleModelRepository>,
-        @inject.getter(AuthorizationBindings.ROLE_PERMISSION_REPOSITORY)
-        private getRolePermissionRepository: Getter<
-            RolePermissionModelRepository
-        >
+        @injectPermissionRepository()
+        private permissionRepository: PermissionRepository<
+            Permission,
+            PermissionRelations
+        >[],
+        @repository(UserGroupRepository)
+        private userGroupRepository: UserGroupRepository,
+        @repository(UserRoleRepository)
+        private userRoleRepository: UserRoleRepository,
+        @repository(GroupRoleRepository)
+        private groupRoleRepository: GroupRoleRepository,
+        @repository(RolePermissionRepository)
+        private rolePermissionRepository: RolePermissionRepository
     ) {}
 
     async value(): Promise<GetUserPermissionsFn> {
         return async id => {
-            const permissionRepository = await this.getPermissionRepository();
-            const userGroupRepository = await this.getUserGroupRepository();
-            const userRoleRepository = await this.getUserRoleRepository();
-            const groupRoleRepository = await this.getGroupRoleRepository();
-            const rolePermissionRepository = await this.getRolePermissionRepository();
-
             return this.getUserPermissions(
                 id,
-                permissionRepository,
-                userGroupRepository,
-                userRoleRepository,
-                groupRoleRepository,
-                rolePermissionRepository
+                this.permissionRepository[0],
+                this.userGroupRepository,
+                this.userRoleRepository,
+                this.groupRoleRepository,
+                this.rolePermissionRepository
             );
         };
     }
 
     private async getUserPermissions(
         id: string,
-        permissionRepository: PermissionModelRepository<
-            PermissionModel,
-            PermissionModelRelations
+        permissionRepository: PermissionRepository<
+            Permission,
+            PermissionRelations
         >,
-        userGroupRepository: UserGroupModelRepository,
-        userRoleRepository: UserRoleModelRepository,
-        groupRoleRepository: GroupRoleModelRepository,
-        rolePermissionRepository: RolePermissionModelRepository
+        userGroupRepository: UserGroupRepository,
+        userRoleRepository: UserRoleRepository,
+        groupRoleRepository: GroupRoleRepository,
+        rolePermissionRepository: RolePermissionRepository
     ) {
         let userGroupsIDs = await this.getUserGroups(id, userGroupRepository);
         let userRolesIDs = await this.getUserRoles(id, userRoleRepository);
@@ -78,7 +72,7 @@ export class GetUserPermissionsProvider
 
     private async getUserGroups(
         userID: string,
-        userGroupRepository: UserGroupModelRepository
+        userGroupRepository: UserGroupRepository
     ) {
         const userGroups = await userGroupRepository.find({
             where: {
@@ -91,7 +85,7 @@ export class GetUserPermissionsProvider
 
     private async getUserRoles(
         userID: string,
-        userRoleRepository: UserRoleModelRepository
+        userRoleRepository: UserRoleRepository
     ) {
         const userRoles = await userRoleRepository.find({
             where: {
@@ -104,7 +98,7 @@ export class GetUserPermissionsProvider
 
     private async getGroupsRoles(
         groupsIDs: string[],
-        groupRoleRepository: GroupRoleModelRepository
+        groupRoleRepository: GroupRoleRepository
     ) {
         const groupsRoles = await groupRoleRepository.find({
             where: {
@@ -119,12 +113,12 @@ export class GetUserPermissionsProvider
 
     private async getRolesPermissions(
         rolesIDs: string[],
-        rolePermissionRepository: RolePermissionModelRepository,
-        permissionRepository: PermissionModelRepository<
-            PermissionModel,
-            PermissionModelRelations
+        rolePermissionRepository: RolePermissionRepository,
+        permissionRepository: PermissionRepository<
+            Permission,
+            PermissionRelations
         >
-    ): Promise<StringPermissionKey[]> {
+    ): Promise<StringKey[]> {
         const rolesPermissions = await rolePermissionRepository.find({
             where: {
                 role: {
