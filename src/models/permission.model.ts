@@ -12,7 +12,10 @@ export class Permission extends Entity {
 
     @property({
         type: "string",
-        required: true
+        required: true,
+        index: {
+            unique: true
+        }
     })
     key: string;
 
