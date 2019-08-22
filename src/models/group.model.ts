@@ -1,7 +1,7 @@
 import { Entity, model, property, belongsTo } from "@loopback/repository";
 
 @model({ settings: {} })
-export class GroupModel extends Entity {
+export class Group extends Entity {
     @property({
         type: "string",
         id: true,
@@ -10,16 +10,16 @@ export class GroupModel extends Entity {
     })
     id: string;
 
-    @belongsTo(() => GroupModel)
+    @belongsTo(() => Group)
     parent: string;
 
-    constructor(data?: Partial<GroupModel>) {
+    constructor(data?: Partial<Group>) {
         super(data);
     }
 }
 
-export interface GroupModelRelations {
+export interface GroupRelations {
     // describe navigational properties here
 }
 
-export type GroupModelWithRelations = GroupModel & GroupModelRelations;
+export type GroupWithRelations = Group & GroupRelations;

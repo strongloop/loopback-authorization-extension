@@ -5,24 +5,21 @@ import {
     juggler
 } from "@loopback/repository";
 
-import { RoleModel, RoleModelRelations } from "../models";
+import { Group, GroupRelations } from "../models";
 
-export class RoleModelRepository<
-    Role extends RoleModel,
-    RoleRelations extends RoleModelRelations
+export class GroupRepository<
+    Model extends Group,
+    ModelRelations extends GroupRelations
 > extends DefaultCrudRepository<
-    Role,
-    typeof RoleModel.prototype.id,
-    RoleRelations
+    Model,
+    typeof Group.prototype.id,
+    ModelRelations
 > {
-    public readonly parent: BelongsToAccessor<
-        Role,
-        typeof RoleModel.prototype.id
-    >;
+    public readonly parent: BelongsToAccessor<Group, typeof Group.prototype.id>;
 
     constructor(
-        entityClass: typeof RoleModel & {
-            prototype: Role;
+        entityClass: typeof Group & {
+            prototype: Model;
         },
         dataSource: juggler.DataSource
     ) {

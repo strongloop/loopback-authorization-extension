@@ -1,10 +1,10 @@
 import { Class, SchemaMigrationOptions } from "@loopback/repository";
 
 import {
-    UserGroupModelRepository,
-    UserRoleModelRepository,
-    GroupRoleModelRepository,
-    RolePermissionModelRepository
+    UserGroupRepository,
+    UserRoleRepository,
+    GroupRoleRepository,
+    RolePermissionRepository
 } from "../repositories";
 
 export function AuthorizationMixin<T extends Class<any>>(baseClass: T) {
@@ -13,10 +13,10 @@ export function AuthorizationMixin<T extends Class<any>>(baseClass: T) {
             await super.boot();
 
             // bind component level repositories
-            this.repository(UserGroupModelRepository);
-            this.repository(UserRoleModelRepository);
-            this.repository(GroupRoleModelRepository);
-            this.repository(RolePermissionModelRepository);
+            this.repository(UserGroupRepository);
+            this.repository(UserRoleRepository);
+            this.repository(GroupRoleRepository);
+            this.repository(RolePermissionRepository);
         }
 
         async migrateSchema(
