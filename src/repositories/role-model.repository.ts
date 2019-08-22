@@ -1,4 +1,4 @@
-import { Getter, bind, inject } from "@loopback/core";
+import { Getter } from "@loopback/core";
 import {
     DefaultCrudRepository,
     BelongsToAccessor,
@@ -7,15 +7,6 @@ import {
 
 import { RoleModel, RoleModelRelations } from "../models";
 
-/**
- * Add binding tags to repository, for tracking
- */
-@bind(binding => {
-    binding.tag({ authorization: true });
-    binding.tag({ model: "Role" });
-
-    return binding;
-})
 export class RoleModelRepository<
     Role extends RoleModel,
     RoleRelations extends RoleModelRelations
@@ -24,7 +15,7 @@ export class RoleModelRepository<
     typeof RoleModel.prototype.id,
     RoleRelations
 > {
-    public readonly roleModel: BelongsToAccessor<
+    public readonly parent: BelongsToAccessor<
         Role,
         typeof RoleModel.prototype.id
     >;
@@ -36,15 +27,10 @@ export class RoleModelRepository<
         dataSource: juggler.DataSource
     ) {
         super(entityClass, dataSource);
-        this.roleModel = this.createBelongsToAccessorFor(
+
+        this.parent = this.createBelongsToAccessorFor(
             "parent",
             Getter.fromValue(this)
         );
     }
-}
-
-export function injectRoleRepositoryGetter() {
-    return inject.getter(binding => {
-        return binding.tagMap.authorization && binding.tagMap.model === "Role";
-    });
 }

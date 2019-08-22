@@ -1,7 +1,14 @@
-import { Getter, bind, inject } from "@loopback/core";
-import { DefaultCrudRepository, BelongsToAccessor } from "@loopback/repository";
+import {
+    DefaultCrudRepository,
+    BelongsToAccessor,
+    juggler
+} from "@loopback/repository";
 
-import { AuthorizationDataSource, injectDataSource } from "../datasources";
+import {
+    injectDataSource,
+    injectGroupRepository,
+    injectRoleRepository
+} from "../keys";
 import {
     GroupRoleModel,
     GroupRoleModelRelations,
@@ -10,66 +17,46 @@ import {
     RoleModel,
     RoleModelRelations
 } from "../models";
-import {
-    GroupModelRepository,
-    injectGroupRepositoryGetter,
-    RoleModelRepository,
-    injectRoleRepositoryGetter
-} from "./";
+import { GroupModelRepository, RoleModelRepository } from "./";
 
-/**
- * Add binding tags to repository, for tracking
- */
-@bind(binding => {
-    binding.tag({ authorization: true });
-    binding.tag({ model: "GroupRole" });
-
-    return binding;
-})
 export class GroupRoleModelRepository extends DefaultCrudRepository<
     GroupRoleModel,
     typeof GroupRoleModel.prototype.id,
     GroupRoleModelRelations
 > {
-    public readonly groupModel: BelongsToAccessor<
+    public readonly group: BelongsToAccessor<
         GroupModel,
         typeof GroupRoleModel.prototype.id
     >;
 
-    public readonly roleModel: BelongsToAccessor<
+    public readonly role: BelongsToAccessor<
         RoleModel,
         typeof GroupRoleModel.prototype.id
     >;
 
     constructor(
         @injectDataSource()
-        dataSource: AuthorizationDataSource[],
-        @injectGroupRepositoryGetter()
-        groupModelRepositoryGetter: Getter<
-            GroupModelRepository<GroupModel, GroupModelRelations>
+        dataSource: juggler.DataSource[],
+        @injectGroupRepository()
+        groupModelRepository: GroupModelRepository<
+            GroupModel,
+            GroupModelRelations
         >[],
-        @injectRoleRepositoryGetter()
-        roleModelRepositoryGetter: Getter<
-            RoleModelRepository<RoleModel, RoleModelRelations>
+        @injectRoleRepository()
+        roleModelRepository: RoleModelRepository<
+            RoleModel,
+            RoleModelRelations
         >[]
     ) {
         super(GroupRoleModel, dataSource[0]);
 
-        this.groupModel = this.createBelongsToAccessorFor(
+        this.group = this.createBelongsToAccessorFor(
             "group",
-            groupModelRepositoryGetter[0]
+            async () => groupModelRepository[0]
         );
-        this.roleModel = this.createBelongsToAccessorFor(
+        this.role = this.createBelongsToAccessorFor(
             "role",
-            roleModelRepositoryGetter[0]
+            async () => roleModelRepository[0]
         );
     }
-}
-
-export function injectGroupRoleRepositoryGetter() {
-    return inject.getter(binding => {
-        return (
-            binding.tagMap.authorization && binding.tagMap.model === "GroupRole"
-        );
-    });
 }
