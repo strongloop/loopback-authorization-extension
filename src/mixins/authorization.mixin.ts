@@ -1,13 +1,23 @@
 import { Class, SchemaMigrationOptions } from "@loopback/repository";
 
+import { StringPermissionKey } from "../types";
 import {
+    PermissionRepository,
     UserGroupRepository,
     UserRoleRepository,
     GroupRoleRepository,
     RolePermissionRepository
 } from "../repositories";
+import { Permission, PermissionRelations } from "../models";
 
-export function AuthorizationMixin<T extends Class<any>>(baseClass: T) {
+export interface AuthorizationMixinConfigs {
+    defaultPermissions?: StringPermissionKey[];
+}
+
+export function AuthorizationMixin<T extends Class<any>>(
+    baseClass: T,
+    configs: AuthorizationMixinConfigs = {}
+) {
     return class extends baseClass {
         async boot() {
             await super.boot();
@@ -24,7 +34,22 @@ export function AuthorizationMixin<T extends Class<any>>(baseClass: T) {
         ): Promise<void> {
             await super.migrateSchema(options);
 
-            // create default permissions
+            if (configs.defaultPermissions) {
+                // create default permissions
+                const permissionRepository: PermissionRepository<
+                    Permission,
+                    PermissionRelations
+                > = this.getRepository(PermissionRepository);
+
+                await permissionRepository.createAll(
+                    configs.defaultPermissions.map(
+                        permission =>
+                            new Permission({
+                                key: permission
+                            })
+                    )
+                );
+            }
         }
     };
 }
