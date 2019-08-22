@@ -36,19 +36,23 @@ export function AuthorizationMixin<T extends Class<any>>(
 
             if (configs.defaultPermissions) {
                 // create default permissions
-                const permissionRepository: PermissionRepository<
-                    Permission,
-                    PermissionRelations
-                > = this.getRepository(PermissionRepository);
-
-                await permissionRepository.createAll(
-                    configs.defaultPermissions.map(
-                        permission =>
-                            new Permission({
-                                key: permission
-                            })
-                    )
+                // TODO
+                throw new Error(
+                    "Default permissions migration not implemented yet!"
                 );
+                // const permissionRepository: PermissionRepository<
+                //     Permission,
+                //     PermissionRelations
+                // > = this.getRepository(PermissionRepository);
+
+                // await permissionRepository.createAll(
+                //     configs.defaultPermissions.map(
+                //         permission =>
+                //             new Permission({
+                //                 key: permission
+                //             })
+                //     )
+                // );
             }
         }
     };
