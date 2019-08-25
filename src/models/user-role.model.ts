@@ -1,5 +1,5 @@
 import { Entity, model, property, belongsTo } from "@loopback/repository";
-import { User, Role } from ".";
+import { User, UserWithRelations, Role, RoleWithRelations } from ".";
 
 @model({ settings: {} })
 export class UserRole extends Entity {
@@ -12,10 +12,10 @@ export class UserRole extends Entity {
     id: string;
 
     @belongsTo(() => User)
-    user: string;
+    userId: string;
 
     @belongsTo(() => Role)
-    role: string;
+    roleId: string;
 
     constructor(data?: Partial<UserRole>) {
         super(data);
@@ -23,7 +23,8 @@ export class UserRole extends Entity {
 }
 
 export interface UserRoleRelations {
-    // describe navigational properties here
+    user: UserWithRelations;
+    role: RoleWithRelations;
 }
 
 export type UserRoleWithRelations = UserRole & UserRoleRelations;

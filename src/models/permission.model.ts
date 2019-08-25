@@ -24,8 +24,6 @@ export class Permission extends Entity {
     }
 }
 
-export interface PermissionRelations {
-    // describe navigational properties here
-}
+export interface PermissionRelations {}
 
 export type PermissionWithRelations = Permission & PermissionRelations;

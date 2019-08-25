@@ -11,7 +11,7 @@ export class Group extends Entity {
     id: string;
 
     @belongsTo(() => Group)
-    parent: string;
+    parentId: string;
 
     constructor(data?: Partial<Group>) {
         super(data);
@@ -19,7 +19,7 @@ export class Group extends Entity {
 }
 
 export interface GroupRelations {
-    // describe navigational properties here
+    parent: GroupWithRelations;
 }
 
 export type GroupWithRelations = Group & GroupRelations;

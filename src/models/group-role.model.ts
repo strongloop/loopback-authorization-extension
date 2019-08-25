@@ -1,5 +1,5 @@
 import { Entity, model, property, belongsTo } from "@loopback/repository";
-import { Group, Role } from ".";
+import { Group, GroupWithRelations, Role, RoleWithRelations } from ".";
 
 @model({ settings: {} })
 export class GroupRole extends Entity {
@@ -12,10 +12,10 @@ export class GroupRole extends Entity {
     id: string;
 
     @belongsTo(() => Group)
-    group: string;
+    groupId: string;
 
     @belongsTo(() => Role)
-    role: string;
+    roleId: string;
 
     constructor(data?: Partial<GroupRole>) {
         super(data);
@@ -23,7 +23,8 @@ export class GroupRole extends Entity {
 }
 
 export interface GroupRoleRelations {
-    // describe navigational properties here
+    group: GroupWithRelations;
+    role: RoleWithRelations;
 }
 
 export type GroupRoleWithRelations = GroupRole & GroupRoleRelations;
