@@ -1,5 +1,5 @@
 import { Entity, model, property, belongsTo } from "@loopback/repository";
-import { User, Group } from ".";
+import { User, UserWithRelations, Group, GroupWithRelations } from ".";
 
 @model({ settings: {} })
 export class UserGroup extends Entity {
@@ -12,10 +12,10 @@ export class UserGroup extends Entity {
     id: string;
 
     @belongsTo(() => User)
-    user: string;
+    userId: string;
 
     @belongsTo(() => Group)
-    group: string;
+    groupId: string;
 
     constructor(data?: Partial<UserGroup>) {
         super(data);
@@ -23,7 +23,8 @@ export class UserGroup extends Entity {
 }
 
 export interface UserGroupRelations {
-    // describe navigational properties here
+    user: UserWithRelations;
+    group: GroupWithRelations;
 }
 
 export type UserGroupWithRelations = UserGroup & UserGroupRelations;
