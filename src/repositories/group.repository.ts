@@ -26,7 +26,7 @@ export class GroupRepository<
         super(entityClass, dataSource);
 
         this.parent = this.createBelongsToAccessorFor(
-            "parent",
+            "parentId",
             Getter.fromValue(this)
         );
     }
