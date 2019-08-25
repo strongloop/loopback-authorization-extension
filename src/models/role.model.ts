@@ -11,7 +11,7 @@ export class Role extends Entity {
     id: string;
 
     @belongsTo(() => Role)
-    parent: string;
+    parentId: string;
 
     constructor(data?: Partial<Role>) {
         super(data);
@@ -19,7 +19,7 @@ export class Role extends Entity {
 }
 
 export interface RoleRelations {
-    // describe navigational properties here
+    parent: RoleWithRelations;
 }
 
 export type RoleWithRelations = Role & RoleRelations;

@@ -45,11 +45,11 @@ export class UserGroupRepository extends DefaultCrudRepository<
         super(UserGroup, dataSource[0]);
 
         this.user = this.createBelongsToAccessorFor(
-            "user",
+            "userId",
             async () => userRepository[0]
         );
         this.group = this.createBelongsToAccessorFor(
-            "group",
+            "groupId",
             async () => groupRepository[0]
         );
     }

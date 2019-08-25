@@ -1,5 +1,10 @@
 import { Entity, model, property, belongsTo } from "@loopback/repository";
-import { Role, Permission } from ".";
+import {
+    Role,
+    RoleWithRelations,
+    Permission,
+    PermissionWithRelations
+} from ".";
 
 @model({ settings: {} })
 export class RolePermission extends Entity {
@@ -12,10 +17,10 @@ export class RolePermission extends Entity {
     id: string;
 
     @belongsTo(() => Role)
-    role: string;
+    roleId: string;
 
     @belongsTo(() => Permission)
-    permission: string;
+    permissionId: string;
 
     constructor(data?: Partial<RolePermission>) {
         super(data);
@@ -23,7 +28,8 @@ export class RolePermission extends Entity {
 }
 
 export interface RolePermissionRelations {
-    // describe navigational properties here
+    role: RoleWithRelations;
+    permission: PermissionWithRelations;
 }
 
 export type RolePermissionWithRelations = RolePermission &
