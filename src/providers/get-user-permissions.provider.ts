@@ -76,11 +76,11 @@ export class GetUserPermissionsProvider
     ) {
         const userGroups = await userGroupRepository.find({
             where: {
-                user: userID
+                userId: userID
             }
         });
 
-        return userGroups.map(userGroup => userGroup.group);
+        return userGroups.map(userGroup => userGroup.groupId);
     }
 
     private async getUserRoles(
@@ -89,11 +89,11 @@ export class GetUserPermissionsProvider
     ) {
         const userRoles = await userRoleRepository.find({
             where: {
-                user: userID
+                userId: userID
             }
         });
 
-        return userRoles.map(userRole => userRole.role);
+        return userRoles.map(userRole => userRole.roleId);
     }
 
     private async getGroupsRoles(
@@ -102,13 +102,13 @@ export class GetUserPermissionsProvider
     ) {
         const groupsRoles = await groupRoleRepository.find({
             where: {
-                group: {
+                groupId: {
                     inq: groupsIDs
                 }
             }
         });
 
-        return groupsRoles.map(groupsRole => groupsRole.role);
+        return groupsRoles.map(groupsRole => groupsRole.roleId);
     }
 
     private async getRolesPermissions(
@@ -121,7 +121,7 @@ export class GetUserPermissionsProvider
     ): Promise<StringKey[]> {
         const rolesPermissions = await rolePermissionRepository.find({
             where: {
-                role: {
+                roleId: {
                     inq: rolesIDs
                 }
             }
@@ -131,7 +131,7 @@ export class GetUserPermissionsProvider
             where: {
                 id: {
                     inq: rolesPermissions.map(
-                        rolesPermission => rolesPermission.permission
+                        rolesPermission => rolesPermission.permissionId
                     )
                 }
             }
