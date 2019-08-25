@@ -26,7 +26,7 @@ export class RoleRepository<
         super(entityClass, dataSource);
 
         this.parent = this.createBelongsToAccessorFor(
-            "parentId",
+            "parent",
             Getter.fromValue(this)
         );
     }
