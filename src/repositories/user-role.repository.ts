@@ -39,11 +39,11 @@ export class UserRoleRepository extends DefaultCrudRepository<
         super(UserRole, dataSource[0]);
 
         this.user = this.createBelongsToAccessorFor(
-            "userId",
+            "user",
             async () => userRepository[0]
         );
         this.role = this.createBelongsToAccessorFor(
-            "roleId",
+            "role",
             async () => roleRepository[0]
         );
     }
