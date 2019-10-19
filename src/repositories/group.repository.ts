@@ -1,20 +1,13 @@
 import { Getter } from "@loopback/core";
-import {
-    DefaultCrudRepository,
-    BelongsToAccessor,
-    juggler
-} from "@loopback/repository";
+import { BelongsToAccessor, juggler } from "@loopback/repository";
+import { HistoryCrudRepository } from "loopback-history-extension";
 
 import { Group, GroupRelations } from "../models";
 
 export class GroupRepository<
     Model extends Group,
     ModelRelations extends GroupRelations
-> extends DefaultCrudRepository<
-    Model,
-    typeof Group.prototype.id,
-    ModelRelations
-> {
+> extends HistoryCrudRepository<Model, ModelRelations> {
     public readonly parent: BelongsToAccessor<Group, typeof Group.prototype.id>;
 
     constructor(
