@@ -2439,9 +2439,9 @@
             }
         },
         "loopback-history-extension": {
-            "version": "0.3.0",
-            "resolved": "https://registry.npmjs.org/loopback-history-extension/-/loopback-history-extension-0.3.0.tgz",
-            "integrity": "sha512-OXt6TnnHhHFtS5E2GeJnCVNjlxFQl358J38ROmNrRy/BcOjjmAe6H5CXleRykI3QmGivUPuY4iYAhgEzhpYaug==",
+            "version": "0.3.1",
+            "resolved": "https://registry.npmjs.org/loopback-history-extension/-/loopback-history-extension-0.3.1.tgz",
+            "integrity": "sha512-gX0qEf9Mojy0Kkw2Ngv2r4nymSn96ttQUo17Y97b0mZjIDlR5fj75dUTrIPyUrumueq450sLjBn1J1TSkEKBdg==",
             "requires": {
                 "@loopback/boot": "^1.5.9",
                 "@loopback/context": "^1.23.3",
