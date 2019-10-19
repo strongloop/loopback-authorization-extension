@@ -1,8 +1,5 @@
-import {
-    DefaultCrudRepository,
-    BelongsToAccessor,
-    juggler
-} from "@loopback/repository";
+import { BelongsToAccessor, juggler } from "@loopback/repository";
+import { HistoryCrudRepository } from "loopback-history-extension";
 
 import {
     injectDataSource,
@@ -19,9 +16,8 @@ import {
 } from "../models";
 import { RoleRepository, PermissionRepository } from ".";
 
-export class RolePermissionRepository extends DefaultCrudRepository<
+export class RolePermissionRepository extends HistoryCrudRepository<
     RolePermission,
-    typeof RolePermission.prototype.id,
     RolePermissionRelations
 > {
     public readonly role: BelongsToAccessor<

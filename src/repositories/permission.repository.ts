@@ -1,15 +1,12 @@
-import { DefaultCrudRepository, juggler } from "@loopback/repository";
+import { juggler } from "@loopback/repository";
+import { HistoryCrudRepository } from "loopback-history-extension";
 
 import { Permission, PermissionRelations } from "../models";
 
 export class PermissionRepository<
     Model extends Permission,
     ModelRelations extends PermissionRelations
-> extends DefaultCrudRepository<
-    Model,
-    typeof Permission.prototype.id,
-    ModelRelations
-> {
+> extends HistoryCrudRepository<Model, ModelRelations> {
     constructor(
         entityClass: typeof Permission & {
             prototype: Model;

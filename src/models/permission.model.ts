@@ -1,15 +1,8 @@
-import { Entity, model, property } from "@loopback/repository";
+import { model, property } from "@loopback/repository";
+import { HistoryEntity } from "loopback-history-extension";
 
 @model({ settings: {} })
-export class Permission extends Entity {
-    @property({
-        type: "string",
-        id: true,
-        required: true,
-        defaultFn: "uuidv4"
-    })
-    id: string;
-
+export class Permission extends HistoryEntity {
     @property({
         type: "string",
         required: true,

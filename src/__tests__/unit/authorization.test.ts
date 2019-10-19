@@ -1,1 +1,3 @@
-it("Template Test", () => {});
+describe("Template Test", () => {
+    console.log("Empty test passed!");
+});

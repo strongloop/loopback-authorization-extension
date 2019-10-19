@@ -1,15 +1,8 @@
-import { Entity, model, property, belongsTo } from "@loopback/repository";
+import { model, belongsTo } from "@loopback/repository";
+import { HistoryEntity } from "loopback-history-extension";
 
 @model({ settings: {} })
-export class Group extends Entity {
-    @property({
-        type: "string",
-        id: true,
-        required: true,
-        defaultFn: "uuidv4"
-    })
-    id: string;
-
+export class Group extends HistoryEntity {
     @belongsTo(() => Group)
     parentId: string;
 

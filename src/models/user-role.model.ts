@@ -1,16 +1,9 @@
-import { Entity, model, property, belongsTo } from "@loopback/repository";
+import { model, belongsTo } from "@loopback/repository";
 import { User, UserWithRelations, Role, RoleWithRelations } from ".";
+import { HistoryEntity } from "loopback-history-extension";
 
 @model({ settings: {} })
-export class UserRole extends Entity {
-    @property({
-        type: "string",
-        id: true,
-        required: true,
-        defaultFn: "uuidv4"
-    })
-    id: string;
-
+export class UserRole extends HistoryEntity {
     @belongsTo(() => User)
     userId: string;
 
