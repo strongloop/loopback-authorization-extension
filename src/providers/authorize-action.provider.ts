@@ -7,10 +7,17 @@ import {
 } from "@loopback/core";
 import { Request, HttpErrors } from "@loopback/rest";
 
-import { Condition, FullKey, StringKey, AuthorizeFn } from "../types";
+import {
+    PermissionsList,
+    Condition,
+    FullKey,
+    StringKey,
+    AuthorizeFn
+} from "../types";
 import { getAuthorizeMetadata } from "../decorators";
 
-export class AuthorizeActionProvider implements Provider<AuthorizeFn> {
+export class AuthorizeActionProvider<Permissions extends PermissionsList>
+    implements Provider<AuthorizeFn<Permissions>> {
     constructor(
         @inject.getter(CoreBindings.CONTROLLER_CLASS)
         private readonly getController: Getter<Constructor<{}>>,
@@ -18,11 +25,11 @@ export class AuthorizeActionProvider implements Provider<AuthorizeFn> {
         private getMethodName: Getter<string>
     ) {}
 
-    async value(): Promise<AuthorizeFn> {
+    async value(): Promise<AuthorizeFn<Permissions>> {
         return async (permissions, request, methodArgs) => {
             let controller: any;
             let methodName: string;
-            let metadata: Condition;
+            let metadata: Condition<Permissions>;
             try {
                 controller = await this.getController();
                 methodName = await this.getMethodName();
@@ -52,8 +59,8 @@ export class AuthorizeActionProvider implements Provider<AuthorizeFn> {
     }
 
     private async authorize(
-        condition: Condition,
-        permissions: StringKey[],
+        condition: Condition<Permissions>,
+        permissions: StringKey<Permissions>[],
         request: Request,
         controller: any,
         methodArgs: any[]
@@ -100,8 +107,8 @@ export class AuthorizeActionProvider implements Provider<AuthorizeFn> {
     }
 
     private async authorizeAnd(
-        conditions: Condition[],
-        permissions: StringKey[],
+        conditions: Condition<Permissions>[],
+        permissions: StringKey<Permissions>[],
         request: Request,
         controller: any,
         methodArgs: any[]
@@ -130,8 +137,8 @@ export class AuthorizeActionProvider implements Provider<AuthorizeFn> {
     }
 
     private async authorizeOr(
-        conditions: Condition[],
-        permissions: StringKey[],
+        conditions: Condition<Permissions>[],
+        permissions: StringKey<Permissions>[],
         request: Request,
         controller: any,
         methodArgs: any[]
@@ -160,8 +167,8 @@ export class AuthorizeActionProvider implements Provider<AuthorizeFn> {
     }
 
     private async authorizePermission(
-        key: FullKey,
-        permissions: StringKey[],
+        key: FullKey<Permissions>,
+        permissions: StringKey<Permissions>[],
         request: Request,
         controller: any,
         methodArgs: any[]

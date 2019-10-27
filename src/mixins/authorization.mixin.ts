@@ -1,6 +1,6 @@
 import { Class, SchemaMigrationOptions } from "@loopback/repository";
 
-import { StringKey } from "../types";
+import { PermissionsList, StringKey } from "../types";
 import {
     PermissionRepository,
     UserGroupRepository,
@@ -10,14 +10,16 @@ import {
 } from "../repositories";
 import { Permission, PermissionRelations } from "../models";
 
-export interface AuthorizationMixinConfigs {
-    defaultPermissions?: StringKey[];
+export interface AuthorizationMixinConfigs<
+    Permissions extends PermissionsList
+> {
+    defaultPermissions?: StringKey<Permissions>[];
 }
 
-export function AuthorizationMixin<T extends Class<any>>(
-    baseClass: T,
-    configs: AuthorizationMixinConfigs = {}
-) {
+export function AuthorizationMixin<
+    T extends Class<any>,
+    Permissions extends PermissionsList
+>(baseClass: T, configs: AuthorizationMixinConfigs<Permissions> = {}) {
     return class extends baseClass {
         async boot() {
             await super.boot();

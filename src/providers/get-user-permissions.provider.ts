@@ -1,7 +1,7 @@
 import { Provider } from "@loopback/core";
 import { repository } from "@loopback/repository";
 
-import { GetUserPermissionsFn, StringKey } from "../types";
+import { PermissionsList, GetUserPermissionsFn, StringKey } from "../types";
 
 import { Permission, PermissionRelations } from "../models";
 
@@ -14,8 +14,8 @@ import {
     RolePermissionRepository
 } from "../repositories";
 
-export class GetUserPermissionsProvider
-    implements Provider<GetUserPermissionsFn> {
+export class GetUserPermissionsProvider<Permissions extends PermissionsList>
+    implements Provider<GetUserPermissionsFn<Permissions>> {
     constructor(
         @injectPermissionRepository()
         private permissionRepository: PermissionRepository<
@@ -32,7 +32,7 @@ export class GetUserPermissionsProvider
         private rolePermissionRepository: RolePermissionRepository
     ) {}
 
-    async value(): Promise<GetUserPermissionsFn> {
+    async value(): Promise<GetUserPermissionsFn<Permissions>> {
         return async id => {
             return this.getUserPermissions(
                 id,
@@ -118,7 +118,7 @@ export class GetUserPermissionsProvider
             Permission,
             PermissionRelations
         >
-    ): Promise<StringKey[]> {
+    ): Promise<StringKey<Permissions>[]> {
         const rolesPermissions = await rolePermissionRepository.find({
             where: {
                 roleId: {
@@ -137,6 +137,8 @@ export class GetUserPermissionsProvider
             }
         });
 
-        return permissions.map(permission => permission.key);
+        return permissions.map(
+            permission => permission.key as keyof Permissions
+        );
     }
 }
