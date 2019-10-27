@@ -12,6 +12,12 @@ export class Permission extends HistoryEntity {
     })
     key: keyof Permissions;
 
+    @property({
+        type: "string",
+        default: ""
+    })
+    description: string;
+
     constructor(data?: Partial<Permission>) {
         super(data);
     }
