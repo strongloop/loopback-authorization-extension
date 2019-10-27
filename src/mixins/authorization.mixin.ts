@@ -1,6 +1,8 @@
 import { Class, SchemaMigrationOptions } from "@loopback/repository";
 
-import { StringKey } from "../types";
+import { createHash } from "crypto";
+
+import { PermissionsList } from "../types";
 import {
     PermissionRepository,
     UserGroupRepository,
@@ -10,14 +12,16 @@ import {
 } from "../repositories";
 import { Permission, PermissionRelations } from "../models";
 
-export interface AuthorizationMixinConfigs {
-    defaultPermissions?: StringKey[];
+export interface AuthorizationMixinConfigs<
+    Permissions extends PermissionsList
+> {
+    permissions?: typeof PermissionsList & { prototype: Permissions };
 }
 
-export function AuthorizationMixin<T extends Class<any>>(
-    baseClass: T,
-    configs: AuthorizationMixinConfigs = {}
-) {
+export function AuthorizationMixin<
+    T extends Class<any>,
+    Permissions extends PermissionsList
+>(baseClass: T, configs: AuthorizationMixinConfigs<Permissions> = {}) {
     return class extends baseClass {
         async boot() {
             await super.boot();
@@ -34,25 +38,27 @@ export function AuthorizationMixin<T extends Class<any>>(
         ): Promise<void> {
             await super.migrateSchema(options);
 
-            if (configs.defaultPermissions) {
+            if (configs.permissions) {
                 // create default permissions
-                // TODO
-                throw new Error(
-                    "Default permissions migration not implemented yet!"
-                );
-                // const permissionRepository: PermissionRepository<
-                //     Permission,
-                //     PermissionRelations
-                // > = this.getRepository(PermissionRepository);
+                const permissions = new configs.permissions();
 
-                // await permissionRepository.createAll(
-                //     configs.defaultPermissions.map(
-                //         permission =>
-                //             new Permission({
-                //                 key: permission
-                //             })
-                //     )
-                // );
+                const permissionRepository: PermissionRepository<
+                    Permission,
+                    PermissionRelations
+                > = this.getRepository(PermissionRepository);
+
+                await permissionRepository.createAll(
+                    Object.keys(permissions).map(
+                        permissionKey =>
+                            new Permission({
+                                id: createHash("md5")
+                                    .update(permissionKey)
+                                    .digest("hex"),
+                                key: permissionKey,
+                                description: (permissions as any)[permissionKey]
+                            })
+                    )
+                );
             }
         }
     };

@@ -1,31 +1,54 @@
 import { Request } from "@loopback/rest";
 
 /**
+ * interface definition of PermissionsList class
+ */
+export class PermissionsList {
+    // KEY = "Description";
+}
+
+/**
  * interface definition of a function which accepts a request
  * and authorizes user
  */
-export interface AuthorizeFn {
-    (permissions: StringKey[], request: Request, methodArgs: any[]): Promise<
-        void
-    >;
+export interface AuthorizeFn<Permissions extends PermissionsList> {
+    (
+        permissions: StringKey<Permissions>[],
+        request: Request,
+        methodArgs: any[]
+    ): Promise<void>;
 }
 
 /**
  * interface definition of a function which accepts a user id
  * and finds it's permission
  */
-export interface GetUserPermissionsFn {
-    (id: string): Promise<StringKey[]>;
+export interface GetUserPermissionsFn<Permissions extends PermissionsList> {
+    (id: string): Promise<StringKey<Permissions>[]>;
 }
 
 /**
  * Authorizer `Condition` type system and authorization metadata
  */
-export type Condition = And | Or | Key;
-export type And = { and: Condition[] };
-export type Or = { or: Condition[] };
-export type Key = { key: StringKey | AsyncKey; not?: true };
-export type StringKey = string;
+export type Condition<Permissions extends PermissionsList> =
+    | And<Permissions>
+    | Or<Permissions>
+    | FullKey<Permissions>
+    | Key<Permissions>;
+export type And<Permissions extends PermissionsList> = {
+    and: Condition<Permissions>[];
+};
+export type Or<Permissions extends PermissionsList> = {
+    or: Condition<Permissions>[];
+};
+export type FullKey<Permissions extends PermissionsList> = {
+    key: Key<Permissions>;
+    not?: true;
+};
+export type Key<Permissions extends PermissionsList> =
+    | StringKey<Permissions>
+    | AsyncKey;
+export type StringKey<Permissions extends PermissionsList> = keyof Permissions;
 export type AsyncKey = (
     controller: any,
     request: Request,

@@ -1,7 +1,7 @@
-import { bind, inject, Application } from "@loopback/core";
+import { bind, inject } from "@loopback/core";
 import { BindingKey, MetadataAccessor } from "@loopback/context";
 
-import { AuthorizeFn, GetUserPermissionsFn } from "./types";
+import { PermissionsList, AuthorizeFn, GetUserPermissionsFn } from "./types";
 import { AuthorizationMetadata } from "./decorators";
 
 /**
@@ -90,15 +90,15 @@ export namespace AuthorizationBindings {
      *  2. GetUserPermissionsFn
      *
      */
-    export const AUTHORIZE_ACTION = BindingKey.create<AuthorizeFn>(
-        "authorization.providers.authorize"
-    );
+    export const AUTHORIZE_ACTION = BindingKey.create<
+        AuthorizeFn<PermissionsList>
+    >("authorization.providers.authorize");
     export const GET_USER_PERMISSIONS_ACTION = BindingKey.create<
-        GetUserPermissionsFn
+        GetUserPermissionsFn<PermissionsList>
     >("authorization.providers.getUserPermissions");
 }
 
 export const AUTHORIZATION_METADATA_KEY = MetadataAccessor.create<
-    AuthorizationMetadata,
+    AuthorizationMetadata<PermissionsList>,
     MethodDecorator
 >("authorization.operationsMetadata");

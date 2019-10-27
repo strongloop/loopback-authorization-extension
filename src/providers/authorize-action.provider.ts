@@ -7,10 +7,17 @@ import {
 } from "@loopback/core";
 import { Request, HttpErrors } from "@loopback/rest";
 
-import { Condition, Key, StringKey, AuthorizeFn } from "../types";
+import {
+    PermissionsList,
+    Condition,
+    FullKey,
+    StringKey,
+    AuthorizeFn
+} from "../types";
 import { getAuthorizeMetadata } from "../decorators";
 
-export class AuthorizeActionProvider implements Provider<AuthorizeFn> {
+export class AuthorizeActionProvider<Permissions extends PermissionsList>
+    implements Provider<AuthorizeFn<Permissions>> {
     constructor(
         @inject.getter(CoreBindings.CONTROLLER_CLASS)
         private readonly getController: Getter<Constructor<{}>>,
@@ -18,11 +25,11 @@ export class AuthorizeActionProvider implements Provider<AuthorizeFn> {
         private getMethodName: Getter<string>
     ) {}
 
-    async value(): Promise<AuthorizeFn> {
+    async value(): Promise<AuthorizeFn<Permissions>> {
         return async (permissions, request, methodArgs) => {
             let controller: any;
             let methodName: string;
-            let metadata: Condition;
+            let metadata: Condition<Permissions>;
             try {
                 controller = await this.getController();
                 methodName = await this.getMethodName();
@@ -52,33 +59,43 @@ export class AuthorizeActionProvider implements Provider<AuthorizeFn> {
     }
 
     private async authorize(
-        condition: Condition,
-        keys: StringKey[],
+        condition: Condition<Permissions>,
+        permissions: StringKey<Permissions>[],
         request: Request,
         controller: any,
         methodArgs: any[]
     ): Promise<boolean> {
         if (condition) {
-            if ("and" in condition) {
-                return await this.authorizeAnd(
-                    condition.and,
-                    keys,
-                    request,
-                    controller,
-                    methodArgs
-                );
-            } else if ("or" in condition) {
-                return await this.authorizeOr(
-                    condition.or,
-                    keys,
-                    request,
-                    controller,
-                    methodArgs
-                );
+            if (typeof condition === "object") {
+                if ("and" in condition) {
+                    return await this.authorizeAnd(
+                        condition.and,
+                        permissions,
+                        request,
+                        controller,
+                        methodArgs
+                    );
+                } else if ("or" in condition) {
+                    return await this.authorizeOr(
+                        condition.or,
+                        permissions,
+                        request,
+                        controller,
+                        methodArgs
+                    );
+                } else {
+                    return await this.authorizePermission(
+                        condition,
+                        permissions,
+                        request,
+                        controller,
+                        methodArgs
+                    );
+                }
             } else {
                 return await this.authorizePermission(
-                    condition,
-                    keys,
+                    { key: condition },
+                    permissions,
                     request,
                     controller,
                     methodArgs
@@ -90,8 +107,8 @@ export class AuthorizeActionProvider implements Provider<AuthorizeFn> {
     }
 
     private async authorizeAnd(
-        conditions: Condition[],
-        keys: StringKey[],
+        conditions: Condition<Permissions>[],
+        permissions: StringKey<Permissions>[],
         request: Request,
         controller: any,
         methodArgs: any[]
@@ -104,7 +121,7 @@ export class AuthorizeActionProvider implements Provider<AuthorizeFn> {
         for (let condition of conditions) {
             let result = await this.authorize(
                 condition,
-                keys,
+                permissions,
                 request,
                 controller,
                 methodArgs
@@ -120,8 +137,8 @@ export class AuthorizeActionProvider implements Provider<AuthorizeFn> {
     }
 
     private async authorizeOr(
-        conditions: Condition[],
-        keys: StringKey[],
+        conditions: Condition<Permissions>[],
+        permissions: StringKey<Permissions>[],
         request: Request,
         controller: any,
         methodArgs: any[]
@@ -134,7 +151,7 @@ export class AuthorizeActionProvider implements Provider<AuthorizeFn> {
         for (let condition of conditions) {
             let result = await this.authorize(
                 condition,
-                keys,
+                permissions,
                 request,
                 controller,
                 methodArgs
@@ -150,8 +167,8 @@ export class AuthorizeActionProvider implements Provider<AuthorizeFn> {
     }
 
     private async authorizePermission(
-        key: Key,
-        keys: StringKey[],
+        key: FullKey<Permissions>,
+        permissions: StringKey<Permissions>[],
         request: Request,
         controller: any,
         methodArgs: any[]
@@ -160,8 +177,8 @@ export class AuthorizeActionProvider implements Provider<AuthorizeFn> {
 
         if (typeof key.key === "string") {
             // string key
-            result = keys.indexOf(key.key) >= 0;
-        } else {
+            result = permissions.indexOf(key.key) >= 0;
+        } else if (typeof key.key === "function") {
             // async key
             result = await key.key(controller, request, methodArgs);
         }
