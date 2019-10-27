@@ -21,11 +21,19 @@ export interface GetUserPermissionsFn {
 /**
  * Authorizer `Condition` type system and authorization metadata
  */
-export type Condition = And | Or | Key;
-export type And = { and: Condition[] };
-export type Or = { or: Condition[] };
-export type Key = { key: StringKey | AsyncKey; not?: true };
-export type StringKey = string;
+export type Condition = And | Or | FullKey | Key;
+export type And = {
+    and: Condition[];
+};
+export type Or = {
+    or: Condition[];
+};
+export type FullKey = {
+    key: Key;
+    not?: true;
+};
+export type Key = StringKey | AsyncKey;
+export type StringKey = keyof Permissions;
 export type AsyncKey = (
     controller: any,
     request: Request,

@@ -10,7 +10,7 @@ export class Permission extends HistoryEntity {
             unique: true
         }
     })
-    key: string;
+    key: keyof Permissions;
 
     constructor(data?: Partial<Permission>) {
         super(data);

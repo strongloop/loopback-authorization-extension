@@ -1,4 +1,4 @@
-import { bind, inject, Application } from "@loopback/core";
+import { bind, inject } from "@loopback/core";
 import { BindingKey, MetadataAccessor } from "@loopback/context";
 
 import { AuthorizeFn, GetUserPermissionsFn } from "./types";
