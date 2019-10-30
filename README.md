@@ -17,10 +17,11 @@ Follow these steps to add `authorization` extension to your loopback4 applicatio
 1. define `User`, `Group`, `Role`, `Permission` models
 2. define, bind `User`, `Group`, `Role`, `Permission` repositories
 3. bind your `dataSource`
-4. bind the `AuthorizationComponent`
-5. add `AuthorizationMixin` to your application
-6. add `AuthorizationActionProvider` to your custom http sequence handler
-7. use `GetUserPermissionsProvider` to find user permissions when `signin` and `save` the permissions in user's session
+4. create `Permissions`
+5. bind the `AuthorizationComponent`
+6. add `AuthorizationMixin` to your application
+7. add `AuthorizationActionProvider` to your custom http sequence handler
+8. use `GetUserPermissionsProvider` to find user permissions when `signin` and `save` the permissions in user's session
 
 Now, let's try these
 
@@ -30,7 +31,7 @@ Use the command `lb4 model` for simplifing your `Entity` model creation, then ju
 
 See this example:
 
-```js
+```ts
 import { model, property } from "@loopback/repository";
 import {
     User as UserModel,
@@ -59,7 +60,6 @@ export interface UserRelations extends UserModelRelations {
 }
 
 export type UserWithRelations = User & UserRelations;
-
 ```
 
 ---
@@ -70,7 +70,7 @@ Use the command `lb4 repository` for simplifing your `Repository` creation, then
 
 See this example:
 
-```js
+```ts
 import { Group, GroupRelations } from "../models";
 import { MySqlDataSource } from "../datasources";
 import { inject } from "@loopback/core";
@@ -95,13 +95,13 @@ export class GroupRepository extends GroupModelRepository<
 
 ---
 
-### Step 3
+### Step 3 (Binding DataSource)
 
 Bind your dataSource you want to use for authorization tables using `bindDataSource`
 
 See this example:
 
-```js
+```ts
 import { bindDataSource } from "loopback-authorization-extension";
 
 @bindDataSource()
@@ -119,19 +119,52 @@ export class MySqlDataSource extends juggler.DataSource {
 
 ---
 
-### Step 4,5
+### Step 4 (Create Permissions)
 
-Edit your `application.ts` file:
+Create a class contaning your permissions
 
-```js
+See this example:
+
+```ts
+import { PermissionsList } from "loopback-authorization-extension";
+
+export class MyPermissions extends PermissionsList {
+    /** Files */
+    FILES_READ = "Read files";
+    FILES_WRITE = "Write files";
+
+    /** Groups */
+    GROUPS_READ = "Read groups";
+    GROUPS_WRITE = "Write groups";
+
+    /** Roles */
+    ROLES_READ = "Read roles";
+    ROLES_WRITE = "Write roles";
+
+    /** Users */
+    USERS_READ = "Read users";
+    USERS_WRITE = "Write users";
+}
+```
+
+---
+
+### Step 5,6 (Binding Component)
+
+Edit your `application.ts` file, add your permissions class to authorize mixin:
+
+```ts
 import {
     AuthorizationBindings,
     AuthorizationComponent,
     AuthorizationMixin
 } from "loopback-authorization-extension";
+import { MyPermissions } from "./permissions.ts";
 
 export class TestApplication extends AuthorizationMixin(
-    BootMixin(ServiceMixin(RepositoryMixin(RestApplication)))
+    BootMixin(ServiceMixin(RepositoryMixin(RestApplication)), {
+        permissions: MyPermissions
+    })
 ) {
     constructor(options: ApplicationConfig = {}) {
         super(options);
@@ -164,15 +197,16 @@ export class TestApplication extends AuthorizationMixin(
 
 ---
 
-### Step 6
+### Step 7
 
 Then edit your `sequence.ts` file:
 
-```js
+```ts
 import {
     AuthorizationBindings,
     AuthorizeFn
 } from "loopback-authorization-extension";
+import { MyPermissions } from "../permissions.ts";
 
 const SequenceActions = RestBindings.SequenceActions;
 
@@ -183,7 +217,7 @@ export class MySequence implements SequenceHandler {
         protected parseParams: ParseParams,
         // add the AuthorizeActionProvider
         @inject(AuthorizationBindings.AUTHORIZE_ACTION)
-        protected authorize: AuthorizeFn,
+        protected authorize: AuthorizeFn<MyPermissions>,
         @inject(SequenceActions.INVOKE_METHOD) protected invoke: InvokeMethod,
         @inject(SequenceActions.SEND) public send: Send,
         @inject(SequenceActions.REJECT) public reject: Reject
@@ -198,9 +232,6 @@ export class MySequence implements SequenceHandler {
             // use `@loopback/authentication` module
             const userSession = await this.authenticate(...);
 
-            // ["CREATE_USER", "READ_USER", ...]
-            const userPermissions = userSession.permissions;
-
             // check user permissions
             /*
             * User permissions will pass to this method,
@@ -209,7 +240,9 @@ export class MySequence implements SequenceHandler {
             * then your must save them in the client's session
             * and at the end your must pass them to this method
             */
-            await this.authorize(userPermissions, request, args);
+            if (userSession) {
+                await this.authorize(userSession.permissions, request, args);
+            }
 
             const result = await this.invoke(route, args);
             this.send(response, result);
@@ -224,22 +257,23 @@ export class MySequence implements SequenceHandler {
 
 ---
 
-### Step 7
+### Step 8
 
 At the final step you must get user permissions using `getUserPermissions(id)` provider and save it in the user's session or token
 
-```js
+```ts
 import {
     AuthorizationBindings,
     GetUserPermissionsFn,
     authorize
 } from "loopback-authorization-extension";
 import { inject } from "@loopback/context";
+import { MyPermissions } from "../permissions.ts";
 
 export class SignInController {
     constructor(
         @inject(AuthorizationBindings.GET_USER_PERMISSIONS_ACTION)
-        protected getUserPermissions: GetUserPermissionsFn,
+        protected getUserPermissions: GetUserPermissionsFn<MyPermissions>
     ) {}
 
     // ...
@@ -258,15 +292,16 @@ export class SignInController {
         // authorization
         const permissions = await this.getUserPermissions(id);
 
-        return this.sessionRepository.create(new Session({
-            //...
-            permissions: permissions
-        }));
+        return this.sessionRepository.create(
+            new Session({
+                //...
+                permissions: permissions
+            })
+        );
     }
 
     // ...
 }
-
 ```
 
 ---
@@ -277,15 +312,13 @@ Now `authorization` extension is fully added and you can protect your endpoints 
 
 You can feel the power of `loopback-authorization-extension` is in this step, by using `And` types, `Or` types, `Async Authorizers`
 
-```js
+```ts
 // ...
+import { MyPermissions } from "../permissions.ts";
 
 @authenticate(...)
-@authorize({
-    and: [
-        {key: "CREATE_USER"},
-        {key: "DELETE_USER"}
-    ]
+@authorize<MyPermissions>({
+    and: ["CREATE_USER", "DELETE_USER"]
 })
 async editUser(...args): Promise<any> {...}
 
@@ -302,7 +335,7 @@ your can define any logical combinations of your `Permissions` to control access
 
 **Example**:
 
-```js
+```ts
 {
     and: [
         { key: "A" },
@@ -319,7 +352,7 @@ In some special cases we need to check some other permissions or conditions such
 
 **Example**:
 
-```js
+```ts
 {
     or: [
         {
@@ -357,7 +390,7 @@ Users, Groups, Roles, Permissions has many-to-many relations, using `UserGroupMo
 
 **Example**:
 
-```js
+```ts
 import {
     AuthorizationBindings,
     GetUserPermissionsFn,
