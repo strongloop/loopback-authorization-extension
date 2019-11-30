@@ -1,4 +1,4 @@
-import { BindingKey, MetadataAccessor } from "@loopback/context";
+import { BindingKey, MetadataAccessor, bind, inject } from "@loopback/context";
 import { Ctor } from "loopback-history-extension";
 import { juggler } from "@loopback/repository";
 
@@ -92,3 +92,103 @@ export const AUTHORIZATION_METADATA_KEY = MetadataAccessor.create<
     AuthorizationMetadata<PermissionsList>,
     MethodDecorator
 >("authorization.operationsMetadata");
+
+/**
+ * DataSource key
+ *
+ * 1. RDBMS
+ */
+export function bindRDBMSDataSource() {
+    return bind(binding => {
+        binding.tag({ authorization: true });
+        binding.tag({ dataSource: true });
+        binding.tag({ rdbms: true });
+
+        return binding;
+    });
+}
+export function injectRDBMSDataSource() {
+    return inject(
+        binding =>
+            binding.tagMap.authorization &&
+            binding.tagMap.dataSource &&
+            binding.tagMap.rdbms
+    );
+}
+
+/**
+ * Repository inject, bind tag setter, getter
+ *
+ * 1. UserRepository
+ * 2. GroupRepository
+ * 3. RoleRepository
+ * 4. PermissionRepository
+ */
+export function bindUserRepository() {
+    return bind(binding => {
+        binding.tag({ authorization: true });
+        binding.tag({ repository: true });
+        binding.tag({ user: true });
+
+        return binding;
+    });
+}
+export function injectUserRepository() {
+    return inject(
+        binding =>
+            binding.tagMap.authorization &&
+            binding.tagMap.repository &&
+            binding.tagMap.user
+    );
+}
+export function bindGroupRepository() {
+    return bind(binding => {
+        binding.tag({ authorization: true });
+        binding.tag({ repository: true });
+        binding.tag({ group: true });
+
+        return binding;
+    });
+}
+export function injectGroupRepository() {
+    return inject(
+        binding =>
+            binding.tagMap.authorization &&
+            binding.tagMap.repository &&
+            binding.tagMap.group
+    );
+}
+export function bindRoleRepository() {
+    return bind(binding => {
+        binding.tag({ authorization: true });
+        binding.tag({ repository: true });
+        binding.tag({ role: true });
+
+        return binding;
+    });
+}
+export function injectRoleRepository() {
+    return inject(
+        binding =>
+            binding.tagMap.authorization &&
+            binding.tagMap.repository &&
+            binding.tagMap.role
+    );
+}
+export function bindPermissionRepository() {
+    return bind(binding => {
+        binding.tag({ authorization: true });
+        binding.tag({ repository: true });
+        binding.tag({ permission: true });
+
+        return binding;
+    });
+}
+export function injectPermissionRepository() {
+    return inject(
+        binding =>
+            binding.tagMap.authorization &&
+            binding.tagMap.repository &&
+            binding.tagMap.permission
+    );
+}
