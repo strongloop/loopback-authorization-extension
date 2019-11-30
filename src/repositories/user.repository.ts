@@ -1,3 +1,4 @@
+import { inject } from "@loopback/context";
 import { juggler } from "@loopback/repository";
 import { HistoryCrudRepository } from "loopback-history-extension";
 

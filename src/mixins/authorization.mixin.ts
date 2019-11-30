@@ -15,7 +15,7 @@ import { Permission, PermissionRelations } from "../models";
 export interface AuthorizationMixinConfigs<
     Permissions extends PermissionsList
 > {
-    permissions?: typeof PermissionsList & { prototype: Permissions };
+    permissions?: Class<Permissions>;
 }
 
 export function AuthorizationMixin<
