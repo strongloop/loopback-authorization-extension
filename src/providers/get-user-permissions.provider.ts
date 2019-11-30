@@ -1,11 +1,11 @@
-import { Provider } from "@loopback/core";
+import { inject, Provider } from "@loopback/core";
 import { repository } from "@loopback/repository";
 
 import { PermissionsList, GetUserPermissionsFn, StringKey } from "../types";
 
 import { Permission, PermissionRelations } from "../models";
 
-import { injectPermissionRepository } from "../keys";
+import { AuthorizationBindings } from "../keys";
 import {
     PermissionRepository,
     UserGroupRepository,
@@ -17,11 +17,11 @@ import {
 export class GetUserPermissionsProvider<Permissions extends PermissionsList>
     implements Provider<GetUserPermissionsFn<Permissions>> {
     constructor(
-        @injectPermissionRepository()
+        @inject(AuthorizationBindings.PERMISSION_REPOSITORY)
         private permissionRepository: PermissionRepository<
             Permission,
             PermissionRelations
-        >[],
+        >,
         @repository(UserGroupRepository)
         private userGroupRepository: UserGroupRepository,
         @repository(UserRoleRepository)
@@ -36,7 +36,7 @@ export class GetUserPermissionsProvider<Permissions extends PermissionsList>
         return async id => {
             return this.getUserPermissions(
                 id,
-                this.permissionRepository[0],
+                this.permissionRepository,
                 this.userGroupRepository,
                 this.userRoleRepository,
                 this.groupRoleRepository,

@@ -1,4 +1,5 @@
 import { BindingKey, MetadataAccessor } from "@loopback/context";
+import { Ctor } from "loopback-history-extension";
 import { juggler } from "@loopback/repository";
 
 import { PermissionsList, AuthorizeFn, GetUserPermissionsFn } from "./types";
@@ -42,6 +43,27 @@ export namespace AuthorizationBindings {
      */
     export const DATASOURCE = BindingKey.create<juggler.DataSource>(
         "authorization.dataSources.rdbms"
+    );
+
+    /**
+     * Repository key:
+     *
+     * 1. UserModel
+     * 2. GroupModel
+     * 3. RoleModel
+     * 4. PermissionModel
+     */
+    export const USER_MODEL = BindingKey.create<Ctor<User>>(
+        "authorization.models.user"
+    );
+    export const GROUP_MODEL = BindingKey.create<Ctor<Group>>(
+        "authorization.models.group"
+    );
+    export const ROLE_MODEL = BindingKey.create<Ctor<Role>>(
+        "authorization.models.role"
+    );
+    export const PERMISSION_MODEL = BindingKey.create<Ctor<Permission>>(
+        "authorization.models.permission"
     );
 
     /**
