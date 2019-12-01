@@ -145,7 +145,7 @@ export function bindAuthorization(key: BindAuthorizationKey) {
     return bind(binding => {
         binding.tag({
             authorization: true,
-            key: key
+            authorizationKey: key
         });
 
         return binding;
@@ -154,7 +154,7 @@ export function bindAuthorization(key: BindAuthorizationKey) {
 export function findAuthorization(ctx: Context, key: BindAuthorizationKey) {
     const binding = ctx.findByTag({
         authorization: true,
-        key: key
+        authorizationKey: key
     })[0];
 
     if (binding) {
