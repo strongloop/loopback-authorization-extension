@@ -1,6 +1,6 @@
 {
     "name": "loopback-authorization-extension",
-    "version": "2.1.0",
+    "version": "3.0.0",
     "description": "HRBAC, MAC, DAC access models, generic implementation for Loopback v4",
     "keywords": [
         "loopback-extension",
@@ -11,7 +11,7 @@
         "node": ">=8.9"
     },
     "scripts": {
-        "build": "lb-tsc",
+        "build": "lb-tsc --outDir build",
         "build:watch": "lb-tsc --watch --outDir build",
         "clean": "lb-clean build *.tsbuildinfo",
         "pretest": "npm run clean && npm run build",

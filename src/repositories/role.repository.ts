@@ -1,7 +1,8 @@
-import { Getter } from "@loopback/core";
-import { BelongsToAccessor, juggler } from "@loopback/repository";
-import { HistoryCrudRepository } from "loopback-history-extension";
+import { inject, Getter } from "@loopback/context";
+import { juggler, BelongsToAccessor } from "@loopback/repository";
+import { Ctor, HistoryCrudRepository } from "loopback-history-extension";
 
+import { PrivateAuthorizationBindings } from "../keys";
 import { Role, RoleRelations } from "../models";
 
 export class RoleRepository<
@@ -11,12 +12,12 @@ export class RoleRepository<
     public readonly parent: BelongsToAccessor<Role, typeof Role.prototype.id>;
 
     constructor(
-        entityClass: typeof Role & {
-            prototype: Model;
-        },
+        @inject(PrivateAuthorizationBindings.ROLE_MODEL)
+        ctor: Ctor<Model>,
+        @inject(PrivateAuthorizationBindings.DATASOURCE)
         dataSource: juggler.DataSource
     ) {
-        super(entityClass, dataSource);
+        super(ctor, dataSource);
 
         this.parent = this.createBelongsToAccessorFor(
             "parent",

@@ -14,14 +14,14 @@ npm i --save loopback-authorization-extension
 
 Follow these steps to add `authorization` extension to your loopback4 application
 
-1. define `User`, `Group`, `Role`, `Permission` models
-2. define, bind `User`, `Group`, `Role`, `Permission` repositories
-3. bind your `dataSource`
-4. create `Permissions`
-5. bind the `AuthorizationComponent`
-6. add `AuthorizationMixin` to your application
-7. add `AuthorizationActionProvider` to your custom http sequence handler
-8. use `GetUserPermissionsProvider` to find user permissions when `signin` and `save` the permissions in user's session
+1. **Optional**: Define `User`, `Group`, `Role`, `Permission` models
+2. **Optional**: Define `User`, `Group`, `Role`, `Permission` repositories
+3. Bind your `dataSource`
+4. Create `Permissions`
+5. Bind the `AuthorizationComponent`
+6. Add `AuthorizationMixin` to your application
+7. Add `AuthorizationActionProvider` to your custom http sequence handler
+8. Use `GetUserPermissionsProvider` to find user permissions when `signin` and `save` the permissions in user's session
 
 Now, let's try these
 
@@ -77,10 +77,10 @@ import { inject } from "@loopback/core";
 
 import {
     GroupRepository as GroupModelRepository,
-    bindGroupRepository
+    F
 } from "loopback-authorization-extension";
 
-@bindGroupRepository()
+@bindAuthorization("GroupRepository")
 export class GroupRepository extends GroupModelRepository<
     Group,
     GroupRelations
@@ -91,20 +91,20 @@ export class GroupRepository extends GroupModelRepository<
 }
 ```
 
-> Don't forget bind your repository using `bindXRepository`
+> Don't forget bind your repository using `bindAuthorization`
 
 ---
 
 ### Step 3 (Binding DataSource)
 
-Bind your dataSource you want to use for authorization tables using `bindDataSource`
+Bind your dataSource you want to use for authorization tables using `bindAuthorization`
 
 See this example:
 
 ```ts
-import { bindDataSource } from "loopback-authorization-extension";
+import { bindAuthorization } from "loopback-authorization-extension";
 
-@bindDataSource()
+@bindAuthorization("DataSource")
 export class MySqlDataSource extends juggler.DataSource {
     static dataSourceName = "MySQL";
 
@@ -162,9 +162,10 @@ import {
 import { MyPermissions } from "./permissions.ts";
 
 export class TestApplication extends AuthorizationMixin(
-    BootMixin(ServiceMixin(RepositoryMixin(RestApplication)), {
-        permissions: MyPermissions
-    })
+    BootMixin(ServiceMixin(RepositoryMixin(RestApplication))),
+    {
+        permissions: MyPermissions;
+    }
 ) {
     constructor(options: ApplicationConfig = {}) {
         super(options);
@@ -234,11 +235,11 @@ export class MySequence implements SequenceHandler {
 
             // check user permissions
             /*
-            * User permissions will pass to this method,
-            * they are loaded before using `getUserPermissions(id)`
+            * User permissions, will passed to this method,
+            * they are loaded, before using `getUserPermissions(id)`
             * action on `sign-in` step of your application,
-            * then your must save them in the client's session
-            * and at the end your must pass them to this method
+            * then you must save them in the client's session
+            * and at the end, you must pass them to this method
             */
             if (userSession) {
                 await this.authorize(userSession.permissions, request, args);

@@ -1,6 +1,8 @@
+import { inject } from "@loopback/context";
 import { juggler } from "@loopback/repository";
-import { HistoryCrudRepository } from "loopback-history-extension";
+import { Ctor, HistoryCrudRepository } from "loopback-history-extension";
 
+import { PrivateAuthorizationBindings } from "../keys";
 import { User, UserRelations } from "../models";
 
 export class UserRepository<
@@ -8,11 +10,11 @@ export class UserRepository<
     ModelRelations extends UserRelations
 > extends HistoryCrudRepository<Model, ModelRelations> {
     constructor(
-        entityClass: typeof User & {
-            prototype: Model;
-        },
+        @inject(PrivateAuthorizationBindings.USER_MODEL)
+        ctor: Ctor<Model>,
+        @inject(PrivateAuthorizationBindings.DATASOURCE)
         dataSource: juggler.DataSource
     ) {
-        super(entityClass, dataSource);
+        super(ctor, dataSource);
     }
 }

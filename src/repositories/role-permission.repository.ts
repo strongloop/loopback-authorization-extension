@@ -1,11 +1,8 @@
+import { inject } from "@loopback/context";
 import { BelongsToAccessor, juggler } from "@loopback/repository";
 import { HistoryCrudRepository } from "loopback-history-extension";
 
-import {
-    injectDataSource,
-    injectRoleRepository,
-    injectPermissionRepository
-} from "../keys";
+import { PrivateAuthorizationBindings, AuthorizationBindings } from "../keys";
 import {
     RolePermission,
     RolePermissionRelations,
@@ -31,25 +28,25 @@ export class RolePermissionRepository extends HistoryCrudRepository<
     >;
 
     constructor(
-        @injectDataSource()
-        dataSource: juggler.DataSource[],
-        @injectRoleRepository()
-        roleRepository: RoleRepository<Role, RoleRelations>[],
-        @injectPermissionRepository()
+        @inject(PrivateAuthorizationBindings.DATASOURCE)
+        dataSource: juggler.DataSource,
+        @inject(AuthorizationBindings.ROLE_REPOSITORY)
+        roleRepository: RoleRepository<Role, RoleRelations>,
+        @inject(AuthorizationBindings.PERMISSION_REPOSITORY)
         permissionRepository: PermissionRepository<
             Permission,
             PermissionRelations
-        >[]
+        >
     ) {
-        super(RolePermission, dataSource[0]);
+        super(RolePermission, dataSource);
 
         this.role = this.createBelongsToAccessorFor(
             "role",
-            async () => roleRepository[0]
+            async () => roleRepository
         );
         this.permission = this.createBelongsToAccessorFor(
             "permission",
-            async () => permissionRepository[0]
+            async () => permissionRepository
         );
     }
 }
