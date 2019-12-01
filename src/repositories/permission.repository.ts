@@ -2,7 +2,7 @@ import { inject } from "@loopback/context";
 import { juggler, DefaultCrudRepository } from "@loopback/repository";
 import { Ctor } from "loopback-history-extension";
 
-import { AuthorizationBindings } from "../keys";
+import { PrivateAuthorizationBindings } from "../keys";
 import { Permission, PermissionRelations } from "../models";
 
 export class PermissionRepository<
@@ -10,9 +10,9 @@ export class PermissionRepository<
     ModelRelations extends PermissionRelations
 > extends DefaultCrudRepository<Model, string, ModelRelations> {
     constructor(
-        @inject(AuthorizationBindings.PERMISSION_MODEL)
+        @inject(PrivateAuthorizationBindings.PERMISSION_MODEL)
         ctor: Ctor<Model>,
-        @inject(AuthorizationBindings.DATASOURCE)
+        @inject(PrivateAuthorizationBindings.DATASOURCE)
         dataSource: juggler.DataSource
     ) {
         super(ctor, dataSource);

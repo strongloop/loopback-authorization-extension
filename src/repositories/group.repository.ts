@@ -2,7 +2,7 @@ import { inject, Getter } from "@loopback/context";
 import { juggler, BelongsToAccessor } from "@loopback/repository";
 import { Ctor, HistoryCrudRepository } from "loopback-history-extension";
 
-import { AuthorizationBindings } from "../keys";
+import { PrivateAuthorizationBindings } from "../keys";
 import { Group, GroupRelations } from "../models";
 
 export class GroupRepository<
@@ -12,9 +12,9 @@ export class GroupRepository<
     public readonly parent: BelongsToAccessor<Group, typeof Group.prototype.id>;
 
     constructor(
-        @inject(AuthorizationBindings.GROUP_MODEL)
+        @inject(PrivateAuthorizationBindings.GROUP_MODEL)
         ctor: Ctor<Model>,
-        @inject(AuthorizationBindings.DATASOURCE)
+        @inject(PrivateAuthorizationBindings.DATASOURCE)
         dataSource: juggler.DataSource
     ) {
         super(ctor, dataSource);
