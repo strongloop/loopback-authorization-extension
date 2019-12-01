@@ -1,5 +1,4 @@
 import { inject, Provider } from "@loopback/core";
-import { repository } from "@loopback/repository";
 
 import { PermissionsList, GetUserPermissionsFn, StringKey } from "../types";
 
@@ -22,13 +21,13 @@ export class GetUserPermissionsProvider<Permissions extends PermissionsList>
             Permission,
             PermissionRelations
         >,
-        @repository(UserGroupRepository)
+        @inject(AuthorizationBindings.USER_GROUP_REPOSITORY)
         private userGroupRepository: UserGroupRepository,
-        @repository(UserRoleRepository)
+        @inject(AuthorizationBindings.USER_ROLE_REPOSITORY)
         private userRoleRepository: UserRoleRepository,
-        @repository(GroupRoleRepository)
+        @inject(AuthorizationBindings.GROUP_ROLE_REPOSITORY)
         private groupRoleRepository: GroupRoleRepository,
-        @repository(RolePermissionRepository)
+        @inject(AuthorizationBindings.ROLE_PERMISSION_REPOSITORY)
         private rolePermissionRepository: RolePermissionRepository
     ) {}
 
