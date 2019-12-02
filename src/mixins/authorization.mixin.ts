@@ -11,6 +11,8 @@ import {
 } from "../keys";
 
 import { PermissionsList } from "../types";
+
+import { User, Group, Role, Permission } from "../models";
 import {
     UserRepository,
     GroupRepository,
@@ -21,7 +23,6 @@ import {
     GroupRoleRepository,
     RolePermissionRepository
 } from "../repositories";
-import { User, Group, Role, Permission } from "../models";
 
 export interface AuthorizationMixinConfigs {
     permissions?: Class<PermissionsList>;

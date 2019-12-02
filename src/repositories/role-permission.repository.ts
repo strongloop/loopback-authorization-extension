@@ -3,6 +3,7 @@ import { BelongsToAccessor, juggler } from "@loopback/repository";
 import { HistoryCrudRepository } from "loopback-history-extension";
 
 import { PrivateAuthorizationBindings, AuthorizationBindings } from "../keys";
+
 import {
     RolePermission,
     RolePermissionRelations,
