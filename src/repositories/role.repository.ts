@@ -3,6 +3,7 @@ import { juggler, BelongsToAccessor } from "@loopback/repository";
 import { Ctor, HistoryCrudRepository } from "loopback-history-extension";
 
 import { PrivateAuthorizationBindings } from "../keys";
+
 import { Role, RoleRelations } from "../models";
 
 export class RoleRepository<

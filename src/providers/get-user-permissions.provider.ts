@@ -1,10 +1,10 @@
 import { inject, Provider } from "@loopback/core";
 
+import { AuthorizationBindings } from "../keys";
+
 import { PermissionsList, GetUserPermissionsFn, StringKey } from "../types";
 
 import { Permission, PermissionRelations } from "../models";
-
-import { AuthorizationBindings } from "../keys";
 import {
     PermissionRepository,
     UserGroupRepository,

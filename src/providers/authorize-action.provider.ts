@@ -14,6 +14,7 @@ import {
     StringKey,
     AuthorizeFn
 } from "../types";
+
 import { getAuthorizeMetadata } from "../decorators";
 
 export class AuthorizeActionProvider<Permissions extends PermissionsList>
