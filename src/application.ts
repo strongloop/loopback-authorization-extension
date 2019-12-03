@@ -1,5 +1,6 @@
 import { BootMixin } from "@loopback/boot";
 import { RepositoryMixin, SchemaMigrationOptions } from "@loopback/repository";
+import { ServiceMixin } from "@loopback/service-proxy";
 import { Application } from "@loopback/core";
 
 import { createHash } from "crypto";
@@ -9,18 +10,25 @@ import {
     AuthorizationBindings,
     findAuthorization
 } from "@authorization/keys";
-import { AuthorizationApplicationConfig } from "@authorization/types";
+import {
+    AuthorizationApplicationConfig,
+    PermissionsList
+} from "@authorization/types";
 
 import { User, Group, Role, Permission } from "@authorization/models";
 import {
     UserRepository,
     GroupRepository,
     RoleRepository,
-    PermissionRepository
+    PermissionRepository,
+    UserGroupRepository,
+    UserRoleRepository,
+    GroupRoleRepository,
+    RolePermissionRepository
 } from "@authorization/repositories";
 
 export class AuthorizationApplication extends BootMixin(
-    RepositoryMixin(Application)
+    ServiceMixin(RepositoryMixin(Application))
 ) {
     constructor(public options: AuthorizationApplicationConfig = {}) {
         super(options);
@@ -37,27 +45,39 @@ export class AuthorizationApplication extends BootMixin(
     async migrateSchema(options: SchemaMigrationOptions = {}): Promise<void> {
         await super.migrateSchema(options);
 
-        if (this.options.permissions) {
-            // create default permissions
-            const permissions = new this.options.permissions();
+        /**
+         * Create default permissions object
+         */
+        const AuthorizationPermissions =
+            this.options.permissions || PermissionsList;
+        const permissions = new AuthorizationPermissions();
 
-            const permissionRepository = this.getSync(
-                AuthorizationBindings.PERMISSION_REPOSITORY
-            );
+        /**
+         * Get permissions repository
+         */
+        const permissionRepository = this.getSync(
+            AuthorizationBindings.PERMISSION_REPOSITORY
+        );
 
-            await permissionRepository.createAll(
-                Object.keys(permissions).map(
-                    permissionKey =>
-                        new Permission({
-                            id: createHash("md5")
-                                .update(permissionKey)
-                                .digest("hex"),
-                            key: permissionKey,
-                            description: (permissions as any)[permissionKey]
-                        })
-                )
-            );
-        }
+        /**
+         * Migrate permissions
+         *
+         * 1. id: hash(key)
+         * 2. key: key
+         * 3. description: description
+         */
+        await permissionRepository.createAll(
+            Object.keys(permissions).map(
+                permissionKey =>
+                    new Permission({
+                        id: createHash("md5")
+                            .update(permissionKey)
+                            .digest("hex"),
+                        key: permissionKey,
+                        description: (permissions as any)[permissionKey]
+                    })
+            )
+        );
     }
 
     private bootModels() {
