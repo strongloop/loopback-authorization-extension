@@ -46,6 +46,7 @@
         "@loopback/build": "^2.0.15",
         "@loopback/testlab": "^1.9.3",
         "@types/node": "^10.17.0",
+        "parcel-bundler": "^1.12.4",
         "source-map-support": "^0.5.16",
         "typescript": "~3.5.3"
     }
