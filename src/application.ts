@@ -17,6 +17,10 @@ import {
 
 import { User, Group, Role, Permission } from "@authorization/models";
 import {
+    AuthorizeActionProvider,
+    GetUserPermissionsProvider
+} from "@authorization/providers";
+import {
     UserRepository,
     GroupRepository,
     RoleRepository,
@@ -38,6 +42,7 @@ export class AuthorizationApplication extends BootMixin(
         await super.boot();
 
         this.bootModels();
+        this.bootProviders();
         this.bootDataSources();
         this.bootRepositories();
     }
@@ -92,6 +97,15 @@ export class AuthorizationApplication extends BootMixin(
         );
         this.bind(PrivateAuthorizationBindings.PERMISSION_MODEL).to(
             this.options.permissionModel || Permission
+        );
+    }
+
+    private bootProviders() {
+        this.bind(AuthorizationBindings.AUTHORIZE_ACTION).toProvider(
+            AuthorizeActionProvider
+        );
+        this.bind(AuthorizationBindings.GET_USER_PERMISSIONS_ACTION).toProvider(
+            GetUserPermissionsProvider
         );
     }
 
