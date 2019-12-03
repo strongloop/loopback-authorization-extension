@@ -4,12 +4,7 @@
     "compilerOptions": {
         "outDir": "build",
         "rootDir": "src",
-        "moduleResolution": "node",
-        "baseUrl": "./",
-        "paths": {
-            "*": ["types/*"],
-            "@authorization/*": ["src/*"]
-        }
+        "baseUrl": "./"
     },
     "include": ["src"]
 }

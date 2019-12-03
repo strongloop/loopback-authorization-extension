@@ -4,9 +4,9 @@ import {
     MethodDecoratorFactory
 } from "@loopback/context";
 
-import { AUTHORIZATION_METADATA_KEY } from "@authorization/keys";
+import { AUTHORIZATION_METADATA_KEY } from "../keys";
 
-import { PermissionsList, Condition } from "@authorization/types";
+import { PermissionsList, Condition } from "../types";
 
 /**
  * Authorization metadata stored via Reflection API
