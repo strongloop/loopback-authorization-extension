@@ -13,9 +13,9 @@ import {
     FullKey,
     StringKey,
     AuthorizeFn
-} from "../types";
+} from "@authorization/types";
 
-import { getAuthorizeMetadata } from "../decorators";
+import { getAuthorizeMetadata } from "@authorization/decorators";
 
 export class AuthorizeActionProvider<Permissions extends PermissionsList>
     implements Provider<AuthorizeFn<Permissions>> {

@@ -16,16 +16,15 @@ Follow these steps to add `authorization` extension to your loopback4 applicatio
 
 1. **Optional**: Define `User`, `Group`, `Role`, `Permission` models
 2. **Optional**: Define `User`, `Group`, `Role`, `Permission` repositories
-3. Bind your `dataSource`
-4. Create `Permissions`
-5. Bind the `AuthorizationComponent`
-6. Add `AuthorizationMixin` to your application
-7. Add `AuthorizationActionProvider` to your custom http sequence handler
-8. Use `GetUserPermissionsProvider` to find user permissions when `signin` and `save` the permissions in user's session
+3. **Optional**: Define `Permissions` class
+4. Define your `dataSource`
+5. Extend your application from `AuthorizationApplication`
+6. Add `AuthorizationActionProvider` to your custom http sequence handler
+7. Use `GetUserPermissionsProvider` to find user permissions when `signin` and `save` the permissions in user's session
 
 Now, let's try these
 
-### Step 1 (Adding Models)
+### Step 1 (Define Models)
 
 Use the command `lb4 model` for simplifing your `Entity` model creation, then just replace `Entity` class with `User`, `Group`, `Role` or `Permission` as the parent class
 
@@ -64,7 +63,7 @@ export type UserWithRelations = User & UserRelations;
 
 ---
 
-### Step 2 (Adding Repositories)
+### Step 2 (Define Repositories)
 
 Use the command `lb4 repository` for simplifing your `Repository` creation, then replace `DefaultCrudRepository` class with `UserRepository`, `GroupRepository`, `RoleRepository` or `PermissionRepository` as the parent class, then bind them
 
@@ -95,31 +94,7 @@ export class GroupRepository extends GroupModelRepository<
 
 ---
 
-### Step 3 (Binding DataSource)
-
-Bind your dataSource you want to use for authorization tables using `bindAuthorization`
-
-See this example:
-
-```ts
-import { bindAuthorization } from "loopback-authorization-extension";
-
-@bindAuthorization("DataSource")
-export class MySqlDataSource extends juggler.DataSource {
-    static dataSourceName = "MySQL";
-
-    constructor(
-        @inject("datasources.config.MySQL", { optional: true })
-        dsConfig: object = config
-    ) {
-        super(dsConfig);
-    }
-}
-```
-
----
-
-### Step 4 (Create Permissions)
+### Step 3 (Define Permissions)
 
 Create a class contaning your permissions
 
@@ -149,25 +124,43 @@ export class MyPermissions extends PermissionsList {
 
 ---
 
-### Step 5,6 (Binding Component)
+### Step 4 (Define DataSource)
+
+Bind your dataSource you want to use for authorization tables using `bindAuthorization`
+
+See this example:
+
+```ts
+import { bindAuthorization } from "loopback-authorization-extension";
+
+@bindAuthorization("DataSource")
+export class MySqlDataSource extends juggler.DataSource {
+    static dataSourceName = "MySQL";
+
+    constructor(
+        @inject("datasources.config.MySQL", { optional: true })
+        dsConfig: object = config
+    ) {
+        super(dsConfig);
+    }
+}
+```
+
+---
+
+### Step 5 (Extend Application)
 
 Edit your `application.ts` file, add your permissions class to authorize mixin:
 
 ```ts
 import {
-    AuthorizationBindings,
-    AuthorizationComponent,
-    AuthorizationMixin
+    AuthorizationApplication,
+    AuthorizationApplicationConfig
 } from "loopback-authorization-extension";
 import { MyPermissions } from "./permissions.ts";
 
-export class TestApplication extends AuthorizationMixin(
-    BootMixin(ServiceMixin(RepositoryMixin(RestApplication))),
-    {
-        permissions: MyPermissions;
-    }
-) {
-    constructor(options: ApplicationConfig = {}) {
+export class TestApplication extends AuthorizationApplication {
+    constructor(options: AuthorizationApplicationConfig = {}) {
         super(options);
 
         // Set up the custom sequence
@@ -198,7 +191,7 @@ export class TestApplication extends AuthorizationMixin(
 
 ---
 
-### Step 7
+### Step 6
 
 Then edit your `sequence.ts` file:
 
@@ -258,7 +251,7 @@ export class MySequence implements SequenceHandler {
 
 ---
 
-### Step 8
+### Step 7
 
 At the final step you must get user permissions using `getUserPermissions(id)` provider and save it in the user's session or token
 
