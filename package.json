@@ -39,7 +39,8 @@
         "@loopback/core": "^1.10.6",
         "@loopback/repository": "^1.15.3",
         "@loopback/rest": "^1.22.0",
-        "loopback-history-extension": "latest"
+        "loopback-history-extension": "latest",
+        "module-alias": "^2.2.2"
     },
     "devDependencies": {
         "@loopback/build": "^2.0.15",
@@ -47,5 +48,8 @@
         "@types/node": "^10.17.0",
         "source-map-support": "^0.5.16",
         "typescript": "~3.5.3"
+    },
+    "_moduleAliases": {
+        "@authorization": "./build"
     }
 }

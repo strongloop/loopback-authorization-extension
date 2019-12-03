@@ -1,4 +1,8 @@
 import { Request } from "@loopback/rest";
+import { Class } from "@loopback/repository";
+import { Ctor } from "loopback-history-extension";
+
+import { User, Group, Role, Permission } from "@authorization/models";
 
 /**
  * interface definition of PermissionsList class
@@ -54,3 +58,14 @@ export type AsyncKey = (
     request: Request,
     methodArgs: any[]
 ) => Promise<boolean>;
+
+/**
+ * AuthorizationApplication configs
+ */
+export interface AuthorizationApplicationConfig {
+    permissions?: Class<PermissionsList>;
+    userModel?: Ctor<User>;
+    groupModel?: Ctor<Group>;
+    roleModel?: Ctor<Role>;
+    permissionModel?: Ctor<Permission>;
+}
