@@ -2,9 +2,13 @@ import { Context, BindingKey, MetadataAccessor, bind } from "@loopback/context";
 import { Ctor } from "loopback-history-extension";
 import { juggler } from "@loopback/repository";
 
-import { PermissionsList, AuthorizeFn, GetUserPermissionsFn } from "./types";
+import {
+    PermissionsList,
+    AuthorizeFn,
+    GetUserPermissionsFn
+} from "@authorization/types";
 
-import { AuthorizationMetadata } from "./decorators";
+import { AuthorizationMetadata } from "@authorization/decorators";
 
 import {
     User,
@@ -15,7 +19,7 @@ import {
     RoleRelations,
     Permission,
     PermissionRelations
-} from "./models";
+} from "@authorization/models";
 import {
     UserRepository,
     GroupRepository,
@@ -25,7 +29,7 @@ import {
     UserRoleRepository,
     GroupRoleRepository,
     RolePermissionRepository
-} from "./repositories";
+} from "@authorization/repositories";
 
 /**
  * Private binding used in component scope
