@@ -9,17 +9,14 @@ import {
     PrivateAuthorizationBindings,
     AuthorizationBindings,
     findAuthorization
-} from "@authorization/keys";
-import {
-    AuthorizationApplicationConfig,
-    PermissionsList
-} from "@authorization/types";
+} from "./keys";
+import { AuthorizationApplicationConfig, PermissionsList } from "./types";
 
-import { User, Group, Role, Permission } from "@authorization/models";
+import { User, Group, Role, Permission } from "./models";
 import {
     AuthorizeActionProvider,
     GetUserPermissionsProvider
-} from "@authorization/providers";
+} from "./providers";
 import {
     UserRepository,
     GroupRepository,
@@ -29,7 +26,7 @@ import {
     UserRoleRepository,
     GroupRoleRepository,
     RolePermissionRepository
-} from "@authorization/repositories";
+} from "./repositories";
 
 export class AuthorizationApplication extends BootMixin(
     ServiceMixin(RepositoryMixin(Application))
@@ -41,10 +38,10 @@ export class AuthorizationApplication extends BootMixin(
     async boot() {
         await super.boot();
 
-        this.bootModels();
-        this.bootProviders();
-        this.bootDataSources();
-        this.bootRepositories();
+        this.bootAuthorizationModels();
+        this.bootAuthorizationProviders();
+        this.bootAuthorizationDataSources();
+        this.bootAuthorizationRepositories();
     }
 
     async migrateSchema(options: SchemaMigrationOptions = {}): Promise<void> {
@@ -85,7 +82,7 @@ export class AuthorizationApplication extends BootMixin(
         );
     }
 
-    private bootModels() {
+    private bootAuthorizationModels() {
         this.bind(PrivateAuthorizationBindings.USER_MODEL).to(
             this.options.userModel || User
         );
@@ -100,7 +97,7 @@ export class AuthorizationApplication extends BootMixin(
         );
     }
 
-    private bootProviders() {
+    private bootAuthorizationProviders() {
         this.bind(AuthorizationBindings.AUTHORIZE_ACTION).toProvider(
             AuthorizeActionProvider
         );
@@ -109,7 +106,7 @@ export class AuthorizationApplication extends BootMixin(
         );
     }
 
-    private bootDataSources() {
+    private bootAuthorizationDataSources() {
         let dataSource = findAuthorization(this, "DataSource");
         if (dataSource) {
             this.bind(PrivateAuthorizationBindings.DATASOURCE).to(dataSource);
@@ -118,7 +115,7 @@ export class AuthorizationApplication extends BootMixin(
         }
     }
 
-    private bootRepositories() {
+    private bootAuthorizationRepositories() {
         /**
          * Find, Bind User Repository
          */
