@@ -4,7 +4,10 @@
     "compilerOptions": {
         "outDir": "build",
         "rootDir": "src",
-        "baseUrl": "./"
+        "baseUrl": ".",
+        "paths": {
+            "~*": ["./src/*"]
+        }
     },
     "include": ["src"]
 }
