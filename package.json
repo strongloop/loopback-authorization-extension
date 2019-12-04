@@ -11,12 +11,12 @@
         "node": ">=8.9"
     },
     "scripts": {
-        "build": "lb-tsc --outDir build",
-        "build:watch": "lb-tsc --watch --outDir build",
-        "clean": "lb-clean build *.tsbuildinfo",
-        "pretest": "npm run clean && npm run build",
-        "test": "lb-mocha --allow-console-logs \"build/__tests__\"",
-        "test:dev": "lb-mocha --allow-console-logs build/__tests__/**/*.js",
+        "start": "nodemon index.ts --exec ts-node",
+        "prebuild": "lb-tsc --outDir build/temp",
+        "build": "parcel build --out-dir build --cache-dir build/temp/cache --target node build/temp/index.js",
+        "postbuild": "lb-clean build/temp",
+        "test": "lb-mocha --allow-console-logs \"test/**/*.test.ts\"",
+        "clean": "lb-clean build",
         "prepublishOnly": "npm run test"
     },
     "repository": {
@@ -28,10 +28,10 @@
     "files": [
         "README.md",
         "index.js",
-        "index.d.ts",
+        "index.ts",
         "build",
         "src",
-        "!*/__tests__"
+        "test"
     ],
     "dependencies": {
         "@loopback/boot": "^1.5.10",
@@ -46,6 +46,7 @@
         "@loopback/build": "^2.0.15",
         "@loopback/testlab": "^1.9.3",
         "@types/node": "^10.17.0",
+        "nodemon": "^2.0.1",
         "parcel-bundler": "^1.12.4",
         "source-map-support": "^0.5.16",
         "typescript": "~3.5.3"
