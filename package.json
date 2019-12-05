@@ -1,6 +1,6 @@
 {
     "name": "loopback-authorization-extension",
-    "version": "6.0.0",
+    "version": "6.1.0",
     "description": "HRBAC, MAC, DAC access models, generic implementation for Loopback v4",
     "keywords": [
         "loopback-extension",
@@ -39,13 +39,13 @@
         "@loopback/core": "^1.11.0",
         "@loopback/repository": "^1.15.5",
         "@loopback/rest": "^1.24.0",
-        "loopback-history-extension": "latest"
+        "loopback-history-extension": "latest",
+        "module-alias": "^2.2.2"
     },
     "devDependencies": {
         "@loopback/build": "^2.1.0",
         "@loopback/testlab": "^1.9.5",
         "@types/node": "^10.17.6",
-        "module-alias": "^2.2.2",
         "nodemon": "^2.0.1",
         "parcel-bundler": "^1.12.4",
         "source-map-support": "^0.5.16",
