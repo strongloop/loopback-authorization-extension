@@ -2,7 +2,7 @@
     "$schema": "http://json.schemastore.org/tsconfig",
     "extends": "@loopback/build/config/tsconfig.common.json",
     "compilerOptions": {
-        "outDir": "build/typings",
+        "outDir": "dist",
         "rootDir": "src",
         "baseUrl": ".",
         "paths": {

@@ -1,1 +1,1 @@
-export * from "./build/typings";
+export * from "./dist";
