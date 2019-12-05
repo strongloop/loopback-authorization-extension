@@ -7661,9 +7661,9 @@
             }
         },
         "loopback-history-extension": {
-            "version": "2.5.0",
-            "resolved": "https://registry.npmjs.org/loopback-history-extension/-/loopback-history-extension-2.5.0.tgz",
-            "integrity": "sha512-rTEMz1kZn25angeWoknx2QLe6G5HIKZz/pxPrl8CUkM0a+ZC1G8vLsrEXYA8Cx0PKn8p1nDPBXEMa2Fgwu5IRA==",
+            "version": "3.0.0",
+            "resolved": "https://registry.npmjs.org/loopback-history-extension/-/loopback-history-extension-3.0.0.tgz",
+            "integrity": "sha512-hSzi6Tl7fa7G+XwkGfdtOT7G6nK+WsCQ9x/tpM0yexyriz3UpPLY1p407vE/Dq52eSqbkcSt0sLvUvgryuWEmw==",
             "requires": {
                 "@loopback/boot": "^1.5.12",
                 "@loopback/context": "^1.24.0",

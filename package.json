@@ -15,7 +15,9 @@
         "prebuild": "npm run clean",
         "build": "lb-tsc --outDir dist",
         "postbuild": "parcel build --out-dir build --cache-dir build/cache --target node dist/index.js",
-        "start": "nodemon --exec ts-node index.ts",
+        "build:watch": "lb-tsc --watch --outDir dist",
+        "start": "node .",
+        "start:watch": "nodemon .",
         "test": "lb-mocha --allow-console-logs \"test/**/*.test.ts\"",
         "prepublishOnly": "npm run build"
     },
@@ -48,5 +50,8 @@
         "parcel-bundler": "^1.12.4",
         "source-map-support": "^0.5.16",
         "typescript": "~3.5.3"
+    },
+    "_moduleAliases": {
+        "~": "./dist"
     }
 }
