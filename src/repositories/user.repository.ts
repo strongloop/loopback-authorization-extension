@@ -2,7 +2,7 @@ import { inject } from "@loopback/context";
 import { juggler } from "@loopback/repository";
 import { Ctor, HistoryCrudRepository } from "loopback-history-extension";
 
-import { PrivateAuthorizationBindings } from "../keys";
+import { PrivateAuthorizationBindings } from "~/keys";
 
 import { User, UserRelations } from "~/models";
 
