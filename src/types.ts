@@ -62,7 +62,7 @@ export type AsyncKey = (
 /**
  * AuthorizationApplication configs
  */
-export interface AuthorizationApplicationConfig {
+export interface AuthorizationMixinConfig {
     permissions?: Class<PermissionsList>;
     userModel?: Ctor<User>;
     groupModel?: Ctor<Group>;
