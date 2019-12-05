@@ -18,7 +18,7 @@ Follow these steps to add `authorization` extension to your loopback4 applicatio
 2. **Optional**: Define `User`, `Group`, `Role`, `Permission` repositories
 3. **Optional**: Define `Permissions` class
 4. Define your `dataSource`
-5. Extend your application from `AuthorizationApplication`
+5. Add `AuthorizationMixin` to your application
 6. Add `AuthorizationActionProvider` to your custom http sequence handler
 7. Use `GetUserPermissionsProvider` to find user permissions when `signin` and `save` the permissions in user's session
 
@@ -148,7 +148,7 @@ export class MySqlDataSource extends juggler.DataSource {
 
 ---
 
-### Step 5 (Extend Application)
+### Step 5 (Application Mixin)
 
 Edit your `application.ts` file, add your permissions class to authorize mixin:
 
@@ -158,32 +158,23 @@ import {
     AuthorizationApplicationConfig
 } from "loopback-authorization-extension";
 import { MyPermissions } from "~/permissions.ts";
+import { User, Group, Role, Permission } from "~/models";
 
-export class TestApplication extends AuthorizationApplication {
-    constructor(options: AuthorizationApplicationConfig = {}) {
+export class TestApplication extends AuthorizationMixin(
+    BootMixin(ServiceMixin(RepositoryMixin(RestApplication)))
+) {
+    constructor(options: ApplicationConfig = {}) {
         super(options);
 
-        // Set up the custom sequence
-        this.sequence(MySequence);
-
-        // Set up default home page
-        this.static("/", path.join(__dirname, "~/public"));
-
         // ...
 
-        this.component(AuthorizationComponent);
-
-        // ...
-
-        this.projectRoot = __dirname;
-        // Customize @loopback/boot Booter Conventions here
-        this.bootOptions = {
-            controllers: {
-                // Customize ControllerBooter Conventions here
-                dirs: ["controllers"],
-                extensions: [".controller.js"],
-                nested: true
-            }
+        // Config authorization mixin
+        this.authorizationConfigs = {
+            permissions: MyPermissions,
+            userModel: User,
+            groupModel: Group,
+            roleModel: Role,
+            permissionModel: Permission
         };
     }
 }
