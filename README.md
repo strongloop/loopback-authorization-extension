@@ -70,8 +70,8 @@ Use the command `lb4 repository` for simplifing your `Repository` creation, then
 See this example:
 
 ```ts
-import { Group, GroupRelations } from "../models";
-import { MySqlDataSource } from "../datasources";
+import { Group, GroupRelations } from "~/models";
+import { MySqlDataSource } from "~/datasources";
 import { inject } from "@loopback/core";
 
 import {
@@ -157,7 +157,7 @@ import {
     AuthorizationApplication,
     AuthorizationApplicationConfig
 } from "loopback-authorization-extension";
-import { MyPermissions } from "./permissions.ts";
+import { MyPermissions } from "~/permissions.ts";
 
 export class TestApplication extends AuthorizationApplication {
     constructor(options: AuthorizationApplicationConfig = {}) {
@@ -167,7 +167,7 @@ export class TestApplication extends AuthorizationApplication {
         this.sequence(MySequence);
 
         // Set up default home page
-        this.static("/", path.join(__dirname, "../public"));
+        this.static("/", path.join(__dirname, "~/public"));
 
         // ...
 
@@ -200,7 +200,7 @@ import {
     AuthorizationBindings,
     AuthorizeFn
 } from "loopback-authorization-extension";
-import { MyPermissions } from "../permissions.ts";
+import { MyPermissions } from "~/permissions.ts";
 
 const SequenceActions = RestBindings.SequenceActions;
 
@@ -262,7 +262,7 @@ import {
     authorize
 } from "loopback-authorization-extension";
 import { inject } from "@loopback/context";
-import { MyPermissions } from "../permissions.ts";
+import { MyPermissions } from "~/permissions.ts";
 
 export class SignInController {
     constructor(
@@ -308,7 +308,7 @@ You can feel the power of `loopback-authorization-extension` is in this step, by
 
 ```ts
 // ...
-import { MyPermissions } from "../permissions.ts";
+import { MyPermissions } from "~/permissions.ts";
 
 @authenticate(...)
 @authorize<MyPermissions>({

@@ -12,12 +12,12 @@
     },
     "scripts": {
         "start": "nodemon index.ts --exec ts-node",
-        "prebuild": "lb-tsc --outDir build/temp",
-        "build": "parcel build --out-dir build --cache-dir build/temp/cache --target node build/temp/index.js",
-        "postbuild": "lb-clean build/temp",
+        "prebuild": "lb-tsc --outDir build/typings",
+        "build": "parcel build --out-dir build --cache-dir build/cache --target node build/typings/index.js",
+        "postbuild": "lb-clean build/cache",
         "test": "lb-mocha --allow-console-logs \"test/**/*.test.ts\"",
         "clean": "lb-clean build",
-        "prepublishOnly": "npm run test"
+        "prepublishOnly": "npm run build"
     },
     "repository": {
         "type": "git",
@@ -26,12 +26,10 @@
     "author": "KoLiBer",
     "license": "MIT",
     "files": [
-        "README.md",
-        "index.js",
-        "index.ts",
         "build",
-        "src",
-        "test"
+        "index.d.ts",
+        "index.js",
+        "README.md"
     ],
     "dependencies": {
         "@loopback/boot": "^1.5.10",
