@@ -2,7 +2,7 @@ import { Request } from "@loopback/rest";
 import { Class } from "@loopback/repository";
 import { Ctor } from "loopback-history-extension";
 
-import { User, Group, Role, Permission } from "./models";
+import { User, Group, Role, Permission } from "~/models";
 
 /**
  * interface definition of PermissionsList class
@@ -62,7 +62,7 @@ export type AsyncKey = (
 /**
  * AuthorizationApplication configs
  */
-export interface AuthorizationApplicationConfig {
+export interface AuthorizationMixinConfig {
     permissions?: Class<PermissionsList>;
     userModel?: Ctor<User>;
     groupModel?: Ctor<Group>;

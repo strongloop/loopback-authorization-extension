@@ -2,9 +2,9 @@ import { inject, Getter } from "@loopback/context";
 import { juggler, BelongsToAccessor } from "@loopback/repository";
 import { Ctor, HistoryCrudRepository } from "loopback-history-extension";
 
-import { PrivateAuthorizationBindings } from "../keys";
+import { PrivateAuthorizationBindings } from "~/keys";
 
-import { Role, RoleRelations } from "../models";
+import { Role, RoleRelations } from "~/models";
 
 export class RoleRepository<
     Model extends Role,

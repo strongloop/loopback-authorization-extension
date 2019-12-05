@@ -2,7 +2,7 @@ import { inject } from "@loopback/context";
 import { BelongsToAccessor, juggler } from "@loopback/repository";
 import { HistoryCrudRepository } from "loopback-history-extension";
 
-import { PrivateAuthorizationBindings, AuthorizationBindings } from "../keys";
+import { PrivateAuthorizationBindings, AuthorizationBindings } from "~/keys";
 
 import {
     GroupRole,
@@ -11,8 +11,8 @@ import {
     GroupRelations,
     Role,
     RoleRelations
-} from "../models";
-import { GroupRepository, RoleRepository } from "../repositories";
+} from "~/models";
+import { GroupRepository, RoleRepository } from "~/repositories";
 
 export class GroupRoleRepository extends HistoryCrudRepository<
     GroupRole,
