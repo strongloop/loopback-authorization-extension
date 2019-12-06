@@ -74,12 +74,8 @@ import { Group, GroupRelations } from "~/models";
 import { MySqlDataSource } from "~/datasources";
 import { inject } from "@loopback/core";
 
-import {
-    GroupRepository as GroupModelRepository,
-    F
-} from "loopback-authorization-extension";
+import { GroupRepository as GroupModelRepository } from "loopback-authorization-extension";
 
-@bindAuthorization("GroupRepository")
 export class GroupRepository extends GroupModelRepository<
     Group,
     GroupRelations
@@ -89,8 +85,6 @@ export class GroupRepository extends GroupModelRepository<
     }
 }
 ```
-
-> Don't forget bind your repository using `bindAuthorization`
 
 ---
 
@@ -126,15 +120,14 @@ export class MyPermissions extends PermissionsList {
 
 ### Step 4 (Define DataSource)
 
-Bind your dataSource you want to use for authorization tables using `bindAuthorization`
+Bind your dataSource you want to use for authorization tables using extending your datasource from `DataSource` class
 
 See this example:
 
 ```ts
-import { bindAuthorization } from "loopback-authorization-extension";
+import { DataSource } from "loopback-authorization-extension";
 
-@bindAuthorization("DataSource")
-export class MySqlDataSource extends juggler.DataSource {
+export class MySqlDataSource extends DataSource {
     static dataSourceName = "MySQL";
 
     constructor(
