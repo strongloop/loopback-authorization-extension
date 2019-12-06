@@ -125,9 +125,10 @@ Bind your dataSource you want to use for authorization tables using extending yo
 See this example:
 
 ```ts
-import { DataSource } from "loopback-authorization-extension";
+import { bindAuthorization } from "loopback-authorization-extension";
 
-export class MySqlDataSource extends DataSource {
+@bindAuthorization("DataSource")
+export class MySqlDataSource extends juggler.DataSource {
     static dataSourceName = "MySQL";
 
     constructor(
