@@ -1,4 +1,4 @@
 /** Fix path mapping in js */
-require("module-alias/register");
+require("better-module-alias")(__dirname);
 
 module.exports = require("./dist");
