@@ -1,6 +1,6 @@
 {
     "name": "loopback-authorization-extension",
-    "version": "6.1.0",
+    "version": "6.2.0",
     "lockfileVersion": 1,
     "requires": true,
     "dependencies": {
@@ -7661,14 +7661,15 @@
             }
         },
         "loopback-history-extension": {
-            "version": "3.0.0",
-            "resolved": "https://registry.npmjs.org/loopback-history-extension/-/loopback-history-extension-3.0.0.tgz",
-            "integrity": "sha512-hSzi6Tl7fa7G+XwkGfdtOT7G6nK+WsCQ9x/tpM0yexyriz3UpPLY1p407vE/Dq52eSqbkcSt0sLvUvgryuWEmw==",
+            "version": "3.1.0",
+            "resolved": "https://registry.npmjs.org/loopback-history-extension/-/loopback-history-extension-3.1.0.tgz",
+            "integrity": "sha512-yDvb4oSVj+1hvc6KR0O9A75MzxccswKM+l4cq9QMrrZKYHWbRU5hJ8Yd4HPudDIHp86ckAxAyFgwwuAC7kCHLQ==",
             "requires": {
                 "@loopback/boot": "^1.5.12",
                 "@loopback/context": "^1.24.0",
                 "@loopback/core": "^1.11.0",
-                "@loopback/repository": "^1.15.5"
+                "@loopback/repository": "^1.15.5",
+                "module-alias": "^2.2.2"
             }
         },
         "loose-envify": {

@@ -60,7 +60,7 @@ export type AsyncKey = (
 ) => Promise<boolean>;
 
 /**
- * AuthorizationApplication configs
+ * AuthorizationMixin configs
  */
 export interface AuthorizationMixinConfig {
     permissions?: Class<PermissionsList>;
