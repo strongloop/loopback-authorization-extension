@@ -68,9 +68,9 @@ export function AuthorizationMixin<T extends Class<any>>(superClass: T) {
         if (userRepository) {
             ctx.bind(AuthorizationBindings.USER_REPOSITORY).to(userRepository);
         } else {
-            ctx.bind(AuthorizationBindings.USER_REPOSITORY).toClass(
-                UserRepository
-            );
+            ctx.bind(AuthorizationBindings.USER_REPOSITORY)
+                .toClass(UserRepository)
+                .tag("repository");
         }
 
         /**
@@ -82,9 +82,9 @@ export function AuthorizationMixin<T extends Class<any>>(superClass: T) {
                 groupRepository
             );
         } else {
-            ctx.bind(AuthorizationBindings.GROUP_REPOSITORY).toClass(
-                GroupRepository
-            );
+            ctx.bind(AuthorizationBindings.GROUP_REPOSITORY)
+                .toClass(GroupRepository)
+                .tag("repository");
         }
 
         /**
@@ -94,9 +94,9 @@ export function AuthorizationMixin<T extends Class<any>>(superClass: T) {
         if (roleRepository) {
             ctx.bind(AuthorizationBindings.ROLE_REPOSITORY).to(roleRepository);
         } else {
-            ctx.bind(AuthorizationBindings.ROLE_REPOSITORY).toClass(
-                RoleRepository
-            );
+            ctx.bind(AuthorizationBindings.ROLE_REPOSITORY)
+                .toClass(RoleRepository)
+                .tag("repository");
         }
 
         /**
@@ -111,26 +111,26 @@ export function AuthorizationMixin<T extends Class<any>>(superClass: T) {
                 permissionRepository
             );
         } else {
-            ctx.bind(AuthorizationBindings.PERMISSION_REPOSITORY).toClass(
-                PermissionRepository
-            );
+            ctx.bind(AuthorizationBindings.PERMISSION_REPOSITORY)
+                .toClass(PermissionRepository)
+                .tag("repository");
         }
 
         /**
          * Bind Relation Repositories
          */
-        ctx.bind(AuthorizationBindings.USER_GROUP_REPOSITORY).toClass(
-            UserGroupRepository
-        );
-        ctx.bind(AuthorizationBindings.USER_ROLE_REPOSITORY).toClass(
-            UserRoleRepository
-        );
-        ctx.bind(AuthorizationBindings.GROUP_ROLE_REPOSITORY).toClass(
-            GroupRoleRepository
-        );
-        ctx.bind(AuthorizationBindings.ROLE_PERMISSION_REPOSITORY).toClass(
-            RolePermissionRepository
-        );
+        ctx.bind(AuthorizationBindings.USER_GROUP_REPOSITORY)
+            .toClass(UserGroupRepository)
+            .tag("repository");
+        ctx.bind(AuthorizationBindings.USER_ROLE_REPOSITORY)
+            .toClass(UserRoleRepository)
+            .tag("repository");
+        ctx.bind(AuthorizationBindings.GROUP_ROLE_REPOSITORY)
+            .toClass(GroupRoleRepository)
+            .tag("repository");
+        ctx.bind(AuthorizationBindings.ROLE_PERMISSION_REPOSITORY)
+            .toClass(RolePermissionRepository)
+            .tag("repository");
     };
 
     return class extends superClass {
