@@ -11,6 +11,9 @@ export class DataSource extends juggler.DataSource {
             optional: true
         })
         settings?: Options,
+        @inject("private.authorization.dataSources.dataSource.modelBuilder", {
+            optional: true
+        })
         modelBuilder?: ModelBuilder
     ) {
         super(settings, modelBuilder);
