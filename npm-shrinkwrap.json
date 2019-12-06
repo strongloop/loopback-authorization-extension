@@ -3157,6 +3157,11 @@
                 "leven": "^2.1.0"
             }
         },
+        "better-module-alias": {
+            "version": "1.0.4",
+            "resolved": "https://registry.npmjs.org/better-module-alias/-/better-module-alias-1.0.4.tgz",
+            "integrity": "sha512-s0twoim/ucBr5pHR7p81j0MWdKrgt/xjcTRCDiVx0niEvg6hnE8dKvfdHRe1WKSGZHZV1SBPNu7uFnYzUIYoAg=="
+        },
         "binary-extensions": {
             "version": "1.13.1",
             "resolved": "https://registry.npmjs.org/binary-extensions/-/binary-extensions-1.13.1.tgz",
