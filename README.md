@@ -120,7 +120,7 @@ export class MyPermissions extends PermissionsList {
 
 ### Step 4 (Define DataSource)
 
-Bind your dataSource you want to use for authorization tables using extending your datasource from `DataSource` class
+Bind your dataSource you want to use for authorization tables using `bindAuthorization`
 
 See this example:
 
