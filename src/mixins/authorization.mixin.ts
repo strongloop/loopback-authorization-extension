@@ -171,6 +171,15 @@ export function AuthorizationMixin<T extends Class<any>>(superClass: T) {
              * 2. key: key
              * 3. description: description
              */
+            await permissionRepository.deleteAll({
+                id: {
+                    inq: Object.keys(permissions).map(permissionKey =>
+                        createHash("md5")
+                            .update(permissionKey)
+                            .digest("hex")
+                    )
+                }
+            });
             await permissionRepository.createAll(
                 Object.keys(permissions).map(
                     permissionKey =>
