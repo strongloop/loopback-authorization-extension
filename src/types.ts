@@ -2,7 +2,7 @@ import { Request } from "@loopback/rest";
 import { Class } from "@loopback/repository";
 import { Ctor } from "loopback-history-extension";
 
-import { User, Group, Role, Permission } from "~/models";
+import { User, Group, Role, Permission } from "./models";
 
 /**
  * interface definition of PermissionsList class

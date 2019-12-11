@@ -4,7 +4,7 @@ import {
     RoleWithRelations,
     Permission,
     PermissionWithRelations
-} from ".";
+} from "./";
 import { HistoryEntity } from "loopback-history-extension";
 
 @model({ settings: {} })

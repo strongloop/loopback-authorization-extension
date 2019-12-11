@@ -1,5 +1,5 @@
 import { model, belongsTo } from "@loopback/repository";
-import { User, UserWithRelations, Group, GroupWithRelations } from ".";
+import { User, UserWithRelations, Group, GroupWithRelations } from "./";
 import { HistoryEntity } from "loopback-history-extension";
 
 @model({ settings: {} })
