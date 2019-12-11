@@ -7,14 +7,14 @@ import {
     PrivateAuthorizationBindings,
     AuthorizationBindings,
     findAuthorization
-} from "~/keys";
-import { AuthorizationMixinConfig, PermissionsList } from "~/types";
+} from "../keys";
+import { AuthorizationMixinConfig, PermissionsList } from "../types";
 
-import { User, Group, Role, Permission } from "~/models";
+import { User, Group, Role, Permission } from "../models";
 import {
     AuthorizeActionProvider,
     GetUserPermissionsProvider
-} from "~/providers";
+} from "../providers";
 import {
     UserRepository,
     GroupRepository,
@@ -24,7 +24,7 @@ import {
     UserRoleRepository,
     GroupRoleRepository,
     RolePermissionRepository
-} from "~/repositories";
+} from "../repositories";
 
 export function AuthorizationMixin<T extends Class<any>>(superClass: T) {
     const bootModels = (ctx: Context, configs: AuthorizationMixinConfig) => {
