@@ -1,15 +1,15 @@
 import { inject, Provider } from "@loopback/core";
 
-import { AuthorizationBindings } from "~/keys";
+import { AuthorizationBindings } from "../keys";
 
-import { PermissionsList, GetUserPermissionsFn, StringKey } from "~/types";
+import { PermissionsList, GetUserPermissionsFn, StringKey } from "../types";
 
-import { Permission, PermissionRelations } from "~/models";
+import { Permission, PermissionRelations } from "../models";
 import {
     PermissionRepository,
     UserRoleRepository,
     RolePermissionRepository
-} from "~/repositories";
+} from "../repositories";
 
 export class GetUserPermissionsProvider<Permissions extends PermissionsList>
     implements Provider<GetUserPermissionsFn<Permissions>> {
