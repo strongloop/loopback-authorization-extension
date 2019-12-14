@@ -7,9 +7,7 @@ import { PermissionsList, GetUserPermissionsFn, StringKey } from "~/types";
 import { Permission, PermissionRelations } from "~/models";
 import {
     PermissionRepository,
-    UserGroupRepository,
     UserRoleRepository,
-    GroupRoleRepository,
     RolePermissionRepository
 } from "~/repositories";
 
@@ -21,12 +19,8 @@ export class GetUserPermissionsProvider<Permissions extends PermissionsList>
             Permission,
             PermissionRelations
         >,
-        @inject(AuthorizationBindings.USER_GROUP_REPOSITORY)
-        private userGroupRepository: UserGroupRepository,
         @inject(AuthorizationBindings.USER_ROLE_REPOSITORY)
         private userRoleRepository: UserRoleRepository,
-        @inject(AuthorizationBindings.GROUP_ROLE_REPOSITORY)
-        private groupRoleRepository: GroupRoleRepository,
         @inject(AuthorizationBindings.ROLE_PERMISSION_REPOSITORY)
         private rolePermissionRepository: RolePermissionRepository
     ) {}
@@ -36,9 +30,7 @@ export class GetUserPermissionsProvider<Permissions extends PermissionsList>
             return this.getUserPermissions(
                 id,
                 this.permissionRepository,
-                this.userGroupRepository,
                 this.userRoleRepository,
-                this.groupRoleRepository,
                 this.rolePermissionRepository
             );
         };
@@ -50,36 +42,16 @@ export class GetUserPermissionsProvider<Permissions extends PermissionsList>
             Permission,
             PermissionRelations
         >,
-        userGroupRepository: UserGroupRepository,
         userRoleRepository: UserRoleRepository,
-        groupRoleRepository: GroupRoleRepository,
         rolePermissionRepository: RolePermissionRepository
     ) {
-        let userGroupsIDs = await this.getUserGroups(id, userGroupRepository);
         let userRolesIDs = await this.getUserRoles(id, userRoleRepository);
-        let groupsRolesIDs = await this.getGroupsRoles(
-            userGroupsIDs,
-            groupRoleRepository
-        );
 
         return await this.getRolesPermissions(
-            [...userRolesIDs, ...groupsRolesIDs],
+            [...userRolesIDs],
             rolePermissionRepository,
             permissionRepository
         );
-    }
-
-    private async getUserGroups(
-        userID: string,
-        userGroupRepository: UserGroupRepository
-    ) {
-        const userGroups = await userGroupRepository.find({
-            where: {
-                userId: userID
-            }
-        });
-
-        return userGroups.map(userGroup => userGroup.groupId);
     }
 
     private async getUserRoles(
@@ -93,21 +65,6 @@ export class GetUserPermissionsProvider<Permissions extends PermissionsList>
         });
 
         return userRoles.map(userRole => userRole.roleId);
-    }
-
-    private async getGroupsRoles(
-        groupsIDs: string[],
-        groupRoleRepository: GroupRoleRepository
-    ) {
-        const groupsRoles = await groupRoleRepository.find({
-            where: {
-                groupId: {
-                    inq: groupsIDs
-                }
-            }
-        });
-
-        return groupsRoles.map(groupsRole => groupsRole.roleId);
     }
 
     private async getRolesPermissions(

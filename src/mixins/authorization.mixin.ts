@@ -10,19 +10,16 @@ import {
 } from "~/keys";
 import { AuthorizationMixinConfig, PermissionsList } from "~/types";
 
-import { User, Group, Role, Permission } from "~/models";
+import { User, Role, Permission } from "~/models";
 import {
     AuthorizeActionProvider,
     GetUserPermissionsProvider
 } from "~/providers";
 import {
     UserRepository,
-    GroupRepository,
     RoleRepository,
     PermissionRepository,
-    UserGroupRepository,
     UserRoleRepository,
-    GroupRoleRepository,
     RolePermissionRepository
 } from "~/repositories";
 
@@ -30,9 +27,6 @@ export function AuthorizationMixin<T extends Class<any>>(superClass: T) {
     const bootModels = (ctx: Context, configs: AuthorizationMixinConfig) => {
         ctx.bind(PrivateAuthorizationBindings.USER_MODEL).to(
             configs.userModel || User
-        );
-        ctx.bind(PrivateAuthorizationBindings.GROUP_MODEL).to(
-            configs.groupModel || Group
         );
         ctx.bind(PrivateAuthorizationBindings.ROLE_MODEL).to(
             configs.roleModel || Role
@@ -74,20 +68,6 @@ export function AuthorizationMixin<T extends Class<any>>(superClass: T) {
         }
 
         /**
-         * Find, Bind Group Repository
-         */
-        let groupRepository = findAuthorization(ctx, "GroupRepository");
-        if (groupRepository) {
-            ctx.bind(AuthorizationBindings.GROUP_REPOSITORY).to(
-                groupRepository
-            );
-        } else {
-            ctx.bind(AuthorizationBindings.GROUP_REPOSITORY)
-                .toClass(GroupRepository)
-                .tag("repository");
-        }
-
-        /**
          * Find, Bind Role Repository
          */
         let roleRepository = findAuthorization(ctx, "RoleRepository");
@@ -119,14 +99,8 @@ export function AuthorizationMixin<T extends Class<any>>(superClass: T) {
         /**
          * Bind Relation Repositories
          */
-        ctx.bind(AuthorizationBindings.USER_GROUP_REPOSITORY)
-            .toClass(UserGroupRepository)
-            .tag("repository");
         ctx.bind(AuthorizationBindings.USER_ROLE_REPOSITORY)
             .toClass(UserRoleRepository)
-            .tag("repository");
-        ctx.bind(AuthorizationBindings.GROUP_ROLE_REPOSITORY)
-            .toClass(GroupRoleRepository)
             .tag("repository");
         ctx.bind(AuthorizationBindings.ROLE_PERMISSION_REPOSITORY)
             .toClass(RolePermissionRepository)
