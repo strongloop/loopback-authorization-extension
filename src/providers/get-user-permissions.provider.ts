@@ -98,7 +98,7 @@ export class GetUserPermissionsProvider<Permissions extends PermissionsList>
          */
         let parentsIDs = rolesIDs;
         while (parentsIDs.length > 0) {
-            result.push(parentsIDs);
+            result.push(...parentsIDs);
 
             const roles = await roleRepository.find({
                 where: {
