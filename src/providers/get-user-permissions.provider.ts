@@ -4,8 +4,14 @@ import { AuthorizationBindings } from "../keys";
 
 import { PermissionsList, GetUserPermissionsFn, StringKey } from "../types";
 
-import { Permission, PermissionRelations } from "../models";
 import {
+    Role,
+    RoleRelations,
+    Permission,
+    PermissionRelations
+} from "../models";
+import {
+    RoleRepository,
     PermissionRepository,
     UserRoleRepository,
     RolePermissionRepository
@@ -14,6 +20,8 @@ import {
 export class GetUserPermissionsProvider<Permissions extends PermissionsList>
     implements Provider<GetUserPermissionsFn<Permissions>> {
     constructor(
+        @inject(AuthorizationBindings.ROLE_REPOSITORY)
+        private roleRepository: RoleRepository<Role, RoleRelations>,
         @inject(AuthorizationBindings.PERMISSION_REPOSITORY)
         private permissionRepository: PermissionRepository<
             Permission,
@@ -29,6 +37,7 @@ export class GetUserPermissionsProvider<Permissions extends PermissionsList>
         return async id => {
             return this.getUserPermissions(
                 id,
+                this.roleRepository,
                 this.permissionRepository,
                 this.userRoleRepository,
                 this.rolePermissionRepository
@@ -38,6 +47,7 @@ export class GetUserPermissionsProvider<Permissions extends PermissionsList>
 
     private async getUserPermissions(
         id: string,
+        roleRepository: RoleRepository<Role, RoleRelations>,
         permissionRepository: PermissionRepository<
             Permission,
             PermissionRelations
@@ -45,10 +55,15 @@ export class GetUserPermissionsProvider<Permissions extends PermissionsList>
         userRoleRepository: UserRoleRepository,
         rolePermissionRepository: RolePermissionRepository
     ) {
-        let userRolesIDs = await this.getUserRoles(id, userRoleRepository);
+        const userRolesIDs = await this.getUserRoles(id, userRoleRepository);
+
+        const rolesIDs = await this.getParentRoles(
+            userRolesIDs,
+            roleRepository
+        );
 
         return await this.getRolesPermissions(
-            [...userRolesIDs],
+            [...rolesIDs],
             rolePermissionRepository,
             permissionRepository
         );
@@ -65,6 +80,40 @@ export class GetUserPermissionsProvider<Permissions extends PermissionsList>
         });
 
         return userRoles.map(userRole => userRole.roleId);
+    }
+
+    private async getParentRoles(
+        rolesIDs: string[],
+        roleRepository: RoleRepository<Role, RoleRelations>
+    ) {
+        let result = [];
+
+        /**
+         * 1. Get role IDs
+         * 2. Find parents IDs
+         * 3. Filter parents IDs
+         * 4. Until we have parents
+         *      5. Push parents IDs
+         *      6. Get parents
+         */
+        let parentsIDs = rolesIDs;
+        while (parentsIDs.length > 0) {
+            result.push(parentsIDs);
+
+            const roles = await roleRepository.find({
+                where: {
+                    id: {
+                        inq: parentsIDs
+                    }
+                }
+            });
+
+            parentsIDs = roles
+                .map(role => role.parentId)
+                .filter(parentId => Boolean(parentId));
+        }
+
+        return result;
     }
 
     private async getRolesPermissions(
