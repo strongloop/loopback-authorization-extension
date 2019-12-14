@@ -9,8 +9,6 @@ import { AuthorizationMetadata } from "./decorators";
 import {
     User,
     UserRelations,
-    Group,
-    GroupRelations,
     Role,
     RoleRelations,
     Permission,
@@ -18,12 +16,9 @@ import {
 } from "./models";
 import {
     UserRepository,
-    GroupRepository,
     RoleRepository,
     PermissionRepository,
-    UserGroupRepository,
     UserRoleRepository,
-    GroupRoleRepository,
     RolePermissionRepository
 } from "./repositories";
 
@@ -35,15 +30,11 @@ export namespace PrivateAuthorizationBindings {
      * Model key:
      *
      * 1. UserModel
-     * 2. GroupModel
-     * 3. RoleModel
-     * 4. PermissionModel
+     * 2. RoleModel
+     * 3. PermissionModel
      */
     export const USER_MODEL = BindingKey.create<Ctor<User>>(
         "private.authorization.models.user"
-    );
-    export const GROUP_MODEL = BindingKey.create<Ctor<Group>>(
-        "private.authorization.models.group"
     );
     export const ROLE_MODEL = BindingKey.create<Ctor<Role>>(
         "private.authorization.models.role"
@@ -83,16 +74,12 @@ export namespace AuthorizationBindings {
      * Base Repository key:
      *
      * 1. UserRepository
-     * 2. GroupRepository
-     * 3. RoleRepository
-     * 4. PermissionRepository
+     * 2. RoleRepository
+     * 3. PermissionRepository
      */
     export const USER_REPOSITORY = BindingKey.create<
         UserRepository<User, UserRelations>
     >("authorization.repositories.user");
-    export const GROUP_REPOSITORY = BindingKey.create<
-        GroupRepository<Group, GroupRelations>
-    >("authorization.repositories.group");
     export const ROLE_REPOSITORY = BindingKey.create<
         RoleRepository<Role, RoleRelations>
     >("authorization.repositories.role");
@@ -103,19 +90,11 @@ export namespace AuthorizationBindings {
     /**
      * Relation Repository key:
      *
-     * 1. UserGroupRepository
-     * 2. UserRoleRepository
-     * 3. GroupRoleRepository
-     * 4. RolePermissionRepository
+     * 1. UserRoleRepository
+     * 2. RolePermissionRepository
      */
-    export const USER_GROUP_REPOSITORY = BindingKey.create<UserGroupRepository>(
-        "authorization.repositories.userGroup"
-    );
     export const USER_ROLE_REPOSITORY = BindingKey.create<UserRoleRepository>(
         "authorization.repositories.userRole"
-    );
-    export const GROUP_ROLE_REPOSITORY = BindingKey.create<GroupRoleRepository>(
-        "authorization.repositories.groupRole"
     );
     export const ROLE_PERMISSION_REPOSITORY = BindingKey.create<
         RolePermissionRepository
@@ -132,14 +111,12 @@ export const AUTHORIZATION_METADATA_KEY = MetadataAccessor.create<
  * 1. DataSource
  *
  * 2. UserRepository
- * 3. GroupRepository
- * 4. RoleRepository
- * 5. PermissionRepository
+ * 3. RoleRepository
+ * 4. PermissionRepository
  */
 export type BindAuthorizationKey =
     | "DataSource"
     | "UserRepository"
-    | "GroupRepository"
     | "RoleRepository"
     | "PermissionRepository";
 export function bindAuthorization(key: BindAuthorizationKey) {

@@ -14,8 +14,8 @@ npm i --save loopback-authorization-extension
 
 Follow these steps to add `authorization` extension to your loopback4 application
 
-1. **Optional**: Define `User`, `Group`, `Role`, `Permission` models
-2. **Optional**: Define `User`, `Group`, `Role`, `Permission` repositories
+1. **Optional**: Define `User`, `Role`, `Permission` models
+2. **Optional**: Define `User`, `Role`, `Permission` repositories
 3. **Optional**: Define `Permissions` class
 4. Define your `dataSource`
 5. Add `AuthorizationMixin` to your application
@@ -26,7 +26,7 @@ Now, let's try these
 
 ### Step 1 (Define Models)
 
-Use the command `lb4 model` for simplifing your `Entity` model creation, then just replace `Entity` class with `User`, `Group`, `Role` or `Permission` as the parent class
+Use the command `lb4 model` for simplifing your `Entity` model creation, then just replace `Entity` class with `User`, `Role` or `Permission` as the parent class
 
 See this example:
 
@@ -65,23 +65,20 @@ export type UserWithRelations = User & UserRelations;
 
 ### Step 2 (Define Repositories)
 
-Use the command `lb4 repository` for simplifing your `Repository` creation, then replace `DefaultCrudRepository` class with `UserRepository`, `GroupRepository`, `RoleRepository` or `PermissionRepository` as the parent class, then bind them
+Use the command `lb4 repository` for simplifing your `Repository` creation, then replace `DefaultCrudRepository` class with `UserRepository`, `RoleRepository` or `PermissionRepository` as the parent class, then bind them
 
 See this example:
 
 ```ts
-import { Group, GroupRelations } from "~/models";
+import { User, UserRelations } from "~/models";
 import { MySqlDataSource } from "~/datasources";
 import { inject } from "@loopback/core";
 
-import { GroupRepository as GroupModelRepository } from "loopback-authorization-extension";
+import { UserRepository as UserModelRepository } from "loopback-authorization-extension";
 
-export class GroupRepository extends GroupModelRepository<
-    Group,
-    GroupRelations
-> {
+export class UserRepository extends UserModelRepository<User, UserRelations> {
     constructor(@inject("datasources.MySQL") dataSource: MySqlDataSource) {
-        super(Group, dataSource);
+        super(User, dataSource);
     }
 }
 ```
@@ -101,10 +98,6 @@ export class MyPermissions extends PermissionsList {
     /** Files */
     FILES_READ = "Read files";
     FILES_WRITE = "Write files";
-
-    /** Groups */
-    GROUPS_READ = "Read groups";
-    GROUPS_WRITE = "Write groups";
 
     /** Roles */
     ROLES_READ = "Read roles";
@@ -152,7 +145,7 @@ import {
     AuthorizationApplicationConfig
 } from "loopback-authorization-extension";
 import { MyPermissions } from "~/permissions.ts";
-import { User, Group, Role, Permission } from "~/models";
+import { User, Role, Permission } from "~/models";
 
 export class TestApplication extends AuthorizationMixin(
     BootMixin(ServiceMixin(RepositoryMixin(RestApplication)))
@@ -166,7 +159,6 @@ export class TestApplication extends AuthorizationMixin(
         this.authorizationConfigs = {
             permissions: MyPermissions,
             userModel: User,
-            groupModel: Group,
             roleModel: Role,
             permissionModel: Permission
         };
@@ -357,15 +349,15 @@ In some special cases we need to check some other permissions or conditions such
 
 ---
 
-## How to define `Users, Groups, Roles, Permissions`
+## How to define `Users, Roles, Permissions`
 
-> You can add or remove users, groups, roles and permissions using your repositories
+> You can add or remove users, roles and permissions using your repositories
 
 ---
 
 ## Many-To-Many relations
 
-Users, Groups, Roles, Permissions has many-to-many relations, using `UserGroupModelRepository`, `UserRoleModelRepository`, `GroupRoleModelRepository`, `RolePermissionModelRepository` you can add some users to groups or roles or add groups to role or assign permissions to roles
+Users, Roles, Permissions has many-to-many relations, using, `UserRoleModelRepository`, `RolePermissionModelRepository` you can add some users to roles or assign permissions to roles
 
 **Example**:
 
@@ -379,8 +371,8 @@ import { inject } from "@loopback/context";
 
 export class UserControllerController {
     constructor(
-        @inject(AuthorizationBindings.USER_GROUP_REPOSITORY)
-        public userGroupRepository: UserGroupRepository
+        @inject(AuthorizationBindings.USER_ROLE_REPOSITORY)
+        public userRoleRepository: UserRoleRepository
     ) {}
 
     @post("/users/...", {
@@ -391,10 +383,10 @@ export class UserControllerController {
         }
     })
     async find(...args): Promise<any> {
-        // add user to group
-        return this.userGroupRepository.create(new UserGroupModel({
-            user: "user id",
-            group: "group id"
+        // add user to role
+        return this.userRoleRepository.create(new UserRoleModel({
+            userId: "user id",
+            roleId: "role id"
         }));
     }
 }
