@@ -10,7 +10,7 @@ import {
 
 @model({ settings: {} })
 export class Role extends HistoryEntity {
-    @belongsTo(() => Role)
+    @belongsTo(() => Role, { keyFrom: "parentId", keyTo: "id" })
     parentId: string;
 
     @hasMany(() => UserRole, { keyTo: "roleId" })
