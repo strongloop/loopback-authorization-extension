@@ -5,10 +5,10 @@ import { User, UserWithRelations, Role, RoleWithRelations } from "./";
 
 @model({ settings: {} })
 export class UserRole extends HistoryEntity {
-    @belongsTo(() => User)
+    @belongsTo(() => User, { keyFrom: "userId", keyTo: "id" })
     userId: string;
 
-    @belongsTo(() => Role)
+    @belongsTo(() => Role, { keyFrom: "roleId", keyTo: "id" })
     roleId: string;
 
     constructor(data?: Partial<UserRole>) {
