@@ -5,12 +5,15 @@ import { AuthorizationBindings } from "../keys";
 import { PermissionsList, GetUserPermissionsFn, StringKey } from "../types";
 
 import {
+    User,
+    UserRelations,
     Role,
     RoleRelations,
     Permission,
     PermissionRelations
 } from "../models";
 import {
+    UserRepository,
     RoleRepository,
     PermissionRepository,
     UserRoleRepository,
@@ -20,6 +23,8 @@ import {
 export class GetUserPermissionsProvider<Permissions extends PermissionsList>
     implements Provider<GetUserPermissionsFn<Permissions>> {
     constructor(
+        @inject(AuthorizationBindings.USER_REPOSITORY)
+        private userRepository: UserRepository<User, UserRelations>,
         @inject(AuthorizationBindings.ROLE_REPOSITORY)
         private roleRepository: RoleRepository<Role, RoleRelations>,
         @inject(AuthorizationBindings.PERMISSION_REPOSITORY)
@@ -37,6 +42,7 @@ export class GetUserPermissionsProvider<Permissions extends PermissionsList>
         return async id => {
             return this.getUserPermissions(
                 id,
+                this.userRepository,
                 this.roleRepository,
                 this.permissionRepository,
                 this.userRoleRepository,
@@ -47,6 +53,7 @@ export class GetUserPermissionsProvider<Permissions extends PermissionsList>
 
     private async getUserPermissions(
         id: string,
+        userRepository: UserRepository<User, UserRelations>,
         roleRepository: RoleRepository<Role, RoleRelations>,
         permissionRepository: PermissionRepository<
             Permission,
@@ -55,6 +62,11 @@ export class GetUserPermissionsProvider<Permissions extends PermissionsList>
         userRoleRepository: UserRoleRepository,
         rolePermissionRepository: RolePermissionRepository
     ) {
+        const user = await this.userRepository.findById(id, {
+            include: [{ relation: "userRoles" }]
+        });
+        user.userRoles.map(userRole => userRole.);
+
         const userRolesIDs = await this.getUserRoles(id, userRoleRepository);
 
         const rolesIDs = await this.getParentRoles(

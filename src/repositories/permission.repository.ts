@@ -40,5 +40,9 @@ export class PermissionRepository<
             "rolePermissions",
             getRolePermissionRepository
         );
+        this.registerInclusionResolver(
+            "rolePermissions",
+            this.rolePermissions.inclusionResolver
+        );
     }
 }

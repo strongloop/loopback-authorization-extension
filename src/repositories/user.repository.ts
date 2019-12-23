@@ -36,5 +36,9 @@ export class UserRepository<
             "userRoles",
             getUserRoleRepository
         );
+        this.registerInclusionResolver(
+            "userRoles",
+            this.userRoles.inclusionResolver
+        );
     }
 }

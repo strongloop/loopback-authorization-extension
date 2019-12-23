@@ -47,15 +47,24 @@ export class RoleRepository<
             "parent",
             Getter.fromValue(this)
         );
+        this.registerInclusionResolver("parent", this.parent.inclusionResolver);
 
         this.userRoles = this.createHasManyRepositoryFactoryFor(
             "userRoles",
             getUserRoleRepository
         );
+        this.registerInclusionResolver(
+            "userRoles",
+            this.userRoles.inclusionResolver
+        );
 
         this.rolePermissions = this.createHasManyRepositoryFactoryFor(
             "rolePermissions",
             getRolePermissionRepository
+        );
+        this.registerInclusionResolver(
+            "rolePermissions",
+            this.rolePermissions.inclusionResolver
         );
     }
 }
