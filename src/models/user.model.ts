@@ -1,12 +1,12 @@
 import { model, hasMany } from "@loopback/repository";
 import { HistoryEntity } from "loopback-history-extension";
 
-import { UserRole } from "./";
+import { UserRole, UserRoleWithRelations } from "./";
 
 @model({ settings: {} })
 export class User extends HistoryEntity {
     @hasMany(() => UserRole, { keyTo: "userId" })
-    userRoles: UserRole[];
+    userRoles: UserRoleWithRelations[];
 
     constructor(data?: Partial<User>) {
         super(data);

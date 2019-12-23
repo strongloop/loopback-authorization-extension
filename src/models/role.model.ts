@@ -1,7 +1,12 @@
 import { model, belongsTo, hasMany } from "@loopback/repository";
 import { HistoryEntity } from "loopback-history-extension";
 
-import { UserRole, RolePermission } from "./";
+import {
+    UserRole,
+    UserRoleWithRelations,
+    RolePermission,
+    RolePermissionWithRelations
+} from "./";
 
 @model({ settings: {} })
 export class Role extends HistoryEntity {
@@ -9,10 +14,10 @@ export class Role extends HistoryEntity {
     parentId: string;
 
     @hasMany(() => UserRole, { keyTo: "roleId" })
-    userRoles: UserRole[];
+    userRoles: UserRoleWithRelations[];
 
     @hasMany(() => RolePermission, { keyTo: "roleId" })
-    rolePermissions: RolePermission[];
+    rolePermissions: RolePermissionWithRelations[];
 
     constructor(data?: Partial<Role>) {
         super(data);
