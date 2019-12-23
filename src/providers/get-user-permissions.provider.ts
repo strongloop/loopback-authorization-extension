@@ -4,94 +4,46 @@ import { AuthorizationBindings } from "../keys";
 
 import { PermissionsList, GetUserPermissionsFn, StringKey } from "../types";
 
-import {
-    Role,
-    RoleRelations,
-    Permission,
-    PermissionRelations
-} from "../models";
-import {
-    RoleRepository,
-    PermissionRepository,
-    UserRoleRepository,
-    RolePermissionRepository
-} from "../repositories";
+import { User, UserRelations, Role, RoleRelations } from "../models";
+import { UserRepository, RoleRepository } from "../repositories";
 
 export class GetUserPermissionsProvider<Permissions extends PermissionsList>
     implements Provider<GetUserPermissionsFn<Permissions>> {
     constructor(
+        @inject(AuthorizationBindings.USER_REPOSITORY)
+        private userRepository: UserRepository<User, UserRelations>,
         @inject(AuthorizationBindings.ROLE_REPOSITORY)
-        private roleRepository: RoleRepository<Role, RoleRelations>,
-        @inject(AuthorizationBindings.PERMISSION_REPOSITORY)
-        private permissionRepository: PermissionRepository<
-            Permission,
-            PermissionRelations
-        >,
-        @inject(AuthorizationBindings.USER_ROLE_REPOSITORY)
-        private userRoleRepository: UserRoleRepository,
-        @inject(AuthorizationBindings.ROLE_PERMISSION_REPOSITORY)
-        private rolePermissionRepository: RolePermissionRepository
+        private roleRepository: RoleRepository<Role, RoleRelations>
     ) {}
 
     async value(): Promise<GetUserPermissionsFn<Permissions>> {
-        return async id => {
-            return this.getUserPermissions(
-                id,
-                this.roleRepository,
-                this.permissionRepository,
-                this.userRoleRepository,
-                this.rolePermissionRepository
-            );
-        };
+        return async id => this.getUserPermissions(id);
     }
 
-    private async getUserPermissions(
-        id: string,
-        roleRepository: RoleRepository<Role, RoleRelations>,
-        permissionRepository: PermissionRepository<
-            Permission,
-            PermissionRelations
-        >,
-        userRoleRepository: UserRoleRepository,
-        rolePermissionRepository: RolePermissionRepository
-    ) {
-        const userRolesIDs = await this.getUserRoles(id, userRoleRepository);
+    private async getUserPermissions(id: string) {
+        const userRoleIDs = await this.getUserRoles(id);
 
-        const rolesIDs = await this.getParentRoles(
-            userRolesIDs,
-            roleRepository
-        );
+        const roleIDs = await this.getParentRoles(userRoleIDs);
 
-        return await this.getRolesPermissions(
-            [...rolesIDs],
-            rolePermissionRepository,
-            permissionRepository
-        );
+        return await this.getRolesPermissions(roleIDs);
     }
 
-    private async getUserRoles(
-        userID: string,
-        userRoleRepository: UserRoleRepository
-    ) {
-        const userRoles = await userRoleRepository.find({
-            where: {
-                userId: userID
-            }
+    private async getUserRoles(userID: string) {
+        const user = await this.userRepository.findById(userID, {
+            include: [{ relation: "userRoles" }]
         });
 
-        return userRoles.map(userRole => userRole.roleId);
+        return user.userRoles.map(userRole => userRole.roleId);
     }
 
-    private async getParentRoles(
-        rolesIDs: string[],
-        roleRepository: RoleRepository<Role, RoleRelations>
-    ) {
-        let result = [];
+    private async getParentRoles(rolesIDs: string[]) {
+        let result: string[] = [];
 
         /**
          * 1. Get role IDs
          * 2. Find parents IDs
          * 3. Filter parents IDs
+         * 4. Remove duplicated parents IDs (recursive circular bugfix)
          * 4. Until we have parents
          *      5. Push parents IDs
          *      6. Get parents
@@ -100,50 +52,44 @@ export class GetUserPermissionsProvider<Permissions extends PermissionsList>
         while (parentsIDs.length > 0) {
             result.push(...parentsIDs);
 
-            const roles = await roleRepository.find({
-                where: {
-                    id: {
-                        inq: parentsIDs
-                    }
-                }
+            const roles = await this.roleRepository.find({
+                where: { id: { inq: parentsIDs } }
             });
 
             parentsIDs = roles
                 .map(role => role.parentId)
-                .filter(parentId => Boolean(parentId));
+                .filter(parentId => Boolean(parentId))
+                .filter(parentId => result.indexOf(parentId) < 0);
         }
 
         return result;
     }
 
-    private async getRolesPermissions(
-        rolesIDs: string[],
-        rolePermissionRepository: RolePermissionRepository,
-        permissionRepository: PermissionRepository<
-            Permission,
-            PermissionRelations
-        >
-    ): Promise<StringKey<Permissions>[]> {
-        const rolesPermissions = await rolePermissionRepository.find({
-            where: {
-                roleId: {
-                    inq: rolesIDs
+    private async getRolesPermissions(rolesIDs: string[]) {
+        const roles = await this.roleRepository.find({
+            where: { id: { inq: rolesIDs } },
+            include: [
+                {
+                    relation: "rolePermissions",
+                    scope: { include: [{ relation: "permission" }] }
                 }
-            }
+            ]
         });
 
-        const permissions = await permissionRepository.find({
-            where: {
-                id: {
-                    inq: rolesPermissions.map(
-                        rolesPermission => rolesPermission.permissionId
+        return [
+            ...new Set(
+                roles
+                    .map(role =>
+                        role.rolePermissions.map(
+                            rolePermission => rolePermission.permission.key
+                        )
                     )
-                }
-            }
-        });
-
-        return permissions.map(
-            permission => permission.key as keyof Permissions
-        );
+                    .reduce(
+                        (accumulate, permissionKeys) =>
+                            accumulate.concat(permissionKeys),
+                        []
+                    )
+            )
+        ] as StringKey<Permissions>[];
     }
 }

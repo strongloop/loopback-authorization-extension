@@ -1,22 +1,48 @@
-import { inject } from "@loopback/context";
-import { juggler, DefaultCrudRepository } from "@loopback/repository";
+import { inject, Getter } from "@loopback/context";
+import {
+    juggler,
+    HasManyRepositoryFactory,
+    DefaultCrudRepository
+} from "@loopback/repository";
 import { Ctor } from "loopback-history-extension";
 
-import { bindAuthorization, PrivateAuthorizationBindings } from "../keys";
+import {
+    bindAuthorization,
+    AuthorizationBindings,
+    PrivateAuthorizationBindings
+} from "../keys";
 
-import { Permission, PermissionRelations } from "../models";
+import { Permission, PermissionRelations, RolePermission } from "../models";
+
+import { RolePermissionRepository } from "./";
 
 @bindAuthorization("PermissionRepository")
 export class PermissionRepository<
     Model extends Permission,
     ModelRelations extends PermissionRelations
 > extends DefaultCrudRepository<Model, string, ModelRelations> {
+    public readonly rolePermissions: HasManyRepositoryFactory<
+        RolePermission,
+        typeof Permission.prototype.id
+    >;
+
     constructor(
         @inject(PrivateAuthorizationBindings.PERMISSION_MODEL)
         ctor: Ctor<Model>,
         @inject(PrivateAuthorizationBindings.DATASOURCE)
-        dataSource: juggler.DataSource
+        dataSource: juggler.DataSource,
+        @inject.getter(AuthorizationBindings.ROLE_PERMISSION_REPOSITORY)
+        getRolePermissionRepository: Getter<RolePermissionRepository>
     ) {
         super(ctor, dataSource);
+
+        this.rolePermissions = this.createHasManyRepositoryFactoryFor(
+            "rolePermissions",
+            getRolePermissionRepository
+        );
+        this.registerInclusionResolver(
+            "rolePermissions",
+            this.rolePermissions.inclusionResolver
+        );
     }
 }
