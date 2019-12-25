@@ -5,7 +5,7 @@ import { UserRole, UserRoleWithRelations } from "./";
 
 @model({ settings: {} })
 export class User extends HistoryEntity {
-    @hasMany(() => UserRole, { keyFrom: "", keyTo: "userId" })
+    @hasMany(() => UserRole, { keyFrom: "id", keyTo: "userId" } as any)
     userRoles: UserRoleWithRelations[];
 
     constructor(data?: Partial<User>) {

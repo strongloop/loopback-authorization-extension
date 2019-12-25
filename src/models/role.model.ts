@@ -13,10 +13,10 @@ export class Role extends HistoryEntity {
     @belongsTo(() => Role, { keyFrom: "parentId", keyTo: "id" })
     parentId: string;
 
-    @hasMany(() => UserRole, { keyTo: "roleId" })
+    @hasMany(() => UserRole, { keyFrom: "id", keyTo: "roleId" } as any)
     userRoles: UserRoleWithRelations[];
 
-    @hasMany(() => RolePermission, { keyTo: "roleId" })
+    @hasMany(() => RolePermission, { keyFrom: "id", keyTo: "roleId" } as any)
     rolePermissions: RolePermissionWithRelations[];
 
     constructor(data?: Partial<Role>) {

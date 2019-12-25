@@ -27,7 +27,10 @@ export class Permission extends Entity {
     })
     description: string;
 
-    @hasMany(() => RolePermission, { keyTo: "permissionId" })
+    @hasMany(() => RolePermission, {
+        keyFrom: "id",
+        keyTo: "permissionId"
+    } as any)
     rolePermissions: RolePermissionWithRelations[];
 
     constructor(data?: Partial<Permission>) {
