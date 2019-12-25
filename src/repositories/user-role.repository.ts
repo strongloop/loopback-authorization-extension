@@ -33,6 +33,9 @@ export class UserRoleRepository extends HistoryCrudRepository<
         super(UserRole, dataSource);
 
         this.user = this.createBelongsToAccessorFor("user", getUserRepository);
+        this.registerInclusionResolver("user", this.user.inclusionResolver);
+
         this.role = this.createBelongsToAccessorFor("role", getRoleRepository);
+        this.registerInclusionResolver("role", this.role.inclusionResolver);
     }
 }
