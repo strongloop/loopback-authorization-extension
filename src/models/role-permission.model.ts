@@ -10,10 +10,10 @@ import {
 
 @model({ settings: {} })
 export class RolePermission extends HistoryEntity {
-    @belongsTo(() => Role)
+    @belongsTo(() => Role, { keyFrom: "roleId", keyTo: "id" })
     roleId: string;
 
-    @belongsTo(() => Permission)
+    @belongsTo(() => Permission, { keyFrom: "permissionId", keyTo: "id" })
     permissionId: string;
 
     constructor(data?: Partial<RolePermission>) {
