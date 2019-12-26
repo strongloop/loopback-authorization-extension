@@ -22,8 +22,7 @@ export class Permission extends Entity {
     key: string;
 
     @property({
-        type: "string",
-        default: ""
+        type: "string"
     })
     description: string;
 

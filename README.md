@@ -357,7 +357,7 @@ In some special cases we need to check some other permissions or conditions such
 
 ## Many-To-Many relations
 
-Users, Roles, Permissions has many-to-many relations, using, `UserRoleModelRepository`, `RolePermissionModelRepository` you can add some users to roles or assign permissions to roles
+Users, Roles, Permissions has many-to-many relations, using, `UserRoleRepository`, `RolePermissionRepository` you can add some users to roles or assign permissions to roles
 
 **Example**:
 
@@ -371,8 +371,8 @@ import { inject } from "@loopback/context";
 
 export class UserControllerController {
     constructor(
-        @inject(AuthorizationBindings.USER_ROLE_REPOSITORY)
-        public userRoleRepository: UserRoleRepository
+        @inject(AuthorizationBindings.USER_REPOSITORY)
+        public userRepository: UserRepository
     ) {}
 
     @post("/users/...", {
@@ -382,11 +382,11 @@ export class UserControllerController {
             }
         }
     })
-    async find(...args): Promise<any> {
+    async add(...args): Promise<any> {
         // add user to role
-        return this.userRoleRepository.create(new UserRoleModel({
-            userId: "user id",
-            roleId: "role id"
+        await this.userRepository.userRoles("userId").create(new UserRoleModel({
+            userId: "userId",
+            roleId: "roleId"
         }));
     }
 }
