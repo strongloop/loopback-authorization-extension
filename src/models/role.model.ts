@@ -13,6 +13,9 @@ export class Role extends HistoryEntity {
     @belongsTo(() => Role, { keyFrom: "parentId", keyTo: "id" })
     parentId: string;
 
+    @hasMany(() => Role, { keyFrom: "id", keyTo: "parentId" } as any)
+    childs: RoleWithRelations[];
+
     @hasMany(() => UserRole, { keyFrom: "id", keyTo: "roleId" } as any)
     userRoles: UserRoleWithRelations[];
 
