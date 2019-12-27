@@ -22,6 +22,10 @@ export class RoleRepository<
     ModelRelations extends RoleRelations
 > extends HistoryCrudRepository<Model, ModelRelations> {
     public readonly parent: BelongsToAccessor<Role, typeof Role.prototype.id>;
+    public readonly childs: HasManyRepositoryFactory<
+        Role,
+        typeof Role.prototype.id
+    >;
     public readonly userRoles: HasManyRepositoryFactory<
         UserRole,
         typeof Role.prototype.id
@@ -48,6 +52,12 @@ export class RoleRepository<
             Getter.fromValue(this)
         );
         this.registerInclusionResolver("parent", this.parent.inclusionResolver);
+
+        this.childs = this.createHasManyRepositoryFactoryFor(
+            "childs",
+            Getter.fromValue(this)
+        );
+        this.registerInclusionResolver("childs", this.childs.inclusionResolver);
 
         this.userRoles = this.createHasManyRepositoryFactoryFor(
             "userRoles",
