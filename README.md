@@ -145,7 +145,7 @@ import {
     AuthorizationApplicationConfig
 } from "loopback-authorization-extension";
 import { MyPermissions } from "~/permissions.ts";
-import { User, Role, Permission } from "~/models";
+import { User, Role, Permission, UserRole, RolePermission } from "~/models";
 
 export class TestApplication extends AuthorizationMixin(
     BootMixin(ServiceMixin(RepositoryMixin(RestApplication)))
@@ -160,7 +160,9 @@ export class TestApplication extends AuthorizationMixin(
             permissions: MyPermissions,
             userModel: User,
             roleModel: Role,
-            permissionModel: Permission
+            permissionModel: Permission,
+            userRoleModel: UserRole,
+            rolePermissionModel: RolePermission
         };
     }
 }

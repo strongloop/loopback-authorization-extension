@@ -2,7 +2,7 @@ import { Request } from "@loopback/rest";
 import { Class } from "@loopback/repository";
 import { Ctor } from "loopback-history-extension";
 
-import { User, Role, Permission } from "./models";
+import { User, Role, Permission, UserRole, RolePermission } from "./models";
 
 /**
  * interface definition of PermissionsList class
@@ -67,4 +67,6 @@ export interface AuthorizationMixinConfig {
     userModel?: Ctor<User>;
     roleModel?: Ctor<Role>;
     permissionModel?: Ctor<Permission>;
+    userRoleModel?: Ctor<UserRole>;
+    rolePermissionModel?: Ctor<RolePermission>;
 }

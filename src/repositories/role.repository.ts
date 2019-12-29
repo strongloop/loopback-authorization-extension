@@ -12,7 +12,14 @@ import {
     PrivateAuthorizationBindings
 } from "../keys";
 
-import { Role, RoleRelations, UserRole, RolePermission } from "../models";
+import {
+    Role,
+    RoleRelations,
+    UserRole,
+    UserRoleRelations,
+    RolePermission,
+    RolePermissionRelations
+} from "../models";
 
 import { UserRoleRepository, RolePermissionRepository } from "./";
 
@@ -41,9 +48,13 @@ export class RoleRepository<
         @inject(PrivateAuthorizationBindings.DATASOURCE)
         dataSource: juggler.DataSource,
         @inject.getter(AuthorizationBindings.USER_ROLE_REPOSITORY)
-        getUserRoleRepository: Getter<UserRoleRepository>,
+        getUserRoleRepository: Getter<
+            UserRoleRepository<UserRole, UserRoleRelations>
+        >,
         @inject.getter(AuthorizationBindings.ROLE_PERMISSION_REPOSITORY)
-        getRolePermissionRepository: Getter<RolePermissionRepository>
+        getRolePermissionRepository: Getter<
+            RolePermissionRepository<RolePermission, RolePermissionRelations>
+        >
     ) {
         super(ctor, dataSource);
 
