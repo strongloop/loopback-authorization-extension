@@ -12,7 +12,11 @@ import {
     Role,
     RoleRelations,
     Permission,
-    PermissionRelations
+    PermissionRelations,
+    UserRole,
+    UserRoleRelations,
+    RolePermission,
+    RolePermissionRelations
 } from "./models";
 import {
     UserRepository,
@@ -32,6 +36,8 @@ export namespace PrivateAuthorizationBindings {
      * 1. UserModel
      * 2. RoleModel
      * 3. PermissionModel
+     * 4. UserRoleModel
+     * 5. RolePermissionModel
      */
     export const USER_MODEL = BindingKey.create<Ctor<User>>(
         "private.authorization.models.user"
@@ -42,6 +48,12 @@ export namespace PrivateAuthorizationBindings {
     export const PERMISSION_MODEL = BindingKey.create<Ctor<Permission>>(
         "private.authorization.models.permission"
     );
+    export const USER_ROLE_MODEL = BindingKey.create<Ctor<UserRole>>(
+        "private.authorization.models.userRole"
+    );
+    export const ROLE_PERMISSION_MODEL = BindingKey.create<
+        Ctor<RolePermission>
+    >("private.authorization.models.rolePermission");
 
     /**
      * DataSource key
@@ -76,6 +88,8 @@ export namespace AuthorizationBindings {
      * 1. UserRepository
      * 2. RoleRepository
      * 3. PermissionRepository
+     * 4. UserRoleRepository
+     * 5. RolePermissionRepository
      */
     export const USER_REPOSITORY = BindingKey.create<
         UserRepository<User, UserRelations>
@@ -86,18 +100,11 @@ export namespace AuthorizationBindings {
     export const PERMISSION_REPOSITORY = BindingKey.create<
         PermissionRepository<Permission, PermissionRelations>
     >("authorization.repositories.permission");
-
-    /**
-     * Relation Repository key:
-     *
-     * 1. UserRoleRepository
-     * 2. RolePermissionRepository
-     */
-    export const USER_ROLE_REPOSITORY = BindingKey.create<UserRoleRepository>(
-        "authorization.repositories.userRole"
-    );
+    export const USER_ROLE_REPOSITORY = BindingKey.create<
+        UserRoleRepository<UserRole, UserRoleRelations>
+    >("authorization.repositories.userRole");
     export const ROLE_PERMISSION_REPOSITORY = BindingKey.create<
-        RolePermissionRepository
+        RolePermissionRepository<RolePermission, RolePermissionRelations>
     >("authorization.repositories.rolePermission");
 }
 export const AUTHORIZATION_METADATA_KEY = MetadataAccessor.create<
@@ -113,12 +120,16 @@ export const AUTHORIZATION_METADATA_KEY = MetadataAccessor.create<
  * 2. UserRepository
  * 3. RoleRepository
  * 4. PermissionRepository
+ * 5. UserRoleRepository
+ * 6. RolePermissionRepository
  */
 export type BindAuthorizationKey =
     | "DataSource"
     | "UserRepository"
     | "RoleRepository"
-    | "PermissionRepository";
+    | "PermissionRepository"
+    | "UserRoleRepository"
+    | "RolePermissionRepository";
 export function bindAuthorization(key: BindAuthorizationKey) {
     return bind(binding => {
         binding.tag({

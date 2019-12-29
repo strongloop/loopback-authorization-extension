@@ -12,7 +12,12 @@ import {
     PrivateAuthorizationBindings
 } from "../keys";
 
-import { Permission, PermissionRelations, RolePermission } from "../models";
+import {
+    Permission,
+    PermissionRelations,
+    RolePermission,
+    RolePermissionRelations
+} from "../models";
 
 import { RolePermissionRepository } from "./";
 
@@ -32,7 +37,9 @@ export class PermissionRepository<
         @inject(PrivateAuthorizationBindings.DATASOURCE)
         dataSource: juggler.DataSource,
         @inject.getter(AuthorizationBindings.ROLE_PERMISSION_REPOSITORY)
-        getRolePermissionRepository: Getter<RolePermissionRepository>
+        getRolePermissionRepository: Getter<
+            RolePermissionRepository<RolePermission, RolePermissionRelations>
+        >
     ) {
         super(ctor, dataSource);
 

@@ -10,7 +10,7 @@ import {
 } from "../keys";
 import { AuthorizationMixinConfig, PermissionsList } from "../types";
 
-import { User, Role, Permission } from "../models";
+import { User, Role, Permission, UserRole, RolePermission } from "../models";
 import {
     AuthorizeActionProvider,
     GetUserPermissionsProvider
@@ -33,6 +33,12 @@ export function AuthorizationMixin<T extends Class<any>>(superClass: T) {
         );
         ctx.bind(PrivateAuthorizationBindings.PERMISSION_MODEL).to(
             configs.permissionModel || Permission
+        );
+        ctx.bind(PrivateAuthorizationBindings.USER_ROLE_MODEL).to(
+            configs.userRoleModel || UserRole
+        );
+        ctx.bind(PrivateAuthorizationBindings.ROLE_PERMISSION_MODEL).to(
+            configs.rolePermissionModel || RolePermission
         );
     };
 
@@ -97,14 +103,35 @@ export function AuthorizationMixin<T extends Class<any>>(superClass: T) {
         }
 
         /**
-         * Bind Relation Repositories
+         * Find, Bind UserRole Repository
          */
-        ctx.bind(AuthorizationBindings.USER_ROLE_REPOSITORY)
-            .toClass(UserRoleRepository)
-            .tag("repository");
-        ctx.bind(AuthorizationBindings.ROLE_PERMISSION_REPOSITORY)
-            .toClass(RolePermissionRepository)
-            .tag("repository");
+        let userRoleRepository = findAuthorization(ctx, "UserRoleRepository");
+        if (userRoleRepository) {
+            ctx.bind(AuthorizationBindings.USER_ROLE_REPOSITORY).to(
+                userRoleRepository
+            );
+        } else {
+            ctx.bind(AuthorizationBindings.USER_ROLE_REPOSITORY)
+                .toClass(UserRoleRepository)
+                .tag("repository");
+        }
+
+        /**
+         * Find, Bind RolePermission Repository
+         */
+        let rolePermissionRepository = findAuthorization(
+            ctx,
+            "RolePermissionRepository"
+        );
+        if (rolePermissionRepository) {
+            ctx.bind(AuthorizationBindings.ROLE_PERMISSION_REPOSITORY).to(
+                rolePermissionRepository
+            );
+        } else {
+            ctx.bind(AuthorizationBindings.ROLE_PERMISSION_REPOSITORY)
+                .toClass(RolePermissionRepository)
+                .tag("repository");
+        }
     };
 
     return class extends superClass {

@@ -8,7 +8,7 @@ import {
     PrivateAuthorizationBindings
 } from "../keys";
 
-import { User, UserRelations, UserRole } from "../models";
+import { User, UserRelations, UserRole, UserRoleRelations } from "../models";
 
 import { UserRoleRepository } from "./";
 
@@ -28,7 +28,9 @@ export class UserRepository<
         @inject(PrivateAuthorizationBindings.DATASOURCE)
         dataSource: juggler.DataSource,
         @inject.getter(AuthorizationBindings.USER_ROLE_REPOSITORY)
-        getUserRoleRepository: Getter<UserRoleRepository>
+        getUserRoleRepository: Getter<
+            UserRoleRepository<UserRole, UserRoleRelations>
+        >
     ) {
         super(ctor, dataSource);
 
