@@ -4,8 +4,8 @@ import { Ctor, HistoryCrudRepository } from "loopback-history-extension";
 
 import {
     bindAuthorization,
-    PrivateAuthorizationBindings,
-    AuthorizationBindings
+    AuthorizationBindings,
+    PrivateAuthorizationBindings
 } from "../keys";
 
 import {
