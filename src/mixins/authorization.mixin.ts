@@ -11,10 +11,12 @@ import {
 import { AuthorizationMixinConfig, PermissionsList } from "../types";
 
 import { User, Role, Permission, UserRole, RolePermission } from "../models";
+
 import {
     AuthorizeActionProvider,
     GetUserPermissionsProvider
 } from "../providers";
+
 import {
     UserRepository,
     RoleRepository,
@@ -25,20 +27,27 @@ import {
 
 export function AuthorizationMixin<T extends Class<any>>(superClass: T) {
     const bootModels = (ctx: Context, configs: AuthorizationMixinConfig) => {
-        ctx.bind(PrivateAuthorizationBindings.USER_MODEL).to(
-            configs.userModel || User
-        );
-        ctx.bind(PrivateAuthorizationBindings.ROLE_MODEL).to(
-            configs.roleModel || Role
-        );
+        const userModel = configs.userModel || User;
+        const roleModel = configs.roleModel || Role;
+        const permissionModel = configs.permissionModel || Permission;
+        const userRoleModel = configs.userRoleModel || UserRole;
+        const rolePermissionModel =
+            configs.rolePermissionModel || RolePermission;
+
+        /**
+         * Change model relation source, target
+         */
+
+        ctx.bind(PrivateAuthorizationBindings.USER_MODEL).to(userModel);
+        ctx.bind(PrivateAuthorizationBindings.ROLE_MODEL).to(roleModel);
         ctx.bind(PrivateAuthorizationBindings.PERMISSION_MODEL).to(
-            configs.permissionModel || Permission
+            permissionModel
         );
         ctx.bind(PrivateAuthorizationBindings.USER_ROLE_MODEL).to(
-            configs.userRoleModel || UserRole
+            userRoleModel
         );
         ctx.bind(PrivateAuthorizationBindings.ROLE_PERMISSION_MODEL).to(
-            configs.rolePermissionModel || RolePermission
+            rolePermissionModel
         );
     };
 
