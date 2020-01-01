@@ -10,7 +10,20 @@ import {
 } from "../keys";
 import { AuthorizationMixinConfig, PermissionsList } from "../types";
 
-import { User, Role, Permission, UserRole, RolePermission } from "../models";
+import { relation } from "../decorators";
+
+import {
+    User,
+    UserWithRelations,
+    Role,
+    RoleWithRelations,
+    Permission,
+    PermissionWithRelations,
+    UserRole,
+    UserRoleWithRelations,
+    RolePermission,
+    RolePermissionWithRelations
+} from "../models";
 
 import {
     AuthorizeActionProvider,
@@ -27,16 +40,53 @@ import {
 
 export function AuthorizationMixin<T extends Class<any>>(superClass: T) {
     const bootModels = (ctx: Context, configs: AuthorizationMixinConfig) => {
-        const userModel = configs.userModel || User;
-        const roleModel = configs.roleModel || Role;
-        const permissionModel = configs.permissionModel || Permission;
-        const userRoleModel = configs.userRoleModel || UserRole;
-        const rolePermissionModel =
-            configs.rolePermissionModel || RolePermission;
+        let userModel = configs.userModel || User;
+        let roleModel = configs.roleModel || Role;
+        let permissionModel = configs.permissionModel || Permission;
+        let userRoleModel = configs.userRoleModel || UserRole;
+        let rolePermissionModel = configs.rolePermissionModel || RolePermission;
 
-        /**
-         * Change model relation source, target
-         */
+        /** Fix user model relations */
+        relation<UserWithRelations, any>(
+            "userRoles",
+            () => userRoleModel
+        )(userModel);
+
+        /** Fix role model relations */
+        relation<RoleWithRelations, any>(
+            "userRoles",
+            () => userRoleModel
+        )(roleModel);
+        relation<RoleWithRelations, any>(
+            "rolePermissions",
+            () => rolePermissionModel
+        )(roleModel);
+
+        /** Fix permission model relations */
+        relation<PermissionWithRelations, any>(
+            "rolePermissions",
+            () => rolePermissionModel
+        )(permissionModel);
+
+        /** Fix userRole model relations */
+        relation<UserRoleWithRelations, any>(
+            "user",
+            () => userModel
+        )(userRoleModel);
+        relation<UserRoleWithRelations, any>(
+            "role",
+            () => roleModel
+        )(userRoleModel);
+
+        /** Fix rolePermission model relations */
+        relation<RolePermissionWithRelations, any>(
+            "role",
+            () => roleModel
+        )(rolePermissionModel);
+        relation<RolePermissionWithRelations, any>(
+            "permission",
+            () => permissionModel
+        )(rolePermissionModel);
 
         ctx.bind(PrivateAuthorizationBindings.USER_MODEL).to(userModel);
         ctx.bind(PrivateAuthorizationBindings.ROLE_MODEL).to(roleModel);
