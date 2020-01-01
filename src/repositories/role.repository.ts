@@ -29,14 +29,17 @@ export class RoleRepository<
     ModelRelations extends RoleRelations
 > extends HistoryCrudRepository<Model, ModelRelations> {
     public readonly parent: BelongsToAccessor<Role, typeof Role.prototype.id>;
+
     public readonly childs: HasManyRepositoryFactory<
         Role,
         typeof Role.prototype.id
     >;
+
     public readonly userRoles: HasManyRepositoryFactory<
         UserRole,
         typeof Role.prototype.id
     >;
+
     public readonly rolePermissions: HasManyRepositoryFactory<
         RolePermission,
         typeof Role.prototype.id
