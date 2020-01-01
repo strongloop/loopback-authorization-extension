@@ -4,9 +4,9 @@ import { Class, SchemaMigrationOptions } from "@loopback/repository";
 import { createHash } from "crypto";
 
 import {
-    PrivateAuthorizationBindings,
+    findAuthorization,
     AuthorizationBindings,
-    findAuthorization
+    PrivateAuthorizationBindings
 } from "../keys";
 import { AuthorizationMixinConfig, PermissionsList } from "../types";
 
@@ -111,11 +111,18 @@ export function AuthorizationMixin<T extends Class<any>>(superClass: T) {
     };
 
     const bootDataSources = (ctx: Context) => {
-        let dataSource = findAuthorization(ctx, "DataSource");
-        if (dataSource) {
-            ctx.bind(PrivateAuthorizationBindings.DATASOURCE).to(dataSource);
+        let relationalDataSource = findAuthorization(
+            ctx,
+            "RelationalDataSource"
+        );
+        if (relationalDataSource) {
+            ctx.bind(PrivateAuthorizationBindings.RELATIONAL_DATASOURCE).to(
+                relationalDataSource
+            );
         } else {
-            throw new Error("AuthorizationComponent: DataSource not found!");
+            throw new Error(
+                "AuthorizationComponent: RelationalDataSource not found!"
+            );
         }
     };
 
