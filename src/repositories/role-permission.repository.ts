@@ -37,7 +37,7 @@ export class RolePermissionRepository<
     constructor(
         @inject(PrivateAuthorizationBindings.ROLE_PERMISSION_MODEL)
         ctor: Ctor<Model>,
-        @inject(PrivateAuthorizationBindings.DATASOURCE)
+        @inject(PrivateAuthorizationBindings.RELATIONAL_DATASOURCE)
         dataSource: juggler.DataSource,
         @inject.getter(AuthorizationBindings.ROLE_REPOSITORY)
         getRoleRepository: Getter<RoleRepository<Role, RoleRelations>>,

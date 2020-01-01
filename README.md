@@ -113,14 +113,14 @@ export class MyPermissions extends PermissionsList {
 
 ### Step 4 (Define DataSource)
 
-Bind your dataSource you want to use for authorization tables using `bindAuthorization`
+Bind your dataSource you want to use for authorization tables using `bindRelationalDataSource`
 
 See this example:
 
 ```ts
-import { bindAuthorization } from "loopback-authorization-extension";
+import { bindRelationalDataSource } from "loopback-authorization-extension";
 
-@bindAuthorization("DataSource")
+@bindRelationalDataSource()
 export class MySqlDataSource extends juggler.DataSource {
     static dataSourceName = "MySQL";
 
