@@ -1,6 +1,11 @@
 import { inject, Getter } from "@loopback/context";
-import { juggler, HasManyRepositoryFactory } from "@loopback/repository";
-import { Ctor, HistoryCrudRepository } from "loopback-history-extension";
+import {
+    juggler,
+    Class,
+    HasManyRepositoryFactory,
+    DefaultCrudRepository
+} from "@loopback/repository";
+import { Ctor, HistoryCrudRepositoryMixin } from "loopback-history-extension";
 
 import {
     bindAuthorization,
@@ -8,39 +13,49 @@ import {
     PrivateAuthorizationBindings
 } from "../keys";
 
-import { User, UserRelations, UserRole, UserRoleRelations } from "../models";
+import { User, UserRelations, UserRole } from "../models";
 
-import { UserRoleRepository } from "./";
+import { DefaultUserRoleRepository } from "./";
 
-@bindAuthorization("UserRepository")
-export class UserRepository<
+export function UserRepositoryMixin<
     Model extends User,
     ModelRelations extends UserRelations
-> extends HistoryCrudRepository<Model, ModelRelations> {
-    public readonly userRoles: HasManyRepositoryFactory<
-        UserRole,
-        typeof User.prototype.id
-    >;
+>(): Class<DefaultCrudRepository<Model, string, ModelRelations>> {
+    @bindAuthorization("UserRepository")
+    class UserRepository extends HistoryCrudRepositoryMixin<
+        Model,
+        ModelRelations
+    >() {
+        public readonly userRoles: HasManyRepositoryFactory<
+            UserRole,
+            typeof User.prototype.id
+        >;
 
-    constructor(
-        @inject(PrivateAuthorizationBindings.USER_MODEL)
-        ctor: Ctor<Model>,
-        @inject(PrivateAuthorizationBindings.DATASOURCE)
-        dataSource: juggler.DataSource,
-        @inject.getter(AuthorizationBindings.USER_ROLE_REPOSITORY)
-        getUserRoleRepository: Getter<
-            UserRoleRepository<UserRole, UserRoleRelations>
-        >
-    ) {
-        super(ctor, dataSource);
+        constructor(
+            @inject(PrivateAuthorizationBindings.USER_MODEL)
+            ctor: Ctor<Model>,
+            @inject(PrivateAuthorizationBindings.DATASOURCE)
+            dataSource: juggler.DataSource,
+            @inject.getter(AuthorizationBindings.USER_ROLE_REPOSITORY)
+            getUserRoleRepository: Getter<DefaultUserRoleRepository>
+        ) {
+            super(ctor, dataSource);
 
-        this.userRoles = this.createHasManyRepositoryFactoryFor(
-            "userRoles",
-            getUserRoleRepository
-        );
-        this.registerInclusionResolver(
-            "userRoles",
-            this.userRoles.inclusionResolver
-        );
+            this.userRoles = this.createHasManyRepositoryFactoryFor(
+                "userRoles",
+                getUserRoleRepository
+            );
+            this.registerInclusionResolver(
+                "userRoles",
+                this.userRoles.inclusionResolver
+            );
+        }
     }
+
+    return UserRepository;
 }
+
+export class DefaultUserRepository extends UserRepositoryMixin<
+    User,
+    UserRelations
+>() {}

@@ -4,16 +4,15 @@ import { AuthorizationBindings } from "../keys";
 
 import { PermissionsList, GetUserPermissionsFn, StringKey } from "../types";
 
-import { User, UserRelations, Role, RoleRelations } from "../models";
 import { UserRepository, RoleRepository } from "../repositories";
 
 export class GetUserPermissionsProvider<Permissions extends PermissionsList>
     implements Provider<GetUserPermissionsFn<Permissions>> {
     constructor(
         @inject(AuthorizationBindings.USER_REPOSITORY)
-        private userRepository: UserRepository<User, UserRelations>,
+        private userRepository: UserRepository,
         @inject(AuthorizationBindings.ROLE_REPOSITORY)
-        private roleRepository: RoleRepository<Role, RoleRelations>
+        private roleRepository: RoleRepository
     ) {}
 
     async value(): Promise<GetUserPermissionsFn<Permissions>> {
