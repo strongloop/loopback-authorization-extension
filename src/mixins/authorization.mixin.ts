@@ -31,11 +31,11 @@ import {
 } from "../providers";
 
 import {
-    UserRepository,
-    RoleRepository,
-    PermissionRepository,
-    UserRoleRepository,
-    RolePermissionRepository
+    DefaultUserRepository,
+    DefaultRoleRepository,
+    DefaultPermissionRepository,
+    DefaultUserRoleRepository,
+    DefaultRolePermissionRepository
 } from "../repositories";
 
 export function AuthorizationMixin<T extends Class<any>>(superClass: T) {
@@ -135,7 +135,7 @@ export function AuthorizationMixin<T extends Class<any>>(superClass: T) {
             ctx.bind(AuthorizationBindings.USER_REPOSITORY).to(userRepository);
         } else {
             ctx.bind(AuthorizationBindings.USER_REPOSITORY)
-                .toClass(UserRepository)
+                .toClass(DefaultUserRepository)
                 .tag("repository");
         }
 
@@ -147,7 +147,7 @@ export function AuthorizationMixin<T extends Class<any>>(superClass: T) {
             ctx.bind(AuthorizationBindings.ROLE_REPOSITORY).to(roleRepository);
         } else {
             ctx.bind(AuthorizationBindings.ROLE_REPOSITORY)
-                .toClass(RoleRepository)
+                .toClass(DefaultRoleRepository)
                 .tag("repository");
         }
 
@@ -164,7 +164,7 @@ export function AuthorizationMixin<T extends Class<any>>(superClass: T) {
             );
         } else {
             ctx.bind(AuthorizationBindings.PERMISSION_REPOSITORY)
-                .toClass(PermissionRepository)
+                .toClass(DefaultPermissionRepository)
                 .tag("repository");
         }
 
@@ -178,7 +178,7 @@ export function AuthorizationMixin<T extends Class<any>>(superClass: T) {
             );
         } else {
             ctx.bind(AuthorizationBindings.USER_ROLE_REPOSITORY)
-                .toClass(UserRoleRepository)
+                .toClass(DefaultUserRoleRepository)
                 .tag("repository");
         }
 
@@ -195,7 +195,7 @@ export function AuthorizationMixin<T extends Class<any>>(superClass: T) {
             );
         } else {
             ctx.bind(AuthorizationBindings.ROLE_PERMISSION_REPOSITORY)
-                .toClass(RolePermissionRepository)
+                .toClass(DefaultRolePermissionRepository)
                 .tag("repository");
         }
     };
