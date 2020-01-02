@@ -35,7 +35,7 @@ export function PermissionRepositoryMixin<
         constructor(
             @inject(PrivateAuthorizationBindings.PERMISSION_MODEL)
             ctor: Ctor<Model>,
-            @inject(PrivateAuthorizationBindings.DATASOURCE)
+            @inject(PrivateAuthorizationBindings.RELATIONAL_DATASOURCE)
             dataSource: juggler.DataSource,
             @inject.getter(AuthorizationBindings.ROLE_PERMISSION_REPOSITORY)
             getRolePermissionRepository: Getter<DefaultRolePermissionRepository>

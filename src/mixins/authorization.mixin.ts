@@ -4,17 +4,32 @@ import { Class, SchemaMigrationOptions } from "@loopback/repository";
 import { createHash } from "crypto";
 
 import {
-    PrivateAuthorizationBindings,
+    findAuthorization,
     AuthorizationBindings,
-    findAuthorization
+    PrivateAuthorizationBindings
 } from "../keys";
 import { AuthorizationMixinConfig, PermissionsList } from "../types";
 
-import { User, Role, Permission, UserRole, RolePermission } from "../models";
+import { relation } from "../decorators";
+
+import {
+    User,
+    UserWithRelations,
+    Role,
+    RoleWithRelations,
+    Permission,
+    PermissionWithRelations,
+    UserRole,
+    UserRoleWithRelations,
+    RolePermission,
+    RolePermissionWithRelations
+} from "../models";
+
 import {
     AuthorizeActionProvider,
     GetUserPermissionsProvider
 } from "../providers";
+
 import {
     UserRepository,
     RoleRepository,
@@ -25,20 +40,64 @@ import {
 
 export function AuthorizationMixin<T extends Class<any>>(superClass: T) {
     const bootModels = (ctx: Context, configs: AuthorizationMixinConfig) => {
-        ctx.bind(PrivateAuthorizationBindings.USER_MODEL).to(
-            configs.userModel || User
-        );
-        ctx.bind(PrivateAuthorizationBindings.ROLE_MODEL).to(
-            configs.roleModel || Role
-        );
+        let userModel = configs.userModel || User;
+        let roleModel = configs.roleModel || Role;
+        let permissionModel = configs.permissionModel || Permission;
+        let userRoleModel = configs.userRoleModel || UserRole;
+        let rolePermissionModel = configs.rolePermissionModel || RolePermission;
+
+        /** Fix user model relations */
+        relation<UserWithRelations, any>(
+            "userRoles",
+            () => userRoleModel
+        )(userModel);
+
+        /** Fix role model relations */
+        relation<RoleWithRelations, any>(
+            "userRoles",
+            () => userRoleModel
+        )(roleModel);
+        relation<RoleWithRelations, any>(
+            "rolePermissions",
+            () => rolePermissionModel
+        )(roleModel);
+
+        /** Fix permission model relations */
+        relation<PermissionWithRelations, any>(
+            "rolePermissions",
+            () => rolePermissionModel
+        )(permissionModel);
+
+        /** Fix userRole model relations */
+        relation<UserRoleWithRelations, any>(
+            "user",
+            () => userModel
+        )(userRoleModel);
+        relation<UserRoleWithRelations, any>(
+            "role",
+            () => roleModel
+        )(userRoleModel);
+
+        /** Fix rolePermission model relations */
+        relation<RolePermissionWithRelations, any>(
+            "role",
+            () => roleModel
+        )(rolePermissionModel);
+        relation<RolePermissionWithRelations, any>(
+            "permission",
+            () => permissionModel
+        )(rolePermissionModel);
+
+        ctx.bind(PrivateAuthorizationBindings.USER_MODEL).to(userModel);
+        ctx.bind(PrivateAuthorizationBindings.ROLE_MODEL).to(roleModel);
         ctx.bind(PrivateAuthorizationBindings.PERMISSION_MODEL).to(
-            configs.permissionModel || Permission
+            permissionModel
         );
         ctx.bind(PrivateAuthorizationBindings.USER_ROLE_MODEL).to(
-            configs.userRoleModel || UserRole
+            userRoleModel
         );
         ctx.bind(PrivateAuthorizationBindings.ROLE_PERMISSION_MODEL).to(
-            configs.rolePermissionModel || RolePermission
+            rolePermissionModel
         );
     };
 
@@ -52,11 +111,18 @@ export function AuthorizationMixin<T extends Class<any>>(superClass: T) {
     };
 
     const bootDataSources = (ctx: Context) => {
-        let dataSource = findAuthorization(ctx, "DataSource");
-        if (dataSource) {
-            ctx.bind(PrivateAuthorizationBindings.DATASOURCE).to(dataSource);
+        let relationalDataSource = findAuthorization(
+            ctx,
+            "RelationalDataSource"
+        );
+        if (relationalDataSource) {
+            ctx.bind(PrivateAuthorizationBindings.RELATIONAL_DATASOURCE).to(
+                relationalDataSource
+            );
         } else {
-            throw new Error("AuthorizationComponent: DataSource not found!");
+            throw new Error(
+                "AuthorizationComponent: RelationalDataSource not found!"
+            );
         }
     };
 

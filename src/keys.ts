@@ -16,45 +16,6 @@ import {
 } from "./repositories";
 
 /**
- * Private binding used in component scope
- */
-export namespace PrivateAuthorizationBindings {
-    /**
-     * Model key:
-     *
-     * 1. UserModel
-     * 2. RoleModel
-     * 3. PermissionModel
-     * 4. UserRoleModel
-     * 5. RolePermissionModel
-     */
-    export const USER_MODEL = BindingKey.create<Ctor<User>>(
-        "private.authorization.models.user"
-    );
-    export const ROLE_MODEL = BindingKey.create<Ctor<Role>>(
-        "private.authorization.models.role"
-    );
-    export const PERMISSION_MODEL = BindingKey.create<Ctor<Permission>>(
-        "private.authorization.models.permission"
-    );
-    export const USER_ROLE_MODEL = BindingKey.create<Ctor<UserRole>>(
-        "private.authorization.models.userRole"
-    );
-    export const ROLE_PERMISSION_MODEL = BindingKey.create<
-        Ctor<RolePermission>
-    >("private.authorization.models.rolePermission");
-
-    /**
-     * DataSource key
-     *
-     * 1. DataSource: RDBMS
-     */
-    export const DATASOURCE = BindingKey.create<juggler.DataSource>(
-        "private.authorization.dataSources.dataSource"
-    );
-}
-
-/**
  * Public bindings used in application scope
  */
 export namespace AuthorizationBindings {
@@ -96,6 +57,46 @@ export namespace AuthorizationBindings {
         DefaultRolePermissionRepository
     >("authorization.repositories.rolePermission");
 }
+
+/**
+ * Private binding used in component scope
+ */
+export namespace PrivateAuthorizationBindings {
+    /**
+     * Model key:
+     *
+     * 1. UserModel
+     * 2. RoleModel
+     * 3. PermissionModel
+     * 4. UserRoleModel
+     * 5. RolePermissionModel
+     */
+    export const USER_MODEL = BindingKey.create<Ctor<User>>(
+        "private.authorization.models.user"
+    );
+    export const ROLE_MODEL = BindingKey.create<Ctor<Role>>(
+        "private.authorization.models.role"
+    );
+    export const PERMISSION_MODEL = BindingKey.create<Ctor<Permission>>(
+        "private.authorization.models.permission"
+    );
+    export const USER_ROLE_MODEL = BindingKey.create<Ctor<UserRole>>(
+        "private.authorization.models.userRole"
+    );
+    export const ROLE_PERMISSION_MODEL = BindingKey.create<
+        Ctor<RolePermission>
+    >("private.authorization.models.rolePermission");
+
+    /**
+     * DataSource key
+     *
+     * 1. RelationalDataSource: RDBMS
+     */
+    export const RELATIONAL_DATASOURCE = BindingKey.create<juggler.DataSource>(
+        "private.authorization.dataSources.relational"
+    );
+}
+
 export const AUTHORIZATION_METADATA_KEY = MetadataAccessor.create<
     AuthorizationMetadata<PermissionsList>,
     MethodDecorator
@@ -104,7 +105,7 @@ export const AUTHORIZATION_METADATA_KEY = MetadataAccessor.create<
 /**
  * Binding, Finding key
  *
- * 1. DataSource
+ * 1. RelationalDataSource
  *
  * 2. UserRepository
  * 3. RoleRepository
@@ -113,7 +114,7 @@ export const AUTHORIZATION_METADATA_KEY = MetadataAccessor.create<
  * 6. RolePermissionRepository
  */
 export type BindAuthorizationKey =
-    | "DataSource"
+    | "RelationalDataSource"
     | "UserRepository"
     | "RoleRepository"
     | "PermissionRepository"
@@ -138,4 +139,9 @@ export function findAuthorization(ctx: Context, key: BindAuthorizationKey) {
     if (binding) {
         return binding.getValue(ctx);
     }
+}
+
+/** bindRelationalDataSource */
+export function bindRelationalDataSource() {
+    return bindAuthorization("RelationalDataSource");
 }

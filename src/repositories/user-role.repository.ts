@@ -30,14 +30,16 @@ export function UserRoleRepositoryMixin<
             User,
             typeof UserRole.prototype.id
         >;
+
         public readonly role: BelongsToAccessor<
             Role,
             typeof UserRole.prototype.id
         >;
+
         constructor(
             @inject(PrivateAuthorizationBindings.USER_ROLE_MODEL)
             ctor: Ctor<Model>,
-            @inject(PrivateAuthorizationBindings.DATASOURCE)
+            @inject(PrivateAuthorizationBindings.RELATIONAL_DATASOURCE)
             dataSource: juggler.DataSource,
             @inject.getter(AuthorizationBindings.USER_REPOSITORY)
             getUserRepository: Getter<DefaultUserRepository>,
@@ -45,11 +47,13 @@ export function UserRoleRepositoryMixin<
             getRoleRepository: Getter<DefaultRoleRepository>
         ) {
             super(ctor, dataSource);
+
             this.user = this.createBelongsToAccessorFor(
                 "user",
                 getUserRepository
             );
             this.registerInclusionResolver("user", this.user.inclusionResolver);
+
             this.role = this.createBelongsToAccessorFor(
                 "role",
                 getRoleRepository
