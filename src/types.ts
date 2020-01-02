@@ -1,5 +1,5 @@
-import { Class } from "@loopback/repository";
 import { InvocationContext } from "@loopback/context";
+import { Class } from "@loopback/repository";
 import { Ctor } from "loopback-history-extension";
 
 import { User, Role, Permission, UserRole, RolePermission } from "./models";

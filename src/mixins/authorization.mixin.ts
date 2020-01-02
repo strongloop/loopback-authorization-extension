@@ -8,6 +8,7 @@ import {
     AuthorizationBindings,
     PrivateAuthorizationBindings
 } from "../keys";
+
 import { AuthorizationMixinConfig, PermissionsList } from "../types";
 
 import { relation } from "../decorators";
