@@ -5,7 +5,8 @@ import {
     Provider,
     CoreBindings
 } from "@loopback/core";
-import { Request, HttpErrors } from "@loopback/rest";
+import { HttpErrors } from "@loopback/rest";
+import { InvocationContext } from "@loopback/context";
 
 import {
     PermissionsList,
@@ -27,28 +28,29 @@ export class AuthorizeActionProvider<Permissions extends PermissionsList>
     ) {}
 
     async value(): Promise<AuthorizeFn<Permissions>> {
-        return async (permissions, request, methodArgs) => {
+        return async (permissions, methodArgs) => {
             let controller: any;
-            let methodName: string;
-            let metadata: Condition<Permissions>;
+            let methodName: string = "";
+            let metadata: Condition<Permissions> = async () => true;
+
             try {
                 controller = await this.getController();
                 methodName = await this.getMethodName();
-                metadata = getAuthorizeMetadata(controller, methodName);
-            } catch (error) {
-                metadata = {
-                    key: async () => {
-                        return true;
-                    }
-                };
-            }
+                metadata = getAuthorizeMetadata(
+                    controller,
+                    methodName
+                ) as Condition<Permissions>;
+            } catch (error) {}
 
-            let access = await this.authorize(
+            let access = await authorizeFn<Permissions>(
                 metadata,
                 permissions,
-                request,
-                controller,
-                methodArgs
+                new InvocationContext(
+                    controller,
+                    controller,
+                    methodName,
+                    methodArgs
+                )
             );
 
             if (!access) {
@@ -58,74 +60,24 @@ export class AuthorizeActionProvider<Permissions extends PermissionsList>
             }
         };
     }
+}
 
-    private async authorize(
-        condition: Condition<Permissions>,
-        permissions: StringKey<Permissions>[],
-        request: Request,
-        controller: any,
-        methodArgs: any[]
-    ): Promise<boolean> {
-        if (condition) {
-            if (typeof condition === "object") {
-                if ("and" in condition) {
-                    return await this.authorizeAnd(
-                        condition.and,
-                        permissions,
-                        request,
-                        controller,
-                        methodArgs
-                    );
-                } else if ("or" in condition) {
-                    return await this.authorizeOr(
-                        condition.or,
-                        permissions,
-                        request,
-                        controller,
-                        methodArgs
-                    );
-                } else {
-                    return await this.authorizePermission(
-                        condition,
-                        permissions,
-                        request,
-                        controller,
-                        methodArgs
-                    );
-                }
-            } else {
-                return await this.authorizePermission(
-                    { key: condition },
-                    permissions,
-                    request,
-                    controller,
-                    methodArgs
-                );
-            }
-        }
-
-        return false;
-    }
-
-    private async authorizeAnd(
-        conditions: Condition<Permissions>[],
-        permissions: StringKey<Permissions>[],
-        request: Request,
-        controller: any,
-        methodArgs: any[]
-    ) {
+export async function authorizeFn<Permissions>(
+    condition: Condition<Permissions>,
+    permissions: StringKey<Permissions>[],
+    invocationContext: InvocationContext
+) {
+    const authorizeAnd = async (conditions: Condition<Permissions>[]) => {
         // bugfix: for empty arrays return true
         if (conditions.length <= 0) {
             return true;
         }
 
         for (let condition of conditions) {
-            let result = await this.authorize(
+            let result = await authorizeFn(
                 condition,
                 permissions,
-                request,
-                controller,
-                methodArgs
+                invocationContext
             );
 
             // lazy evaluation for high performance
@@ -135,27 +87,19 @@ export class AuthorizeActionProvider<Permissions extends PermissionsList>
         }
 
         return true;
-    }
+    };
 
-    private async authorizeOr(
-        conditions: Condition<Permissions>[],
-        permissions: StringKey<Permissions>[],
-        request: Request,
-        controller: any,
-        methodArgs: any[]
-    ) {
+    const authorizeOr = async (conditions: Condition<Permissions>[]) => {
         // bugfix: for empty arrays return true
         if (conditions.length <= 0) {
             return true;
         }
 
         for (let condition of conditions) {
-            let result = await this.authorize(
+            let result = await authorizeFn(
                 condition,
                 permissions,
-                request,
-                controller,
-                methodArgs
+                invocationContext
             );
 
             // lazy evaluation for high performance
@@ -165,15 +109,9 @@ export class AuthorizeActionProvider<Permissions extends PermissionsList>
         }
 
         return false;
-    }
+    };
 
-    private async authorizePermission(
-        key: FullKey<Permissions>,
-        permissions: StringKey<Permissions>[],
-        request: Request,
-        controller: any,
-        methodArgs: any[]
-    ) {
+    const authorizePermission = async (key: FullKey<Permissions>) => {
         let result = false;
 
         if (typeof key.key === "string") {
@@ -181,9 +119,25 @@ export class AuthorizeActionProvider<Permissions extends PermissionsList>
             result = permissions.indexOf(key.key) >= 0;
         } else if (typeof key.key === "function") {
             // async key
-            result = await key.key(controller, request, methodArgs);
+            result = await key.key(invocationContext);
         }
 
         return key.not ? !result : result;
+    };
+
+    if (condition) {
+        if (typeof condition === "object") {
+            if ("and" in condition) {
+                return await authorizeAnd(condition.and);
+            } else if ("or" in condition) {
+                return await authorizeOr(condition.or);
+            } else {
+                return await authorizePermission(condition);
+            }
+        } else {
+            return await authorizePermission({ key: condition });
+        }
     }
+
+    return false;
 }

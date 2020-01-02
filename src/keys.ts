@@ -1,4 +1,4 @@
-import { Context, BindingKey, MetadataAccessor, bind } from "@loopback/context";
+import { bind, Context, BindingKey, MetadataAccessor } from "@loopback/context";
 import { Ctor } from "loopback-history-extension";
 import { juggler } from "@loopback/repository";
 
