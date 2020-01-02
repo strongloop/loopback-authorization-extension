@@ -6,24 +6,13 @@ import { PermissionsList, AuthorizeFn, GetUserPermissionsFn } from "./types";
 
 import { AuthorizationMetadata } from "./decorators";
 
+import { User, Role, Permission, UserRole, RolePermission } from "./models";
 import {
-    User,
-    UserRelations,
-    Role,
-    RoleRelations,
-    Permission,
-    PermissionRelations,
-    UserRole,
-    UserRoleRelations,
-    RolePermission,
-    RolePermissionRelations
-} from "./models";
-import {
-    UserRepository,
-    RoleRepository,
-    PermissionRepository,
-    UserRoleRepository,
-    RolePermissionRepository
+    DefaultUserRepository,
+    DefaultRoleRepository,
+    DefaultPermissionRepository,
+    DefaultUserRoleRepository,
+    DefaultRolePermissionRepository
 } from "./repositories";
 
 /**
@@ -52,20 +41,20 @@ export namespace AuthorizationBindings {
      * 4. UserRoleRepository
      * 5. RolePermissionRepository
      */
-    export const USER_REPOSITORY = BindingKey.create<
-        UserRepository<User, UserRelations>
-    >("authorization.repositories.user");
-    export const ROLE_REPOSITORY = BindingKey.create<
-        RoleRepository<Role, RoleRelations>
-    >("authorization.repositories.role");
+    export const USER_REPOSITORY = BindingKey.create<DefaultUserRepository>(
+        "authorization.repositories.user"
+    );
+    export const ROLE_REPOSITORY = BindingKey.create<DefaultRoleRepository>(
+        "authorization.repositories.role"
+    );
     export const PERMISSION_REPOSITORY = BindingKey.create<
-        PermissionRepository<Permission, PermissionRelations>
+        DefaultPermissionRepository
     >("authorization.repositories.permission");
     export const USER_ROLE_REPOSITORY = BindingKey.create<
-        UserRoleRepository<UserRole, UserRoleRelations>
+        DefaultUserRoleRepository
     >("authorization.repositories.userRole");
     export const ROLE_PERMISSION_REPOSITORY = BindingKey.create<
-        RolePermissionRepository<RolePermission, RolePermissionRelations>
+        DefaultRolePermissionRepository
     >("authorization.repositories.rolePermission");
 }
 
