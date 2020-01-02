@@ -1,4 +1,4 @@
-import { Request } from "@loopback/rest";
+import { InvocationContext } from "@loopback/context";
 import { Class } from "@loopback/repository";
 import { Ctor } from "loopback-history-extension";
 
@@ -16,11 +16,7 @@ export class PermissionsList {
  * and authorizes user
  */
 export interface AuthorizeFn<Permissions extends PermissionsList> {
-    (
-        permissions: StringKey<Permissions>[],
-        request: Request,
-        methodArgs: any[]
-    ): Promise<void>;
+    (permissions: StringKey<Permissions>[], methodArgs: any[]): Promise<void>;
 }
 
 /**
@@ -54,9 +50,7 @@ export type Key<Permissions extends PermissionsList> =
     | AsyncKey;
 export type StringKey<Permissions extends PermissionsList> = keyof Permissions;
 export type AsyncKey = (
-    controller: any,
-    request: Request,
-    methodArgs: any[]
+    invocationContext: InvocationContext
 ) => Promise<boolean>;
 
 /**

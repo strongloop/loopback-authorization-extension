@@ -1,12 +1,13 @@
-import { Context, BindingKey, MetadataAccessor, bind } from "@loopback/context";
-import { Ctor } from "loopback-history-extension";
+import { bind, Context, BindingKey, MetadataAccessor } from "@loopback/context";
 import { juggler } from "@loopback/repository";
+import { Ctor } from "loopback-history-extension";
 
 import { PermissionsList, AuthorizeFn, GetUserPermissionsFn } from "./types";
 
 import { AuthorizationMetadata } from "./decorators";
 
 import { User, Role, Permission, UserRole, RolePermission } from "./models";
+
 import {
     DefaultUserRepository,
     DefaultRoleRepository,
