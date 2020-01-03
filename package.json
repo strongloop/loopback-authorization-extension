@@ -38,7 +38,7 @@
         "@loopback/core": "^1.12.0",
         "@loopback/repository": "^1.16.0",
         "@loopback/rest": "^1.25.0",
-        "loopback-history-extension": "^4.5.0"
+        "loopback-history-extension": "^5.0.0"
     },
     "devDependencies": {
         "@loopback/build": "^3.0.0",
