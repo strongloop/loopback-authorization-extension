@@ -75,20 +75,18 @@ export class GetUserPermissionsProvider<Permissions extends PermissionsList>
             ]
         });
 
-        return [
-            ...new Set(
-                roles
-                    .map(role =>
-                        role.rolePermissions.map(
-                            rolePermission => rolePermission.permission.key
-                        )
+        const permissions = roles
+            .map(role =>
+                role.rolePermissions
+                    .map(
+                        rolePermission =>
+                            rolePermission.permission &&
+                            rolePermission.permission.key
                     )
-                    .reduce(
-                        (accumulate, permissionKeys) =>
-                            accumulate.concat(permissionKeys),
-                        []
-                    )
+                    .filter(rolePermission => Boolean(rolePermission))
             )
-        ] as StringKey<Permissions>[];
+            .reduce((prev, permissionKeys) => prev.concat(permissionKeys), []);
+
+        return [...new Set(permissions)] as StringKey<Permissions>[];
     }
 }
