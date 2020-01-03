@@ -65,7 +65,7 @@ export type UserWithRelations = User & UserRelations;
 
 ### Step 2 (Define Repositories)
 
-Use the command `lb4 repository` for simplifing your `Repository` creation, then replace `DefaultCrudRepository` class with `UserRepository`, `RoleRepository` or `PermissionRepository` as the parent class, then bind them
+Use the command `lb4 repository` for simplifing your `Repository` creation, then replace `DefaultCrudRepository` class with `UserRepositoryMixin()`, `RoleRepositoryMixin()` or `PermissionRepositoryMixin()` as the parent class, then bind them
 
 See this example:
 
@@ -74,9 +74,9 @@ import { User, UserRelations } from "~/models";
 import { MySqlDataSource } from "~/datasources";
 import { inject } from "@loopback/core";
 
-import { UserRepository as UserModelRepository } from "loopback-authorization-extension";
+import { UserRepositoryMixin } from "loopback-authorization-extension";
 
-export class UserRepository extends UserModelRepository<User, UserRelations> {
+export class UserRepository extends UserRepositoryMixin<User, UserRelations>() {
     constructor(@inject("datasources.MySQL") dataSource: MySqlDataSource) {
         super(User, dataSource);
     }
@@ -214,7 +214,7 @@ export class MySequence implements SequenceHandler {
             * and at the end, you must pass them to this method
             */
             if (userSession) {
-                await this.authorize(userSession.permissions, request, args);
+                await this.authorize(userSession.permissions, args);
             }
 
             const result = await this.invoke(route, args);
@@ -359,7 +359,7 @@ In some special cases we need to check some other permissions or conditions such
 
 ## Many-To-Many relations
 
-Users, Roles, Permissions has many-to-many relations, using, `UserRoleRepository`, `RolePermissionRepository` you can add some users to roles or assign permissions to roles
+Users, Roles, Permissions has many-to-many relations, using, `DefaultUserRoleRepository`, `DefaultRolePermissionRepository` you can add some users to roles or assign permissions to roles
 
 **Example**:
 
@@ -374,7 +374,7 @@ import { inject } from "@loopback/context";
 export class UserControllerController {
     constructor(
         @inject(AuthorizationBindings.USER_REPOSITORY)
-        public userRepository: UserRepository
+        public userRepository: DefaultUserRepository
     ) {}
 
     @post("/users/...", {
