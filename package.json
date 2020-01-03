@@ -1,6 +1,6 @@
 {
     "name": "loopback-authorization-extension",
-    "version": "9.9.1",
+    "version": "10.0.0",
     "description": "HRBAC, MAC, DAC access models, generic implementation for Loopback v4",
     "keywords": [
         "loopback-extension",
