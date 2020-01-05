@@ -22,58 +22,105 @@ import {
 
 import { DefaultRoleRepository, DefaultPermissionRepository } from "./";
 
+/**
+ * Repository Type
+ */
+export interface RolePermissionRepository<
+    Model extends RolePermission,
+    ModelRelations extends RolePermissionRelations
+>
+    extends DefaultCrudRepository<
+        Model,
+        typeof RolePermission.prototype.id,
+        ModelRelations
+    > {
+    readonly role: BelongsToAccessor<Role, typeof RolePermission.prototype.id>;
+
+    readonly permission: BelongsToAccessor<
+        Permission,
+        typeof RolePermission.prototype.id
+    >;
+}
+
+/**
+ * Repository Mixin
+ */
 export function RolePermissionRepositoryMixin<
     Model extends RolePermission,
     ModelRelations extends RolePermissionRelations
->(): Class<DefaultCrudRepository<Model, string, ModelRelations>> {
-    @bindAuthorization("RolePermissionRepository")
-    class RolePermissionRepository extends HistoryCrudRepositoryMixin<
-        Model,
-        ModelRelations
-    >() {
-        public readonly role: BelongsToAccessor<
-            Role,
-            typeof RolePermission.prototype.id
-        >;
+>() {
+    /**
+     * Return function with generic type of repository class, returns mixed in class
+     *
+     * bugfix: optional type, load type from value
+     */
+    return function<
+        RepositoryClass extends Class<
+            DefaultCrudRepository<Model, string, ModelRelations>
+        >
+    >(
+        superClass?: RepositoryClass
+    ): RepositoryClass &
+        Class<RolePermissionRepository<Model, ModelRelations>> {
+        const parentClass: Class<DefaultCrudRepository<
+            Model,
+            string,
+            ModelRelations
+        >> = superClass || DefaultCrudRepository;
 
-        public readonly permission: BelongsToAccessor<
-            Permission,
-            typeof RolePermission.prototype.id
-        >;
+        @bindAuthorization("RolePermissionRepository")
+        class Repository extends parentClass
+            implements RolePermissionRepository<Model, ModelRelations> {
+            public readonly role: BelongsToAccessor<
+                Role,
+                typeof RolePermission.prototype.id
+            >;
 
-        constructor(
-            @inject(PrivateAuthorizationBindings.ROLE_PERMISSION_MODEL)
-            ctor: Ctor<Model>,
-            @inject(PrivateAuthorizationBindings.RELATIONAL_DATASOURCE)
-            dataSource: juggler.DataSource,
-            @inject.getter(AuthorizationBindings.ROLE_REPOSITORY)
-            getRoleRepository: Getter<DefaultRoleRepository>,
-            @inject.getter(AuthorizationBindings.PERMISSION_REPOSITORY)
-            getPermissionRepository: Getter<DefaultPermissionRepository>
-        ) {
-            super(ctor, dataSource);
+            public readonly permission: BelongsToAccessor<
+                Permission,
+                typeof RolePermission.prototype.id
+            >;
 
-            this.role = this.createBelongsToAccessorFor(
-                "role",
-                getRoleRepository
-            );
-            this.registerInclusionResolver("role", this.role.inclusionResolver);
+            constructor(
+                @inject(PrivateAuthorizationBindings.ROLE_PERMISSION_MODEL)
+                ctor: Ctor<Model>,
+                @inject(PrivateAuthorizationBindings.RELATIONAL_DATASOURCE)
+                dataSource: juggler.DataSource,
+                @inject.getter(AuthorizationBindings.ROLE_REPOSITORY)
+                getRoleRepository: Getter<DefaultRoleRepository>,
+                @inject.getter(AuthorizationBindings.PERMISSION_REPOSITORY)
+                getPermissionRepository: Getter<DefaultPermissionRepository>
+            ) {
+                super(ctor, dataSource);
 
-            this.permission = this.createBelongsToAccessorFor(
-                "permission",
-                getPermissionRepository
-            );
-            this.registerInclusionResolver(
-                "permission",
-                this.permission.inclusionResolver
-            );
+                this.role = this.createBelongsToAccessorFor(
+                    "role",
+                    getRoleRepository
+                );
+                this.registerInclusionResolver(
+                    "role",
+                    this.role.inclusionResolver
+                );
+
+                this.permission = this.createBelongsToAccessorFor(
+                    "permission",
+                    getPermissionRepository
+                );
+                this.registerInclusionResolver(
+                    "permission",
+                    this.permission.inclusionResolver
+                );
+            }
         }
-    }
 
-    return RolePermissionRepository;
+        return Repository as any;
+    };
 }
 
+/**
+ * Repository Class
+ */
 export class DefaultRolePermissionRepository extends RolePermissionRepositoryMixin<
     RolePermission,
     RolePermissionRelations
->() {}
+>()(HistoryCrudRepositoryMixin<RolePermission, RolePermissionRelations>()()) {}

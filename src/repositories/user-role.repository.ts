@@ -17,55 +17,101 @@ import { UserRole, UserRoleRelations, User, Role } from "../models";
 
 import { DefaultUserRepository, DefaultRoleRepository } from "./";
 
+/**
+ * Repository Type
+ */
+export interface UserRoleRepository<
+    Model extends UserRole,
+    ModelRelations extends UserRoleRelations
+>
+    extends DefaultCrudRepository<
+        Model,
+        typeof UserRole.prototype.id,
+        ModelRelations
+    > {
+    readonly user: BelongsToAccessor<User, typeof UserRole.prototype.id>;
+
+    readonly role: BelongsToAccessor<Role, typeof UserRole.prototype.id>;
+}
+
+/**
+ * Repository Mixin
+ */
 export function UserRoleRepositoryMixin<
     Model extends UserRole,
     ModelRelations extends UserRoleRelations
->(): Class<DefaultCrudRepository<Model, string, ModelRelations>> {
-    @bindAuthorization("UserRoleRepository")
-    class UserRoleRepository extends HistoryCrudRepositoryMixin<
-        Model,
-        ModelRelations
-    >() {
-        public readonly user: BelongsToAccessor<
-            User,
-            typeof UserRole.prototype.id
-        >;
+>() {
+    /**
+     * Return function with generic type of repository class, returns mixed in class
+     *
+     * bugfix: optional type, load type from value
+     */
+    return function<
+        RepositoryClass extends Class<
+            DefaultCrudRepository<Model, string, ModelRelations>
+        >
+    >(
+        superClass?: RepositoryClass
+    ): RepositoryClass & Class<UserRoleRepository<Model, ModelRelations>> {
+        const parentClass: Class<DefaultCrudRepository<
+            Model,
+            string,
+            ModelRelations
+        >> = superClass || DefaultCrudRepository;
 
-        public readonly role: BelongsToAccessor<
-            Role,
-            typeof UserRole.prototype.id
-        >;
+        @bindAuthorization("UserRoleRepository")
+        class Repository extends parentClass
+            implements UserRoleRepository<Model, ModelRelations> {
+            public readonly user: BelongsToAccessor<
+                User,
+                typeof UserRole.prototype.id
+            >;
 
-        constructor(
-            @inject(PrivateAuthorizationBindings.USER_ROLE_MODEL)
-            ctor: Ctor<Model>,
-            @inject(PrivateAuthorizationBindings.RELATIONAL_DATASOURCE)
-            dataSource: juggler.DataSource,
-            @inject.getter(AuthorizationBindings.USER_REPOSITORY)
-            getUserRepository: Getter<DefaultUserRepository>,
-            @inject.getter(AuthorizationBindings.ROLE_REPOSITORY)
-            getRoleRepository: Getter<DefaultRoleRepository>
-        ) {
-            super(ctor, dataSource);
+            public readonly role: BelongsToAccessor<
+                Role,
+                typeof UserRole.prototype.id
+            >;
 
-            this.user = this.createBelongsToAccessorFor(
-                "user",
-                getUserRepository
-            );
-            this.registerInclusionResolver("user", this.user.inclusionResolver);
+            constructor(
+                @inject(PrivateAuthorizationBindings.USER_ROLE_MODEL)
+                ctor: Ctor<Model>,
+                @inject(PrivateAuthorizationBindings.RELATIONAL_DATASOURCE)
+                dataSource: juggler.DataSource,
+                @inject.getter(AuthorizationBindings.USER_REPOSITORY)
+                getUserRepository: Getter<DefaultUserRepository>,
+                @inject.getter(AuthorizationBindings.ROLE_REPOSITORY)
+                getRoleRepository: Getter<DefaultRoleRepository>
+            ) {
+                super(ctor, dataSource);
 
-            this.role = this.createBelongsToAccessorFor(
-                "role",
-                getRoleRepository
-            );
-            this.registerInclusionResolver("role", this.role.inclusionResolver);
+                this.user = this.createBelongsToAccessorFor(
+                    "user",
+                    getUserRepository
+                );
+                this.registerInclusionResolver(
+                    "user",
+                    this.user.inclusionResolver
+                );
+
+                this.role = this.createBelongsToAccessorFor(
+                    "role",
+                    getRoleRepository
+                );
+                this.registerInclusionResolver(
+                    "role",
+                    this.role.inclusionResolver
+                );
+            }
         }
-    }
 
-    return UserRoleRepository;
+        return Repository as any;
+    };
 }
 
+/**
+ * Repository Class
+ */
 export class DefaultUserRoleRepository extends UserRoleRepositoryMixin<
     UserRole,
     UserRoleRelations
->() {}
+>()(HistoryCrudRepositoryMixin<UserRole, UserRoleRelations>()()) {}
