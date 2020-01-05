@@ -65,7 +65,7 @@ export type UserWithRelations = User & UserRelations;
 
 ### Step 2 (Define Repositories)
 
-Use the command `lb4 repository` for simplifing your `Repository` creation, then replace `DefaultCrudRepository` class with `UserRepositoryMixin()`, `RoleRepositoryMixin()` or `PermissionRepositoryMixin()` as the parent class, then bind them
+Use the command `lb4 repository` for simplifing your `Repository` creation, then replace `DefaultCrudRepository` class with `UserRepositoryMixin()()`, `RoleRepositoryMixin()()` or `PermissionRepositoryMixin()()` as the parent class, then bind them
 
 See this example:
 
@@ -76,7 +76,10 @@ import { inject } from "@loopback/core";
 
 import { UserRepositoryMixin } from "loopback-authorization-extension";
 
-export class UserRepository extends UserRepositoryMixin<User, UserRelations>() {
+export class UserRepository extends UserRepositoryMixin<
+    User,
+    UserRelations
+>()() {
     constructor(@inject("datasources.MySQL") dataSource: MySqlDataSource) {
         super(User, dataSource);
     }
@@ -321,7 +324,7 @@ your can define any logical combinations of your `Permissions` to control access
 
 ### AsyncAuthorizer
 
-In some special cases we need to check some other permissions or conditions such as querying in database or etc, for these cases we can use `AsyncAuthorizer` for running an async function of type `(controller,req,args) => boolean`
+In some special cases we need to check some other permissions or conditions such as querying in database or etc, for these cases we can use `AsyncAuthorizer` for running an async function of type `(invocationContext) => Promise<boolean>`
 
 **Example**:
 
@@ -335,7 +338,7 @@ In some special cases we need to check some other permissions or conditions such
             ]
         },
         {
-            key: async (controller, req, args) => {
+            key: async invocationContext => {
                 let result = await controller.userRepository.find({...});
 
                 if (result.length > 0) {
@@ -354,8 +357,6 @@ In some special cases we need to check some other permissions or conditions such
 ## How to define `Users, Roles, Permissions`
 
 > You can add or remove users, roles and permissions using your repositories
-
----
 
 ## Many-To-Many relations
 
