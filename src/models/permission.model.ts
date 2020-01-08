@@ -29,7 +29,7 @@ export class Permission extends Entity {
     @hasMany(() => RolePermission, {
         keyFrom: "id",
         keyTo: "permissionId"
-    } as any)
+    })
     rolePermissions: RolePermissionWithRelations[];
 
     constructor(data?: Partial<Permission>) {
