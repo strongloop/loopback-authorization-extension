@@ -32,7 +32,7 @@ export class GetUserPermissionsProvider<Permissions extends PermissionsList>
             include: [{ relation: "userRoles" }]
         });
 
-        return user.userRoles.map(userRole => userRole.roleId);
+        return (user.userRoles || []).map(userRole => userRole.roleId);
     }
 
     private async getParentRoles(rolesIDs: string[]) {
@@ -77,7 +77,7 @@ export class GetUserPermissionsProvider<Permissions extends PermissionsList>
 
         const permissions = roles
             .map(role =>
-                role.rolePermissions
+                (role.rolePermissions || [])
                     .map(
                         rolePermission =>
                             rolePermission.permission &&
