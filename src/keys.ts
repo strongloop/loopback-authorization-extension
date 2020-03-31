@@ -24,7 +24,6 @@ export namespace AuthorizationBindings {
      * Action Provider key: output
      *  1. AuthorizeFn
      *  2. GetUserPermissionsFn
-     *
      */
     export const AUTHORIZE_ACTION = BindingKey.create<
         AuthorizeFn<PermissionsList>
