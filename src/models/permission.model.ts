@@ -6,9 +6,8 @@ import { RolePermission, RolePermissionWithRelations } from "./";
 export class Permission extends Entity {
     @property({
         type: "string",
-        id: true,
-        required: true,
-        defaultFn: "uuidv4"
+        defaultFn: "uuidv4",
+        id: true
     })
     id: string;
 

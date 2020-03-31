@@ -120,10 +120,6 @@ export function AuthorizationMixin<T extends Class<any>>(superClass: T) {
             ctx.bind(PrivateAuthorizationBindings.RELATIONAL_DATASOURCE).to(
                 relationalDataSource
             );
-        } else {
-            throw new Error(
-                "AuthorizationComponent: RelationalDataSource not found!"
-            );
         }
     };
 
